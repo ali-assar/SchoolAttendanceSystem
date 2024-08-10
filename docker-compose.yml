@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  adminer:
+    image: adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: sqlite
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+
+  # SQLite service (optional, usually SQLite is file-based)
+  sqlite:
+    image: nouchka/sqlite3
+    volumes:
+      - ./data:/data
+    command: ["sqlite3", "/data/school_attendance.db"]
