@@ -6,83 +6,27 @@ package db
 
 import (
 	"database/sql"
-	"time"
 )
 
-type Admin struct {
-	ID           int64        `json:"id"`
-	Name         string       `json:"name"`
-	Email        string       `json:"email"`
-	PasswordHash string       `json:"password_hash"`
-	Role         string       `json:"role"`
-	CreatedAt    sql.NullTime `json:"created_at"`
+type Attendance struct {
+	AttendanceID int64          `json:"attendance_id"`
+	UserID       sql.NullInt64  `json:"user_id"`
+	Date         string         `json:"date"`
+	EntryTime    sql.NullString `json:"entry_time"`
+	ExitTime     sql.NullString `json:"exit_time"`
 }
 
-type AttendanceRecord struct {
-	ID        int64        `json:"id"`
-	UserType  string       `json:"user_type"`
-	UserID    int64        `json:"user_id"`
-	EntryTime time.Time    `json:"entry_time"`
-	ExitTime  sql.NullTime `json:"exit_time"`
+type Role struct {
+	RoleID   int64  `json:"role_id"`
+	RoleName string `json:"role_name"`
 }
 
-type LeaveRequest struct {
-	ID        int64          `json:"id"`
-	UserType  string         `json:"user_type"`
-	UserID    int64          `json:"user_id"`
-	StartDate time.Time      `json:"start_date"`
-	EndDate   time.Time      `json:"end_date"`
-	Reason    sql.NullString `json:"reason"`
-	Status    sql.NullString `json:"status"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-}
-
-type Notification struct {
-	ID               int64        `json:"id"`
-	UserType         string       `json:"user_type"`
-	UserID           int64        `json:"user_id"`
-	NotificationType string       `json:"notification_type"`
-	Message          string       `json:"message"`
-	SentAt           sql.NullTime `json:"sent_at"`
-}
-
-type Parent struct {
-	ID        int64          `json:"id"`
-	Name      string         `json:"name"`
-	Email     sql.NullString `json:"email"`
-	Phone     sql.NullString `json:"phone"`
-	Relation  sql.NullString `json:"relation"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-}
-
-type Student struct {
-	ID              int64          `json:"id"`
-	Name            string         `json:"name"`
-	StudentID       string         `json:"student_id"`
-	Class           string         `json:"class"`
-	FaceImagePath   sql.NullString `json:"face_image_path"`
-	FingerprintPath sql.NullString `json:"fingerprint_path"`
-	Email           sql.NullString `json:"email"`
-	Phone           sql.NullString `json:"phone"`
-	Status          sql.NullString `json:"status"`
-	CreatedAt       sql.NullTime   `json:"created_at"`
-}
-
-type StudentParent struct {
-	ID        int64 `json:"id"`
-	StudentID int64 `json:"student_id"`
-	ParentID  int64 `json:"parent_id"`
-}
-
-type Teacher struct {
-	ID              int64          `json:"id"`
-	Name            string         `json:"name"`
-	TeacherID       string         `json:"teacher_id"`
-	Department      string         `json:"department"`
-	FaceImagePath   sql.NullString `json:"face_image_path"`
-	FingerprintPath sql.NullString `json:"fingerprint_path"`
-	Email           sql.NullString `json:"email"`
-	Phone           sql.NullString `json:"phone"`
-	Status          sql.NullString `json:"status"`
-	CreatedAt       sql.NullTime   `json:"created_at"`
+type User struct {
+	UserID      int64          `json:"user_id"`
+	FirstName   string         `json:"first_name"`
+	LastName    string         `json:"last_name"`
+	PhoneNumber sql.NullString `json:"phone_number"`
+	ImagePath   sql.NullString `json:"image_path"`
+	RoleID      sql.NullInt64  `json:"role_id"`
+	IsAdmin     sql.NullInt64  `json:"is_admin"`
 }

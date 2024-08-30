@@ -11,14 +11,9 @@ import (
 )
 
 var (
-	ErrorCreateStudentsTable     = errors.New("could not create students table")
-	ErrorCreateTeachersTable     = errors.New("could not create teachers table")
-	ErrorCreateAttendanceRecords = errors.New("could not create attendance records table")
-	ErrorCreateParentsTable      = errors.New("could not create parents table")
-	ErrorCreateStudentParents    = errors.New("could not create student parents table")
-	ErrorCreateNotifications     = errors.New("could not create notifications table")
-	ErrorCreateLeaveRequests     = errors.New("could not create leave requests table")
-	ErrorCreateAdminsTable       = errors.New("could not create admins table")
+	ErrorCreateUsersTable = errors.New("could not create users table")
+	ErrorCreateRolesTable = errors.New("could not create roles table")
+	ErrorCreateAttendance = errors.New("could not create attendance table")
 )
 
 type DBParameter struct {
@@ -59,35 +54,15 @@ func InitDB() (*sql.DB, error) {
 }
 
 func CreateTables(db *sql.DB) error {
-	if err := CreateStudentsTable(db); err != nil {
+	if err := CreateUsersTable(db); err != nil {
 		return err
 	}
 
-	if err := CreateTeachersTable(db); err != nil {
+	if err := CreateRolesTable(db); err != nil {
 		return err
 	}
 
-	if err := CreateAttendanceRecordsTable(db); err != nil {
-		return err
-	}
-
-	if err := CreateParentsTable(db); err != nil {
-		return err
-	}
-
-	if err := CreateStudentParentsTable(db); err != nil {
-		return err
-	}
-
-	if err := CreateNotificationsTable(db); err != nil {
-		return err
-	}
-
-	if err := CreateLeaveRequestsTable(db); err != nil {
-		return err
-	}
-
-	if err := CreateAdminsTable(db); err != nil {
+	if err := CreateAttendanceTable(db); err != nil {
 		return err
 	}
 
@@ -95,171 +70,56 @@ func CreateTables(db *sql.DB) error {
 }
 
 func TearDown(db *sql.DB) {
-	db.Exec("DROP TABLE IF EXISTS students")
-	db.Exec("DROP TABLE IF EXISTS teachers")
-	db.Exec("DROP TABLE IF EXISTS attendance_records")
-	db.Exec("DROP TABLE IF EXISTS parents")
-	db.Exec("DROP TABLE IF EXISTS student_parents")
-	db.Exec("DROP TABLE IF EXISTS notifications")
-	db.Exec("DROP TABLE IF EXISTS leave_requests")
-	db.Exec("DROP TABLE IF EXISTS admins")
+	db.Exec("DROP TABLE IF EXISTS users")
+	db.Exec("DROP TABLE IF EXISTS roles")
+	db.Exec("DROP TABLE IF EXISTS attendance")
 }
 
-func CreateStudentsTable(db *sql.DB) error {
-	createStudentsTable := `
-	CREATE TABLE IF NOT EXISTS students (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		student_id TEXT UNIQUE NOT NULL,
-		class TEXT NOT NULL,
-		face_image_path TEXT,
-		fingerprint_path TEXT,
-		email TEXT,
-		phone TEXT,
-		status TEXT DEFAULT 'active',
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-	_, err := db.Exec(createStudentsTable)
+func CreateUsersTable(db *sql.DB) error {
+	createUsersTable := `
+	CREATE TABLE IF NOT EXISTS users (
+		user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+		first_name TEXT NOT NULL,
+		last_name TEXT NOT NULL,
+		phone_number TEXT,
+		image_path TEXT,
+		role_id INTEGER,
+		is_admin INTEGER DEFAULT 0,
+		FOREIGN KEY (role_id) REFERENCES roles(role_id)
+	)`
+	_, err := db.Exec(createUsersTable)
 	if err != nil {
-		return errors.Join(ErrorCreateStudentsTable, err)
+		return errors.Join(ErrorCreateUsersTable, err)
 	}
 	return nil
 }
 
-func CreateTeachersTable(db *sql.DB) error {
-	createTeachersTable := `
-	CREATE TABLE IF NOT EXISTS teachers (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		teacher_id TEXT UNIQUE NOT NULL,
-		department TEXT NOT NULL,
-		face_image_path TEXT,
-		fingerprint_path TEXT,
-		email TEXT,
-		phone TEXT,
-		status TEXT DEFAULT 'active',
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-	_, err := db.Exec(createTeachersTable)
+func CreateRolesTable(db *sql.DB) error {
+	createRolesTable := `
+	CREATE TABLE IF NOT EXISTS roles (
+		role_id INTEGER PRIMARY KEY AUTOINCREMENT,
+		role_name TEXT NOT NULL
+	)`
+	_, err := db.Exec(createRolesTable)
 	if err != nil {
-		return errors.Join(ErrorCreateTeachersTable, err)
+		return errors.Join(ErrorCreateRolesTable, err)
 	}
 	return nil
 }
 
-func CreateAttendanceRecordsTable(db *sql.DB) error {
-	createAttendanceRecordsTable := `
-	CREATE TABLE IF NOT EXISTS attendance_records (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_type TEXT NOT NULL,
-		user_id INTEGER NOT NULL,
-		entry_time DATETIME NOT NULL,
-		exit_time DATETIME,
-		FOREIGN KEY (user_id) REFERENCES students(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES teachers(id) ON DELETE CASCADE
-	);
-	`
-	_, err := db.Exec(createAttendanceRecordsTable)
+func CreateAttendanceTable(db *sql.DB) error {
+	createAttendanceTable := `
+	CREATE TABLE IF NOT EXISTS attendance (
+		attendance_id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER,
+		date TEXT NOT NULL,
+		entry_time TEXT,
+		exit_time TEXT,
+		FOREIGN KEY (user_id) REFERENCES users(user_id)
+	)`
+	_, err := db.Exec(createAttendanceTable)
 	if err != nil {
-		return errors.Join(ErrorCreateAttendanceRecords, err)
-	}
-	return nil
-}
-
-func CreateParentsTable(db *sql.DB) error {
-	createParentsTable := `
-	CREATE TABLE IF NOT EXISTS parents (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		email TEXT,
-		phone TEXT,
-		relation TEXT,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-	_, err := db.Exec(createParentsTable)
-	if err != nil {
-		return errors.Join(ErrorCreateParentsTable, err)
-	}
-	return nil
-}
-
-func CreateStudentParentsTable(db *sql.DB) error {
-	createStudentParentsTable := `
-	CREATE TABLE IF NOT EXISTS student_parents (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		student_id INTEGER NOT NULL,
-		parent_id INTEGER NOT NULL,
-		FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-		FOREIGN KEY (parent_id) REFERENCES parents(id) ON DELETE CASCADE
-	);
-	`
-	_, err := db.Exec(createStudentParentsTable)
-	if err != nil {
-		return errors.Join(ErrorCreateStudentParents, err)
-	}
-	return nil
-}
-
-func CreateNotificationsTable(db *sql.DB) error {
-	createNotificationsTable := `
-	CREATE TABLE IF NOT EXISTS notifications (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_type TEXT NOT NULL,
-		user_id INTEGER NOT NULL,
-		notification_type TEXT NOT NULL,
-		message TEXT NOT NULL,
-		sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_id) REFERENCES students(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES teachers(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES parents(id) ON DELETE CASCADE
-	);
-	`
-	_, err := db.Exec(createNotificationsTable)
-	if err != nil {
-		return errors.Join(ErrorCreateNotifications, err)
-	}
-	return nil
-}
-
-func CreateLeaveRequestsTable(db *sql.DB) error {
-	createLeaveRequestsTable := `
-	CREATE TABLE IF NOT EXISTS leave_requests (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_type TEXT NOT NULL,
-		user_id INTEGER NOT NULL,
-		start_date DATE NOT NULL,
-		end_date DATE NOT NULL,
-		reason TEXT,
-		status TEXT DEFAULT 'pending',
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_id) REFERENCES students(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES teachers(id) ON DELETE CASCADE
-	);
-	`
-	_, err := db.Exec(createLeaveRequestsTable)
-	if err != nil {
-		return errors.Join(ErrorCreateLeaveRequests, err)
-	}
-	return nil
-}
-
-func CreateAdminsTable(db *sql.DB) error {
-	createAdminsTable := `
-	CREATE TABLE IF NOT EXISTS admins (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		email TEXT UNIQUE NOT NULL,
-		password_hash TEXT NOT NULL,
-		role TEXT NOT NULL,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-	_, err := db.Exec(createAdminsTable)
-	if err != nil {
-		return errors.Join(ErrorCreateAdminsTable, err)
+		return errors.Join(ErrorCreateAttendance, err)
 	}
 	return nil
 }

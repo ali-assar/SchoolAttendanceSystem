@@ -8,248 +8,137 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
-const createAdmin = `-- name: CreateAdmin :exec
-
-INSERT INTO admins (name, email, password_hash, role) 
+const createAttendance = `-- name: CreateAttendance :exec
+INSERT INTO attendance (user_id, date, entry_time, exit_time) 
 VALUES (?, ?, ?, ?)
 `
 
-type CreateAdminParams struct {
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	PasswordHash string `json:"password_hash"`
-	Role         string `json:"role"`
+type CreateAttendanceParams struct {
+	UserID    sql.NullInt64  `json:"user_id"`
+	Date      string         `json:"date"`
+	EntryTime sql.NullString `json:"entry_time"`
+	ExitTime  sql.NullString `json:"exit_time"`
 }
 
-// Admins Queries
-func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) error {
-	_, err := q.db.ExecContext(ctx, createAdmin,
-		arg.Name,
-		arg.Email,
-		arg.PasswordHash,
-		arg.Role,
+func (q *Queries) CreateAttendance(ctx context.Context, arg CreateAttendanceParams) error {
+	_, err := q.db.ExecContext(ctx, createAttendance,
+		arg.UserID,
+		arg.Date,
+		arg.EntryTime,
+		arg.ExitTime,
 	)
 	return err
 }
 
-const createLeaveRequest = `-- name: CreateLeaveRequest :exec
+const createRole = `-- name: CreateRole :exec
 
-INSERT INTO leave_requests (user_type, user_id, start_date, end_date, reason, status) 
+INSERT INTO roles (role_name) 
+VALUES (?)
+`
+
+// Roles Queries
+func (q *Queries) CreateRole(ctx context.Context, roleName string) error {
+	_, err := q.db.ExecContext(ctx, createRole, roleName)
+	return err
+}
+
+const createUser = `-- name: CreateUser :exec
+INSERT INTO users (first_name, last_name, phone_number, image_path, role_id, is_admin) 
 VALUES (?, ?, ?, ?, ?, ?)
 `
 
-type CreateLeaveRequestParams struct {
-	UserType  string         `json:"user_type"`
-	UserID    int64          `json:"user_id"`
-	StartDate time.Time      `json:"start_date"`
-	EndDate   time.Time      `json:"end_date"`
-	Reason    sql.NullString `json:"reason"`
-	Status    sql.NullString `json:"status"`
+type CreateUserParams struct {
+	FirstName   string         `json:"first_name"`
+	LastName    string         `json:"last_name"`
+	PhoneNumber sql.NullString `json:"phone_number"`
+	ImagePath   sql.NullString `json:"image_path"`
+	RoleID      sql.NullInt64  `json:"role_id"`
+	IsAdmin     sql.NullInt64  `json:"is_admin"`
 }
 
-// Leave Requests Queries
-func (q *Queries) CreateLeaveRequest(ctx context.Context, arg CreateLeaveRequestParams) error {
-	_, err := q.db.ExecContext(ctx, createLeaveRequest,
-		arg.UserType,
-		arg.UserID,
-		arg.StartDate,
-		arg.EndDate,
-		arg.Reason,
-		arg.Status,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser,
+		arg.FirstName,
+		arg.LastName,
+		arg.PhoneNumber,
+		arg.ImagePath,
+		arg.RoleID,
+		arg.IsAdmin,
 	)
 	return err
 }
 
-const createParent = `-- name: CreateParent :exec
-
-INSERT INTO parents (name, email, phone, relation) 
-VALUES (?, ?, ?, ?)
+const deleteAttendance = `-- name: DeleteAttendance :exec
+DELETE FROM attendance WHERE attendance_id = ?
 `
 
-type CreateParentParams struct {
-	Name     string         `json:"name"`
-	Email    sql.NullString `json:"email"`
-	Phone    sql.NullString `json:"phone"`
-	Relation sql.NullString `json:"relation"`
-}
-
-// Parents Queries
-func (q *Queries) CreateParent(ctx context.Context, arg CreateParentParams) error {
-	_, err := q.db.ExecContext(ctx, createParent,
-		arg.Name,
-		arg.Email,
-		arg.Phone,
-		arg.Relation,
-	)
+func (q *Queries) DeleteAttendance(ctx context.Context, attendanceID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAttendance, attendanceID)
 	return err
 }
 
-const createStudent = `-- name: CreateStudent :exec
-
-INSERT INTO students (name, student_id, class, face_image_path, fingerprint_path, email, phone, status) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+const deleteRole = `-- name: DeleteRole :exec
+DELETE FROM roles WHERE role_id = ?
 `
 
-type CreateStudentParams struct {
-	Name            string         `json:"name"`
-	StudentID       string         `json:"student_id"`
-	Class           string         `json:"class"`
-	FaceImagePath   sql.NullString `json:"face_image_path"`
-	FingerprintPath sql.NullString `json:"fingerprint_path"`
-	Email           sql.NullString `json:"email"`
-	Phone           sql.NullString `json:"phone"`
-	Status          sql.NullString `json:"status"`
-}
-
-// Students Queries
-func (q *Queries) CreateStudent(ctx context.Context, arg CreateStudentParams) error {
-	_, err := q.db.ExecContext(ctx, createStudent,
-		arg.Name,
-		arg.StudentID,
-		arg.Class,
-		arg.FaceImagePath,
-		arg.FingerprintPath,
-		arg.Email,
-		arg.Phone,
-		arg.Status,
-	)
+func (q *Queries) DeleteRole(ctx context.Context, roleID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteRole, roleID)
 	return err
 }
 
-const createTeacher = `-- name: CreateTeacher :exec
-
-INSERT INTO teachers (name, teacher_id, department, face_image_path, fingerprint_path, email, phone, status) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users WHERE user_id = ?
 `
 
-type CreateTeacherParams struct {
-	Name            string         `json:"name"`
-	TeacherID       string         `json:"teacher_id"`
-	Department      string         `json:"department"`
-	FaceImagePath   sql.NullString `json:"face_image_path"`
-	FingerprintPath sql.NullString `json:"fingerprint_path"`
-	Email           sql.NullString `json:"email"`
-	Phone           sql.NullString `json:"phone"`
-	Status          sql.NullString `json:"status"`
-}
-
-// Teachers Queries
-func (q *Queries) CreateTeacher(ctx context.Context, arg CreateTeacherParams) error {
-	_, err := q.db.ExecContext(ctx, createTeacher,
-		arg.Name,
-		arg.TeacherID,
-		arg.Department,
-		arg.FaceImagePath,
-		arg.FingerprintPath,
-		arg.Email,
-		arg.Phone,
-		arg.Status,
-	)
+func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, userID)
 	return err
 }
 
-const deleteAdmin = `-- name: DeleteAdmin :exec
-DELETE FROM admins WHERE id = ?
+const getAllUsersAttendanceByDate = `-- name: GetAllUsersAttendanceByDate :many
+SELECT 
+    attendance.attendance_id, 
+    attendance.user_id, 
+    users.first_name, 
+    users.last_name, 
+    attendance.date, 
+    attendance.entry_time, 
+    attendance.exit_time
+FROM 
+    attendance
+INNER JOIN 
+    users ON attendance.user_id = users.user_id
+WHERE 
+    attendance.date = ?
 `
 
-func (q *Queries) DeleteAdmin(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteAdmin, id)
-	return err
+type GetAllUsersAttendanceByDateRow struct {
+	AttendanceID int64          `json:"attendance_id"`
+	UserID       sql.NullInt64  `json:"user_id"`
+	FirstName    string         `json:"first_name"`
+	LastName     string         `json:"last_name"`
+	Date         string         `json:"date"`
+	EntryTime    sql.NullString `json:"entry_time"`
+	ExitTime     sql.NullString `json:"exit_time"`
 }
 
-const deleteStudent = `-- name: DeleteStudent :exec
-DELETE FROM students WHERE id = ?
-`
-
-func (q *Queries) DeleteStudent(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteStudent, id)
-	return err
-}
-
-const deleteTeacher = `-- name: DeleteTeacher :exec
-DELETE FROM teachers WHERE id = ?
-`
-
-func (q *Queries) DeleteTeacher(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteTeacher, id)
-	return err
-}
-
-const getAdminByEmail = `-- name: GetAdminByEmail :one
-SELECT id, name, email, password_hash, role, created_at 
-FROM admins 
-WHERE email = ?
-`
-
-func (q *Queries) GetAdminByEmail(ctx context.Context, email string) (Admin, error) {
-	row := q.db.QueryRowContext(ctx, getAdminByEmail, email)
-	var i Admin
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Email,
-		&i.PasswordHash,
-		&i.Role,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const getAdminByID = `-- name: GetAdminByID :one
-SELECT id, name, email, role, created_at 
-FROM admins 
-WHERE id = ?
-`
-
-type GetAdminByIDRow struct {
-	ID        int64        `json:"id"`
-	Name      string       `json:"name"`
-	Email     string       `json:"email"`
-	Role      string       `json:"role"`
-	CreatedAt sql.NullTime `json:"created_at"`
-}
-
-func (q *Queries) GetAdminByID(ctx context.Context, id int64) (GetAdminByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, getAdminByID, id)
-	var i GetAdminByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Email,
-		&i.Role,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const getAttendanceByUserID = `-- name: GetAttendanceByUserID :many
-SELECT id, user_type, user_id, entry_time, exit_time 
-FROM attendance_records 
-WHERE user_id = ? AND user_type = ? 
-ORDER BY entry_time DESC
-`
-
-type GetAttendanceByUserIDParams struct {
-	UserID   int64  `json:"user_id"`
-	UserType string `json:"user_type"`
-}
-
-func (q *Queries) GetAttendanceByUserID(ctx context.Context, arg GetAttendanceByUserIDParams) ([]AttendanceRecord, error) {
-	rows, err := q.db.QueryContext(ctx, getAttendanceByUserID, arg.UserID, arg.UserType)
+func (q *Queries) GetAllUsersAttendanceByDate(ctx context.Context, date string) ([]GetAllUsersAttendanceByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUsersAttendanceByDate, date)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []AttendanceRecord
+	var items []GetAllUsersAttendanceByDateRow
 	for rows.Next() {
-		var i AttendanceRecord
+		var i GetAllUsersAttendanceByDateRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.UserType,
+			&i.AttendanceID,
 			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Date,
 			&i.EntryTime,
 			&i.ExitTime,
 		); err != nil {
@@ -266,342 +155,188 @@ func (q *Queries) GetAttendanceByUserID(ctx context.Context, arg GetAttendanceBy
 	return items, nil
 }
 
-const getLeaveRequestsByUserID = `-- name: GetLeaveRequestsByUserID :many
-SELECT id, user_type, user_id, start_date, end_date, reason, status, created_at 
-FROM leave_requests 
-WHERE user_id = ? AND user_type = ? 
-ORDER BY created_at DESC
+const getAttendanceByUserIDAndDate = `-- name: GetAttendanceByUserIDAndDate :one
+SELECT attendance_id, user_id, date, entry_time, exit_time 
+FROM attendance 
+WHERE user_id = ? AND date = ?
 `
 
-type GetLeaveRequestsByUserIDParams struct {
-	UserID   int64  `json:"user_id"`
-	UserType string `json:"user_type"`
+type GetAttendanceByUserIDAndDateParams struct {
+	UserID sql.NullInt64 `json:"user_id"`
+	Date   string        `json:"date"`
 }
 
-func (q *Queries) GetLeaveRequestsByUserID(ctx context.Context, arg GetLeaveRequestsByUserIDParams) ([]LeaveRequest, error) {
-	rows, err := q.db.QueryContext(ctx, getLeaveRequestsByUserID, arg.UserID, arg.UserType)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []LeaveRequest
-	for rows.Next() {
-		var i LeaveRequest
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserType,
-			&i.UserID,
-			&i.StartDate,
-			&i.EndDate,
-			&i.Reason,
-			&i.Status,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getNotificationsByUserID = `-- name: GetNotificationsByUserID :many
-SELECT id, user_type, user_id, notification_type, message, sent_at 
-FROM notifications 
-WHERE user_id = ? AND user_type = ? 
-ORDER BY sent_at DESC
-`
-
-type GetNotificationsByUserIDParams struct {
-	UserID   int64  `json:"user_id"`
-	UserType string `json:"user_type"`
-}
-
-func (q *Queries) GetNotificationsByUserID(ctx context.Context, arg GetNotificationsByUserIDParams) ([]Notification, error) {
-	rows, err := q.db.QueryContext(ctx, getNotificationsByUserID, arg.UserID, arg.UserType)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Notification
-	for rows.Next() {
-		var i Notification
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserType,
-			&i.UserID,
-			&i.NotificationType,
-			&i.Message,
-			&i.SentAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getParentsByStudentID = `-- name: GetParentsByStudentID :many
-SELECT parents.id, parents.name, parents.email, parents.phone, parents.relation, parents.created_at 
-FROM parents 
-JOIN student_parents ON parents.id = student_parents.parent_id 
-WHERE student_parents.student_id = ?
-`
-
-func (q *Queries) GetParentsByStudentID(ctx context.Context, studentID int64) ([]Parent, error) {
-	rows, err := q.db.QueryContext(ctx, getParentsByStudentID, studentID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Parent
-	for rows.Next() {
-		var i Parent
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Email,
-			&i.Phone,
-			&i.Relation,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getStudentByID = `-- name: GetStudentByID :one
-SELECT id, name, student_id, class, face_image_path, fingerprint_path, email, phone, status, created_at 
-FROM students 
-WHERE id = ?
-`
-
-func (q *Queries) GetStudentByID(ctx context.Context, id int64) (Student, error) {
-	row := q.db.QueryRowContext(ctx, getStudentByID, id)
-	var i Student
+func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error) {
+	row := q.db.QueryRowContext(ctx, getAttendanceByUserIDAndDate, arg.UserID, arg.Date)
+	var i Attendance
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.StudentID,
-		&i.Class,
-		&i.FaceImagePath,
-		&i.FingerprintPath,
-		&i.Email,
-		&i.Phone,
-		&i.Status,
-		&i.CreatedAt,
+		&i.AttendanceID,
+		&i.UserID,
+		&i.Date,
+		&i.EntryTime,
+		&i.ExitTime,
 	)
 	return i, err
 }
 
-const getTeacherByID = `-- name: GetTeacherByID :one
-SELECT id, name, teacher_id, department, face_image_path, fingerprint_path, email, phone, status, created_at 
-FROM teachers 
-WHERE id = ?
+const getRoleByID = `-- name: GetRoleByID :one
+SELECT role_id, role_name 
+FROM roles 
+WHERE role_id = ?
 `
 
-func (q *Queries) GetTeacherByID(ctx context.Context, id int64) (Teacher, error) {
-	row := q.db.QueryRowContext(ctx, getTeacherByID, id)
-	var i Teacher
+func (q *Queries) GetRoleByID(ctx context.Context, roleID int64) (Role, error) {
+	row := q.db.QueryRowContext(ctx, getRoleByID, roleID)
+	var i Role
+	err := row.Scan(&i.RoleID, &i.RoleName)
+	return i, err
+}
+
+const getUserAttendanceBetweenDates = `-- name: GetUserAttendanceBetweenDates :many
+SELECT 
+    attendance.attendance_id, 
+    attendance.user_id, 
+    users.first_name, 
+    users.last_name, 
+    attendance.date, 
+    attendance.entry_time, 
+    attendance.exit_time
+FROM 
+    attendance
+INNER JOIN 
+    users ON attendance.user_id = users.user_id
+WHERE 
+    attendance.user_id = ? 
+AND 
+    attendance.date BETWEEN ? AND ?
+`
+
+type GetUserAttendanceBetweenDatesRow struct {
+	AttendanceID int64          `json:"attendance_id"`
+	UserID       sql.NullInt64  `json:"user_id"`
+	FirstName    string         `json:"first_name"`
+	LastName     string         `json:"last_name"`
+	Date         string         `json:"date"`
+	EntryTime    sql.NullString `json:"entry_time"`
+	ExitTime     sql.NullString `json:"exit_time"`
+}
+
+func (q *Queries) GetUserAttendanceBetweenDates(ctx context.Context, userID sql.NullInt64) ([]GetUserAttendanceBetweenDatesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserAttendanceBetweenDates, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserAttendanceBetweenDatesRow
+	for rows.Next() {
+		var i GetUserAttendanceBetweenDatesRow
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Date,
+			&i.EntryTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT user_id, first_name, last_name, phone_number, image_path, role_id, is_admin 
+FROM users 
+WHERE user_id = ?
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, userID int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, userID)
+	var i User
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.TeacherID,
-		&i.Department,
-		&i.FaceImagePath,
-		&i.FingerprintPath,
-		&i.Email,
-		&i.Phone,
-		&i.Status,
-		&i.CreatedAt,
+		&i.UserID,
+		&i.FirstName,
+		&i.LastName,
+		&i.PhoneNumber,
+		&i.ImagePath,
+		&i.RoleID,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
-const linkParentToStudent = `-- name: LinkParentToStudent :exec
-INSERT INTO student_parents (student_id, parent_id) 
-VALUES (?, ?)
+const updateAttendance = `-- name: UpdateAttendance :exec
+UPDATE attendance 
+SET entry_time = ?, exit_time = ? 
+WHERE user_id = ? AND date = ?
 `
 
-type LinkParentToStudentParams struct {
-	StudentID int64 `json:"student_id"`
-	ParentID  int64 `json:"parent_id"`
+type UpdateAttendanceParams struct {
+	EntryTime sql.NullString `json:"entry_time"`
+	ExitTime  sql.NullString `json:"exit_time"`
+	UserID    sql.NullInt64  `json:"user_id"`
+	Date      string         `json:"date"`
 }
 
-func (q *Queries) LinkParentToStudent(ctx context.Context, arg LinkParentToStudentParams) error {
-	_, err := q.db.ExecContext(ctx, linkParentToStudent, arg.StudentID, arg.ParentID)
-	return err
-}
-
-const recordEntry = `-- name: RecordEntry :exec
-
-INSERT INTO attendance_records (user_type, user_id, entry_time) 
-VALUES (?, ?, ?)
-`
-
-type RecordEntryParams struct {
-	UserType  string    `json:"user_type"`
-	UserID    int64     `json:"user_id"`
-	EntryTime time.Time `json:"entry_time"`
-}
-
-// Attendance Records Queries
-func (q *Queries) RecordEntry(ctx context.Context, arg RecordEntryParams) error {
-	_, err := q.db.ExecContext(ctx, recordEntry, arg.UserType, arg.UserID, arg.EntryTime)
-	return err
-}
-
-const recordExit = `-- name: RecordExit :exec
-UPDATE attendance_records 
-SET exit_time = ? 
-WHERE id = ?
-`
-
-type RecordExitParams struct {
-	ExitTime sql.NullTime `json:"exit_time"`
-	ID       int64        `json:"id"`
-}
-
-func (q *Queries) RecordExit(ctx context.Context, arg RecordExitParams) error {
-	_, err := q.db.ExecContext(ctx, recordExit, arg.ExitTime, arg.ID)
-	return err
-}
-
-const recordNotification = `-- name: RecordNotification :exec
-
-INSERT INTO notifications (user_type, user_id, notification_type, message, sent_at) 
-VALUES (?, ?, ?, ?, ?)
-`
-
-type RecordNotificationParams struct {
-	UserType         string       `json:"user_type"`
-	UserID           int64        `json:"user_id"`
-	NotificationType string       `json:"notification_type"`
-	Message          string       `json:"message"`
-	SentAt           sql.NullTime `json:"sent_at"`
-}
-
-// Notifications Queries
-func (q *Queries) RecordNotification(ctx context.Context, arg RecordNotificationParams) error {
-	_, err := q.db.ExecContext(ctx, recordNotification,
-		arg.UserType,
+func (q *Queries) UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error {
+	_, err := q.db.ExecContext(ctx, updateAttendance,
+		arg.EntryTime,
+		arg.ExitTime,
 		arg.UserID,
-		arg.NotificationType,
-		arg.Message,
-		arg.SentAt,
+		arg.Date,
 	)
 	return err
 }
 
-const updateAdminRole = `-- name: UpdateAdminRole :exec
-UPDATE admins 
-SET role = ? 
-WHERE id = ?
+const updateRole = `-- name: UpdateRole :exec
+UPDATE roles 
+SET role_name = ? 
+WHERE role_id = ?
 `
 
-type UpdateAdminRoleParams struct {
-	Role string `json:"role"`
-	ID   int64  `json:"id"`
+type UpdateRoleParams struct {
+	RoleName string `json:"role_name"`
+	RoleID   int64  `json:"role_id"`
 }
 
-func (q *Queries) UpdateAdminRole(ctx context.Context, arg UpdateAdminRoleParams) error {
-	_, err := q.db.ExecContext(ctx, updateAdminRole, arg.Role, arg.ID)
+func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) error {
+	_, err := q.db.ExecContext(ctx, updateRole, arg.RoleName, arg.RoleID)
 	return err
 }
 
-const updateLeaveRequestStatus = `-- name: UpdateLeaveRequestStatus :exec
-UPDATE leave_requests 
-SET status = ? 
-WHERE id = ?
+const updateUser = `-- name: UpdateUser :exec
+UPDATE users 
+SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?, role_id = ?, is_admin = ? 
+WHERE user_id = ?
 `
 
-type UpdateLeaveRequestStatusParams struct {
-	Status sql.NullString `json:"status"`
-	ID     int64          `json:"id"`
+type UpdateUserParams struct {
+	FirstName   string         `json:"first_name"`
+	LastName    string         `json:"last_name"`
+	PhoneNumber sql.NullString `json:"phone_number"`
+	ImagePath   sql.NullString `json:"image_path"`
+	RoleID      sql.NullInt64  `json:"role_id"`
+	IsAdmin     sql.NullInt64  `json:"is_admin"`
+	UserID      int64          `json:"user_id"`
 }
 
-func (q *Queries) UpdateLeaveRequestStatus(ctx context.Context, arg UpdateLeaveRequestStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateLeaveRequestStatus, arg.Status, arg.ID)
-	return err
-}
-
-const updateStudent = `-- name: UpdateStudent :exec
-UPDATE students 
-SET name = ?, class = ?, face_image_path = ?, fingerprint_path = ?, email = ?, phone = ?, status = ? 
-WHERE id = ?
-`
-
-type UpdateStudentParams struct {
-	Name            string         `json:"name"`
-	Class           string         `json:"class"`
-	FaceImagePath   sql.NullString `json:"face_image_path"`
-	FingerprintPath sql.NullString `json:"fingerprint_path"`
-	Email           sql.NullString `json:"email"`
-	Phone           sql.NullString `json:"phone"`
-	Status          sql.NullString `json:"status"`
-	ID              int64          `json:"id"`
-}
-
-func (q *Queries) UpdateStudent(ctx context.Context, arg UpdateStudentParams) error {
-	_, err := q.db.ExecContext(ctx, updateStudent,
-		arg.Name,
-		arg.Class,
-		arg.FaceImagePath,
-		arg.FingerprintPath,
-		arg.Email,
-		arg.Phone,
-		arg.Status,
-		arg.ID,
-	)
-	return err
-}
-
-const updateTeacher = `-- name: UpdateTeacher :exec
-UPDATE teachers 
-SET name = ?, department = ?, face_image_path = ?, fingerprint_path = ?, email = ?, phone = ?, status = ? 
-WHERE id = ?
-`
-
-type UpdateTeacherParams struct {
-	Name            string         `json:"name"`
-	Department      string         `json:"department"`
-	FaceImagePath   sql.NullString `json:"face_image_path"`
-	FingerprintPath sql.NullString `json:"fingerprint_path"`
-	Email           sql.NullString `json:"email"`
-	Phone           sql.NullString `json:"phone"`
-	Status          sql.NullString `json:"status"`
-	ID              int64          `json:"id"`
-}
-
-func (q *Queries) UpdateTeacher(ctx context.Context, arg UpdateTeacherParams) error {
-	_, err := q.db.ExecContext(ctx, updateTeacher,
-		arg.Name,
-		arg.Department,
-		arg.FaceImagePath,
-		arg.FingerprintPath,
-		arg.Email,
-		arg.Phone,
-		arg.Status,
-		arg.ID,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.ExecContext(ctx, updateUser,
+		arg.FirstName,
+		arg.LastName,
+		arg.PhoneNumber,
+		arg.ImagePath,
+		arg.RoleID,
+		arg.IsAdmin,
+		arg.UserID,
 	)
 	return err
 }

@@ -6,40 +6,25 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
-	// Admins Queries
-	CreateAdmin(ctx context.Context, arg CreateAdminParams) error
-	// Leave Requests Queries
-	CreateLeaveRequest(ctx context.Context, arg CreateLeaveRequestParams) error
-	// Parents Queries
-	CreateParent(ctx context.Context, arg CreateParentParams) error
-	// Students Queries
-	CreateStudent(ctx context.Context, arg CreateStudentParams) error
-	// Teachers Queries
-	CreateTeacher(ctx context.Context, arg CreateTeacherParams) error
-	DeleteAdmin(ctx context.Context, id int64) error
-	DeleteStudent(ctx context.Context, id int64) error
-	DeleteTeacher(ctx context.Context, id int64) error
-	GetAdminByEmail(ctx context.Context, email string) (Admin, error)
-	GetAdminByID(ctx context.Context, id int64) (GetAdminByIDRow, error)
-	GetAttendanceByUserID(ctx context.Context, arg GetAttendanceByUserIDParams) ([]AttendanceRecord, error)
-	GetLeaveRequestsByUserID(ctx context.Context, arg GetLeaveRequestsByUserIDParams) ([]LeaveRequest, error)
-	GetNotificationsByUserID(ctx context.Context, arg GetNotificationsByUserIDParams) ([]Notification, error)
-	GetParentsByStudentID(ctx context.Context, studentID int64) ([]Parent, error)
-	GetStudentByID(ctx context.Context, id int64) (Student, error)
-	GetTeacherByID(ctx context.Context, id int64) (Teacher, error)
-	LinkParentToStudent(ctx context.Context, arg LinkParentToStudentParams) error
-	// Attendance Records Queries
-	RecordEntry(ctx context.Context, arg RecordEntryParams) error
-	RecordExit(ctx context.Context, arg RecordExitParams) error
-	// Notifications Queries
-	RecordNotification(ctx context.Context, arg RecordNotificationParams) error
-	UpdateAdminRole(ctx context.Context, arg UpdateAdminRoleParams) error
-	UpdateLeaveRequestStatus(ctx context.Context, arg UpdateLeaveRequestStatusParams) error
-	UpdateStudent(ctx context.Context, arg UpdateStudentParams) error
-	UpdateTeacher(ctx context.Context, arg UpdateTeacherParams) error
+	CreateAttendance(ctx context.Context, arg CreateAttendanceParams) error
+	// Roles Queries
+	CreateRole(ctx context.Context, roleName string) error
+	CreateUser(ctx context.Context, arg CreateUserParams) error
+	DeleteAttendance(ctx context.Context, attendanceID int64) error
+	DeleteRole(ctx context.Context, roleID int64) error
+	DeleteUser(ctx context.Context, userID int64) error
+	GetAllUsersAttendanceByDate(ctx context.Context, date string) ([]GetAllUsersAttendanceByDateRow, error)
+	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error)
+	GetRoleByID(ctx context.Context, roleID int64) (Role, error)
+	GetUserAttendanceBetweenDates(ctx context.Context, userID sql.NullInt64) ([]GetUserAttendanceBetweenDatesRow, error)
+	GetUserByID(ctx context.Context, userID int64) (User, error)
+	UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error
+	UpdateRole(ctx context.Context, arg UpdateRoleParams) error
+	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 }
 
 var _ Querier = (*Queries)(nil)
