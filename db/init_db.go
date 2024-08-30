@@ -12,7 +12,6 @@ import (
 
 var (
 	ErrorCreateUsersTable = errors.New("could not create users table")
-	ErrorCreateRolesTable = errors.New("could not create roles table")
 	ErrorCreateAttendance = errors.New("could not create attendance table")
 )
 
@@ -58,10 +57,6 @@ func CreateTables(db *sql.DB) error {
 		return err
 	}
 
-	if err := CreateRolesTable(db); err != nil {
-		return err
-	}
-
 	if err := CreateAttendanceTable(db); err != nil {
 		return err
 	}
@@ -78,31 +73,17 @@ func TearDown(db *sql.DB) {
 func CreateUsersTable(db *sql.DB) error {
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
-		user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		first_name TEXT NOT NULL,
-		last_name TEXT NOT NULL,
-		phone_number TEXT,
-		image_path TEXT,
-		role_id INTEGER,
-		is_admin INTEGER DEFAULT 0,
-		FOREIGN KEY (role_id) REFERENCES roles(role_id)
-	)`
+    user_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(15),
+    image_path TEXT,
+    is_teacher BOOLEAN DEFAULT FALSE,
+    is_admin BOOLEAN DEFAULT FALSE
+)`
 	_, err := db.Exec(createUsersTable)
 	if err != nil {
 		return errors.Join(ErrorCreateUsersTable, err)
-	}
-	return nil
-}
-
-func CreateRolesTable(db *sql.DB) error {
-	createRolesTable := `
-	CREATE TABLE IF NOT EXISTS roles (
-		role_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		role_name TEXT NOT NULL
-	)`
-	_, err := db.Exec(createRolesTable)
-	if err != nil {
-		return errors.Join(ErrorCreateRolesTable, err)
 	}
 	return nil
 }

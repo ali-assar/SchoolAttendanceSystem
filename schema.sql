@@ -1,27 +1,18 @@
--- Users Table
-CREATE TABLE users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    phone_number TEXT,
+CREATE TABLE IF NOT EXISTS users (
+    user_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(15),
     image_path TEXT,
-    role_id INTEGER,
-    is_admin INTEGER DEFAULT 0,
-    FOREIGN KEY (role_id) REFERENCES roles(role_id)
+    is_teacher BOOLEAN DEFAULT FALSE,
+    is_admin BOOLEAN DEFAULT FALSE
 );
 
--- Roles Table
-CREATE TABLE roles (
-    role_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    role_name TEXT NOT NULL
-);
-
--- Attendance Table
-CREATE TABLE attendance (
-    attendance_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    date TEXT NOT NULL,
-    entry_time TEXT,
-    exit_time TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+CREATE TABLE IF NOT EXISTS attendance (
+    attendance_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    date DATE NOT NULL,
+    entry_time TIME,
+    exit_time TIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );

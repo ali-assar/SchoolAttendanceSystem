@@ -12,40 +12,59 @@ import (
 )
 
 func main() {
+	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
+	// Initialize the database connection
 	database, err := db.InitDB()
 	if err != nil {
 		log.Fatalf("Failed to initialize the database: %v", err)
 	}
 	defer database.Close()
 
+	// Create tables if they do not exist
 	err = db.CreateTables(database)
 	if err != nil {
 		log.Fatalf("Failed to create tables: %v", err)
 	}
 
+	// Create a new Fiber app
 	app := fiber.New()
+
+	// Use logger middleware for logging HTTP requests
 	app.Use(logger.New())
 
-	userStore := db.New(database)
+	// Initialize the database store (repository)
+	store := db.New(database)
 
-	userHandler := handler.NewUserHandler(userStore)
+	// Initialize the handlers with the store
+	handlers := handler.NewHandlers(store)
+
+	// Define API routes under /api/v1 prefix
 	apiv1 := app.Group("/api/v1")
 
-	apiv1.Post("user/", userHandler.HandlePostUser)
-	apiv1.Get("user/:id", userHandler.HandleGetUserByID)
+	// User routes
+	apiv1.Post("user/", handlers.HandlePostUser)      // Create a new user
+	apiv1.Get("user/:id", handlers.HandleGetUserByID) // Get a user by ID
+	// apiv1.Get("users/", handlers.HandleGetAllUsers)     // Get all users
+	apiv1.Put("user/:id", handlers.HandleUpdateUser)    // Update a user by ID
+	apiv1.Delete("user/:id", handlers.HandleDeleteUser) // Delete a user by ID
 
+	// Attendance routes
+	apiv1.Post("attendance/", handlers.HandlePostAttendance)                            // Create a new attendance record
+	apiv1.Get("attendance/:user_id/:date", handlers.HandleGetAttendanceByUserIDAndDate) // Get attendance by user ID and date
+	apiv1.Get("attendances/:date", handlers.HandleGetAllUsersAttendanceByDate)          // Get all users' attendance by date
+	apiv1.Put("attendance/", handlers.HandleUpdateAttendance)                           // Update an attendance record
+	apiv1.Delete("attendance/:attendance_id", handlers.HandleDeleteAttendance)          // Delete an attendance record by ID
+
+	// Start the server on the specified port
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "3000"
+		port = "3000" // Default port if not specified
 	}
-	log.Printf("Server running on port %s", port)
-	err = app.Listen(":" + port)
-	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+
+	log.Fatal(app.Listen(":" + port))
 }
