@@ -5,43 +5,40 @@ import (
 	"os"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
+	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/handler"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Initialize the SQLite database connection
 	database, err := db.InitDB()
 	if err != nil {
 		log.Fatalf("Failed to initialize the database: %v", err)
 	}
 	defer database.Close()
 
-	// Create necessary tables in the database
 	err = db.CreateTables(database)
 	if err != nil {
 		log.Fatalf("Failed to create tables: %v", err)
 	}
 
-	// Initialize Fiber app
 	app := fiber.New()
-
-	// Middleware
 	app.Use(logger.New())
 
-	// Routes
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Welcome to the School Attendance System!")
-	})
+	userStore := db.New(database)
 
-	// Start server
+	userHandler := handler.NewUserHandler(userStore)
+	apiv1 := app.Group("/api/v1")
+
+	apiv1.Post("user/", userHandler.HandlePostUser)
+	apiv1.Get("user/:id", userHandler.HandleGetUserByID)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
