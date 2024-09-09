@@ -6,15 +6,14 @@ package db
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Attendance struct {
-	AttendanceID int64       `json:"attendance_id"`
-	UserID       int64       `json:"user_id"`
-	Date         time.Time   `json:"date"`
-	EntryTime    interface{} `json:"entry_time"`
-	ExitTime     interface{} `json:"exit_time"`
+	AttendanceID int64         `json:"attendance_id"`
+	UserID       int64         `json:"user_id"`
+	Date         int64         `json:"date"`
+	EntryTime    sql.NullInt64 `json:"entry_time"`
+	ExitTime     sql.NullInt64 `json:"exit_time"`
 }
 
 type User struct {

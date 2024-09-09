@@ -47,27 +47,21 @@ func main() {
 	apiv1 := app.Group("/api/v1")
 
 	// User routes
-	apiv1.Post("user/", handlers.HandlePostUser)      // Create a new user
-	apiv1.Get("user/:id", handlers.HandleGetUserByID) // Get a user by ID,
-	apiv1.Get("user/", handlers.HandleGetAllUsers)    // Get all users by ID,
-	apiv1.Put("user/:id", handlers.HandleUpdateUser)  // Update a user by ID,
-	// Get user by phone number
+	apiv1.Post("user/", handlers.HandlePostUser)
+	apiv1.Get("user/:id", handlers.HandleGetUserByID)
+	apiv1.Get("user/", handlers.HandleGetAllUsers)
+	apiv1.Put("user/:id", handlers.HandleUpdateUser)
 	apiv1.Get("user/phone/:phone", handlers.HandleGetUserByPhoneNumber)
-	// Get user by first and last name
 	apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
+	apiv1.Delete("user/:id", handlers.HandleDeleteUserByID)
 
-	apiv1.Delete("user/:id", handlers.HandleDeleteUserByID) // Delete a user by ID
+	// Attendance routes
+	apiv1.Post("attendance/", handlers.HandlePostAttendance) // Create a new attendance record
+	apiv1.Get("attendance/:user_id/:date", handlers.HandleGetAttendanceByUserIDAndDate) // Get attendance by user ID and date
+	apiv1.Get("attendances/:date", handlers.HandleGetAllUsersAttendanceByDate)          // Get all users' attendance by date
+	apiv1.Put("attendance/", handlers.HandleUpdateAttendanceByID)                       // Update an attendance record
+	apiv1.Delete("attendance/:attendance_id", handlers.HandleDeleteAttendanceByID)      // Delete an attendance record by ID
 
-	// Attendance routes (remain the same)
-
-	/*
-		// Attendance routes
-		apiv1.Post("attendance/", handlers.HandlePostAttendance)                            // Create a new attendance record
-		apiv1.Get("attendance/:user_id/:date", handlers.HandleGetAttendanceByUserIDAndDate) // Get attendance by user ID and date
-		apiv1.Get("attendances/:date", handlers.HandleGetAllUsersAttendanceByDate)          // Get all users' attendance by date
-		apiv1.Put("attendance/", handlers.HandleUpdateAttendance)                           // Update an attendance record
-		apiv1.Delete("attendance/:attendance_id", handlers.HandleDeleteAttendance)          // Delete an attendance record by ID
-	*/
 	// Start the server on the specified port
 	port := os.Getenv("PORT")
 	if port == "" {

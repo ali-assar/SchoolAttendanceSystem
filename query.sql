@@ -60,7 +60,7 @@ WHERE
 -- name: UpdateAttendance :exec
 UPDATE attendance 
 SET entry_time = ?, exit_time = ? 
-WHERE user_id = ? AND date = ?;
+WHERE user_id = ? AND attendance_id = ? AND date = ?;
 
 -- name: DeleteAttendance :exec
 DELETE FROM attendance WHERE attendance_id = ?;

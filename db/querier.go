@@ -6,7 +6,6 @@ package db
 
 import (
 	"context"
-	"time"
 )
 
 type Querier interface {
@@ -15,7 +14,7 @@ type Querier interface {
 	DeleteAttendance(ctx context.Context, attendanceID int64) error
 	DeleteUser(ctx context.Context, userID int64) error
 	GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error)
-	GetAllUsersAttendanceByDate(ctx context.Context, date time.Time) ([]GetAllUsersAttendanceByDateRow, error)
+	GetAllUsersAttendanceByDate(ctx context.Context, date int64) ([]GetAllUsersAttendanceByDateRow, error)
 	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error)
 	GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) (GetUserByNameRow, error)

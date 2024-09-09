@@ -8,7 +8,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createAttendance = `-- name: CreateAttendance :one
@@ -18,10 +17,10 @@ RETURNING attendance_id
 `
 
 type CreateAttendanceParams struct {
-	UserID    int64       `json:"user_id"`
-	Date      time.Time   `json:"date"`
-	EntryTime interface{} `json:"entry_time"`
-	ExitTime  interface{} `json:"exit_time"`
+	UserID    int64         `json:"user_id"`
+	Date      int64         `json:"date"`
+	EntryTime sql.NullInt64 `json:"entry_time"`
+	ExitTime  sql.NullInt64 `json:"exit_time"`
 }
 
 func (q *Queries) CreateAttendance(ctx context.Context, arg CreateAttendanceParams) (int64, error) {
@@ -151,16 +150,16 @@ WHERE
 `
 
 type GetAllUsersAttendanceByDateRow struct {
-	AttendanceID int64       `json:"attendance_id"`
-	UserID       int64       `json:"user_id"`
-	FirstName    string      `json:"first_name"`
-	LastName     string      `json:"last_name"`
-	Date         time.Time   `json:"date"`
-	EntryTime    interface{} `json:"entry_time"`
-	ExitTime     interface{} `json:"exit_time"`
+	AttendanceID int64         `json:"attendance_id"`
+	UserID       int64         `json:"user_id"`
+	FirstName    string        `json:"first_name"`
+	LastName     string        `json:"last_name"`
+	Date         int64         `json:"date"`
+	EntryTime    sql.NullInt64 `json:"entry_time"`
+	ExitTime     sql.NullInt64 `json:"exit_time"`
 }
 
-func (q *Queries) GetAllUsersAttendanceByDate(ctx context.Context, date time.Time) ([]GetAllUsersAttendanceByDateRow, error) {
+func (q *Queries) GetAllUsersAttendanceByDate(ctx context.Context, date int64) ([]GetAllUsersAttendanceByDateRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAllUsersAttendanceByDate, date)
 	if err != nil {
 		return nil, err
@@ -198,8 +197,8 @@ WHERE user_id = ? AND date = ?
 `
 
 type GetAttendanceByUserIDAndDateParams struct {
-	UserID int64     `json:"user_id"`
-	Date   time.Time `json:"date"`
+	UserID int64 `json:"user_id"`
+	Date   int64 `json:"date"`
 }
 
 func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error) {
@@ -322,14 +321,15 @@ func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber int64) (
 const updateAttendance = `-- name: UpdateAttendance :exec
 UPDATE attendance 
 SET entry_time = ?, exit_time = ? 
-WHERE user_id = ? AND date = ?
+WHERE user_id = ? AND attendance_id = ? AND date = ?
 `
 
 type UpdateAttendanceParams struct {
-	EntryTime interface{} `json:"entry_time"`
-	ExitTime  interface{} `json:"exit_time"`
-	UserID    int64       `json:"user_id"`
-	Date      time.Time   `json:"date"`
+	EntryTime    sql.NullInt64 `json:"entry_time"`
+	ExitTime     sql.NullInt64 `json:"exit_time"`
+	UserID       int64         `json:"user_id"`
+	AttendanceID int64         `json:"attendance_id"`
+	Date         int64         `json:"date"`
 }
 
 func (q *Queries) UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error {
@@ -337,6 +337,7 @@ func (q *Queries) UpdateAttendance(ctx context.Context, arg UpdateAttendancePara
 		arg.EntryTime,
 		arg.ExitTime,
 		arg.UserID,
+		arg.AttendanceID,
 		arg.Date,
 	)
 	return err

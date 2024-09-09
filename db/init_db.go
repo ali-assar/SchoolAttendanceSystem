@@ -96,11 +96,12 @@ func CreateAttendanceTable(db *sql.DB) error {
 	CREATE TABLE IF NOT EXISTS attendance (
 		attendance_id INTEGER PRIMARY KEY,
 		user_id INT NOT NULL,
-		date DATE NOT NULL,
-		entry_time TIME,
-		exit_time TIME,
+		date INT NOT NULL,        -- Store date as integer in YYYYMMDD format
+		entry_time INT,           -- Store time as integer in seconds (or minutes) since midnight
+		exit_time INT,            -- Same for exit time
 		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 	);
+	
 	`
 	_, err := db.Exec(createAttendanceTable)
 	if err != nil {
