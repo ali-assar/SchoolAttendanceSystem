@@ -20,7 +20,7 @@ type User struct {
 	UserID            int64          `json:"user_id"`
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	IsTeacher         bool           `json:"is_teacher"`
 	ImagePath         sql.NullString `json:"image_path"`
 	FingerID          sql.NullString `json:"finger_id"`

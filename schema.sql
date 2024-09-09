@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    phone_number INTEGER NOT NULL,
+    phone_number VARCHAR(50) NOT NULL,
     is_teacher BOOLEAN NOT NULL DEFAULT FALSE,
 
     image_path TEXT,

@@ -44,7 +44,7 @@ RETURNING user_id
 type CreateUserParams struct {
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	ImagePath         sql.NullString `json:"image_path"`
 	IsTeacher         bool           `json:"is_teacher"`
 	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
@@ -93,7 +93,7 @@ type GetAllUsersRow struct {
 	UserID            int64          `json:"user_id"`
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	ImagePath         sql.NullString `json:"image_path"`
 	IsTeacher         bool           `json:"is_teacher"`
 	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
@@ -224,7 +224,7 @@ type GetUserByIDRow struct {
 	UserID            int64          `json:"user_id"`
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	ImagePath         sql.NullString `json:"image_path"`
 	IsTeacher         bool           `json:"is_teacher"`
 	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
@@ -262,7 +262,7 @@ type GetUserByNameRow struct {
 	UserID            int64          `json:"user_id"`
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	ImagePath         sql.NullString `json:"image_path"`
 	IsTeacher         bool           `json:"is_teacher"`
 	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
@@ -295,14 +295,14 @@ type GetUserByPhoneNumberRow struct {
 	UserID            int64          `json:"user_id"`
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	ImagePath         sql.NullString `json:"image_path"`
 	IsTeacher         bool           `json:"is_teacher"`
 	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
 	FingerID          sql.NullString `json:"finger_id"`
 }
 
-func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber int64) (GetUserByPhoneNumberRow, error) {
+func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (GetUserByPhoneNumberRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByPhoneNumber, phoneNumber)
 	var i GetUserByPhoneNumberRow
 	err := row.Scan(
@@ -352,7 +352,7 @@ WHERE user_id = ?
 type UpdateUserParams struct {
 	FirstName         string         `json:"first_name"`
 	LastName          string         `json:"last_name"`
-	PhoneNumber       int64          `json:"phone_number"`
+	PhoneNumber       string         `json:"phone_number"`
 	ImagePath         sql.NullString `json:"image_path"`
 	IsTeacher         bool           `json:"is_teacher"`
 	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`

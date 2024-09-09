@@ -18,7 +18,7 @@ type Querier interface {
 	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error)
 	GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) (GetUserByNameRow, error)
-	GetUserByPhoneNumber(ctx context.Context, phoneNumber int64) (GetUserByPhoneNumberRow, error)
+	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (GetUserByPhoneNumberRow, error)
 	UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 }

@@ -46,14 +46,8 @@ func (h *Handlers) HandleGetUserByID(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(fetchedUser)
 }
 
-
 func (h *Handlers) HandleGetUserByPhoneNumber(c *fiber.Ctx) error {
-	phoneStr := c.Params("phone")
-	phone, err := strconv.ParseInt(phoneStr, 10, 64)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(err.Error())
-	}
-
+	phone := c.Params("phone")
 	user, err := h.Store.GetUserByPhoneNumber(c.Context(), phone)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(err.Error())
@@ -61,7 +55,6 @@ func (h *Handlers) HandleGetUserByPhoneNumber(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(user)
 }
-
 
 func (h *Handlers) HandleGetUserByName(c *fiber.Ctx) error {
 	var args db.GetUserByNameParams
