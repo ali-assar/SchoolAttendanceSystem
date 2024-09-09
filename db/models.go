@@ -6,27 +6,24 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Attendance struct {
-	AttendanceID int64          `json:"attendance_id"`
-	UserID       sql.NullInt64  `json:"user_id"`
-	Date         string         `json:"date"`
-	EntryTime    sql.NullString `json:"entry_time"`
-	ExitTime     sql.NullString `json:"exit_time"`
-}
-
-type Role struct {
-	RoleID   int64  `json:"role_id"`
-	RoleName string `json:"role_name"`
+	AttendanceID int64       `json:"attendance_id"`
+	UserID       int64       `json:"user_id"`
+	Date         time.Time   `json:"date"`
+	EntryTime    interface{} `json:"entry_time"`
+	ExitTime     interface{} `json:"exit_time"`
 }
 
 type User struct {
-	UserID      int64          `json:"user_id"`
-	FirstName   string         `json:"first_name"`
-	LastName    string         `json:"last_name"`
-	PhoneNumber sql.NullString `json:"phone_number"`
-	ImagePath   sql.NullString `json:"image_path"`
-	RoleID      sql.NullInt64  `json:"role_id"`
-	IsAdmin     sql.NullInt64  `json:"is_admin"`
+	UserID            int64          `json:"user_id"`
+	FirstName         string         `json:"first_name"`
+	LastName          string         `json:"last_name"`
+	PhoneNumber       int64          `json:"phone_number"`
+	IsTeacher         bool           `json:"is_teacher"`
+	ImagePath         sql.NullString `json:"image_path"`
+	FingerID          sql.NullString `json:"finger_id"`
+	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
 }

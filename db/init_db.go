@@ -73,14 +73,17 @@ func TearDown(db *sql.DB) {
 func CreateUsersTable(db *sql.DB) error {
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
-    user_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    phone_number VARCHAR(15),
-    image_path TEXT,
-    is_teacher BOOLEAN DEFAULT FALSE,
-    is_admin BOOLEAN DEFAULT FALSE
-)`
+		user_id INTEGER PRIMARY KEY,
+		first_name VARCHAR(100) NOT NULL,
+		last_name VARCHAR(100) NOT NULL,
+		phone_number INTEGER NOT NULL,
+		is_teacher BOOLEAN NOT NULL DEFAULT FALSE,
+	
+		image_path TEXT,
+		finger_id TEXT,
+		is_biometric_active BOOLEAN DEFAULT FALSE
+	);
+	`
 	_, err := db.Exec(createUsersTable)
 	if err != nil {
 		return errors.Join(ErrorCreateUsersTable, err)
@@ -91,13 +94,14 @@ func CreateUsersTable(db *sql.DB) error {
 func CreateAttendanceTable(db *sql.DB) error {
 	createAttendanceTable := `
 	CREATE TABLE IF NOT EXISTS attendance (
-		attendance_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER,
-		date TEXT NOT NULL,
-		entry_time TEXT,
-		exit_time TEXT,
-		FOREIGN KEY (user_id) REFERENCES users(user_id)
-	)`
+		attendance_id INTEGER PRIMARY KEY,
+		user_id INT NOT NULL,
+		date DATE NOT NULL,
+		entry_time TIME,
+		exit_time TIME,
+		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+	);
+	`
 	_, err := db.Exec(createAttendanceTable)
 	if err != nil {
 		return errors.Join(ErrorCreateAttendance, err)

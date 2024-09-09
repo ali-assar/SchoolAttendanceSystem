@@ -6,24 +6,21 @@ package db
 
 import (
 	"context"
-	"database/sql"
+	"time"
 )
 
 type Querier interface {
-	CreateAttendance(ctx context.Context, arg CreateAttendanceParams) error
-	// Roles Queries
-	CreateRole(ctx context.Context, roleName string) error
-	CreateUser(ctx context.Context, arg CreateUserParams) error
+	CreateAttendance(ctx context.Context, arg CreateAttendanceParams) (int64, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 	DeleteAttendance(ctx context.Context, attendanceID int64) error
-	DeleteRole(ctx context.Context, roleID int64) error
 	DeleteUser(ctx context.Context, userID int64) error
-	GetAllUsersAttendanceByDate(ctx context.Context, date string) ([]GetAllUsersAttendanceByDateRow, error)
+	GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error)
+	GetAllUsersAttendanceByDate(ctx context.Context, date time.Time) ([]GetAllUsersAttendanceByDateRow, error)
 	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error)
-	GetRoleByID(ctx context.Context, roleID int64) (Role, error)
-	GetUserAttendanceBetweenDates(ctx context.Context, userID sql.NullInt64) ([]GetUserAttendanceBetweenDatesRow, error)
-	GetUserByID(ctx context.Context, userID int64) (User, error)
+	GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error)
+	GetUserByName(ctx context.Context, arg GetUserByNameParams) (GetUserByNameRow, error)
+	GetUserByPhoneNumber(ctx context.Context, phoneNumber int64) (GetUserByPhoneNumberRow, error)
 	UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error
-	UpdateRole(ctx context.Context, arg UpdateRoleParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 }
 

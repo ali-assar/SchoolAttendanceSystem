@@ -1,28 +1,40 @@
-
--- name: CreateUser :exec
-INSERT INTO users (first_name, last_name, phone_number, image_path, is_teacher, is_admin) 
-VALUES (?, ?, ?, ?, ?, ?);
+-- name: CreateUser :one
+INSERT INTO users (first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id) 
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING user_id;
 
 -- name: GetUserByID :one
-SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_admin 
+SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id
 FROM users 
 WHERE user_id = ?;
 
+-- name: GetUserByPhoneNumber :one
+SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id
+FROM users
+WHERE phone_number = ?;
+
+-- name: GetUserByName :one
+SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id
+FROM users
+WHERE first_name = ? AND last_name = ?;
+
+
 -- name: GetAllUsers :many
-SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_admin 
+SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id 
 FROM users;
 
 -- name: UpdateUser :exec
 UPDATE users 
-SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?, is_teacher = ?, is_admin = ? 
+SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?, is_teacher = ?, is_biometric_active = ?, finger_id = ? 
 WHERE user_id = ?;
 
 -- name: DeleteUser :exec
 DELETE FROM users WHERE user_id = ?;
 
--- name: CreateAttendance :exec
+-- name: CreateAttendance :one
 INSERT INTO attendance (user_id, date, entry_time, exit_time) 
-VALUES (?, ?, ?, ?);
+VALUES (?, ?, ?, ?)
+RETURNING attendance_id;
 
 -- name: GetAttendanceByUserIDAndDate :one
 SELECT attendance_id, user_id, date, entry_time, exit_time 
