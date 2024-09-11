@@ -1,137 +1,295 @@
-# School Attendance System API
+# School Attendance System
 
-This project is an API for managing users and attendance in a school system, built using Go and Fiber.
+This system is designed to manage users and attendance records in a school. It includes functionalities for creating, updating, retrieving, and deleting users and attendance records. The system also supports authentication for securing routes, ensuring only authorized users have access to sensitive endpoints.
 
-## Getting Started
+## Authentication
 
-Follow these instructions to set up and test the API locally.
+In this system, authentication ensures that only authorized individuals can add, modify, or delete user and attendance data. This protects the integrity of the system and ensures compliance with privacy standards.
 
-### Prerequisites
+In this system, the admin role (username: `admin`, password: `admin`) has access to all routes. Non-admin users might be restricted based on their role, ensuring secure access management.
 
-1. **Go**: Make sure Go is installed on your machine. You can download it [here](https://golang.org/dl/).
-2. **SQLite**: The database used is SQLite. Ensure you have SQLite installed. Download it [here](https://www.sqlite.org/download.html).
-3. **Postman or Insomnia**: For testing the API, you can use Postman or any other API client tool.
+## User Endpoints
 
-### Installing
+### 1. Create User
 
-1. **Clone the repository**:
+**Endpoint:** `POST api/v1/user`
 
-    ```bash
-    git clone https://github.com/Ali-Assar/SchoolAttendanceSystem.git
-    cd SchoolAttendanceSystem
-    ```
+Creates a new user in the system.
 
-2. **Install dependencies**:
-
-    You will need to install Go dependencies, which are managed with `go mod`.
-
-    ```bash
-    go mod download
-    ```
-
-3. **Create `.env` file**:
-
-    Create a `.env` file in the root of the project and include the following configuration:
-
-    ```env
-    PORT=3000
-    DB_PATH=./database.db
-    ```
-
-   You can change the `PORT` if necessary, and the database file path `DB_PATH` should point to the location of your SQLite database.
-
-4. **Run the application**:
-
-    Run the following command to start the server:
-
-    ```bash
-    go run main.go
-    ```
-
-   This will start the server on `http://localhost:3000` (or the port specified in the `.env` file).
-
-5. **Database Initialization**:
-
-    The database will be automatically initialized on the first run. Tables for users and attendance will be created if they do not exist.
-
-### API Documentation
-
-The following endpoints are available:
-
-#### User Routes
-
-- **POST `/api/v1/user/`**: Create a new user
-- **GET `/api/v1/user/:id`**: Get user by ID
-- **GET `/api/v1/user/`**: Get all users
-- **PUT `/api/v1/user/:id`**: Update user by ID
-- **GET `/api/v1/user/phone/:phone`**: Get user by phone number
-- **GET `/api/v1/user/name/:first_name/:last_name`**: Get user by name
-- **DELETE `/api/v1/user/:id`**: Delete user by ID
-
-#### Attendance Routes
-
-- **POST `/api/v1/attendance/`**: Create a new attendance record
-- **GET `/api/v1/attendance/:user_id/:date`**: Get attendance by user ID and date
-- **GET `/api/v1/attendances/:date`**: Get all attendance records for a specific date
-- **PUT `/api/v1/attendance/`**: Update attendance by ID
-- **DELETE `/api/v1/attendance/:attendance_id`**: Delete attendance by ID
-
-### Testing the API
-
-To test the API, you can use Postman, curl, or any other API testing tool.
-
-#### Example Requests
-
-##### Create a User (POST `/api/v1/user/`)
+#### Request Body:
 
 ```json
-POST http://localhost:3000/api/v1/user/
-Content-Type: application/json
-
 {
   "first_name": "John",
   "last_name": "Doe",
-  "phone": "1234567890"
+  "phone_number": "123456789",
+  "image_path": null,
+  "is_teacher": true,
+  "is_biometric_active": false,
+  "finger_id": null
 }
 ```
 
-##### Get User by ID (GET `/api/v1/user/:id`)
+#### Response:
 
+- **Status 201 (Created):** 
 ```json
-GET http://localhost:3000/api/v1/user/1
+{
+  "message": "user with id 1 created"
+}
 ```
 
-##### Create Attendance (POST `/api/v1/attendance/`)
+### 2. Get All Users
 
+**Endpoint:** `GET api/v1/user`
+
+Retrieves a list of all users in the system.
+
+#### Response:
+
+- **Status 200 (OK):**
 ```json
-POST http://localhost:3000/api/v1/attendance/
-Content-Type: application/json
+[
+  {
+    "user_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone_number": "123456789",
+    "image_path": null,
+    "is_teacher": true,
+    "is_biometric_active": false,
+    "finger_id": null
+  }
+]
+```
 
+### 3. Get User by ID
+
+**Endpoint:** `GET api/v1/user/:id`
+
+Retrieves a user by their ID.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
 {
   "user_id": 1,
-  "entry_time": 1693516800,  // Unix timestamp
-  "exit_time": 1693520400    // Unix timestamp
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone_number": "123456789",
+  "image_path": null,
+  "is_teacher": true,
+  "is_biometric_active": false,
+  "finger_id": null
 }
 ```
 
-##### Get Attendance by User ID and Date (GET `/api/v1/attendance/:user_id/:date`)
+### 4. Get User by Phone Number
+
+**Endpoint:** `GET api/v1/user/phone/:phone`
+
+Retrieves a user by their phone number.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "user_id": 1,
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone_number": "123456789",
+  "image_path": null,
+  "is_teacher": true,
+  "is_biometric_active": false,
+  "finger_id": null
+}
+```
+
+### 5. Get User by Name
+
+**Endpoint:** `GET api/v1/user/name/:first_name/:last_name`
+
+Retrieves a user by their first and last name.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "user_id": 1,
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone_number": "123456789",
+  "image_path": null,
+  "is_teacher": true,
+  "is_biometric_active": false,
+  "finger_id": null
+}
+```
+
+### 6. Update User
+
+**Endpoint:** `PUT api/v1/user/:id`
+
+Updates a user's information.
+
+#### Request Body:
 
 ```json
-GET http://localhost:3000/api/v1/attendance/1/1693516800
+{
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "phone_number": "987654321",
+  "image_path": null,
+  "is_teacher": true,
+  "is_biometric_active": true,
+  "finger_id": null
+}
 ```
 
-#### Error Handling
+#### Response:
 
-- **400 Bad Request**: Invalid data provided in the request body or URL parameters.
-- **404 Not Found**: Requested resource does not exist.
-- **500 Internal Server Error**: An unexpected error occurred on the server.
-
-### Running Tests
-
-You can run unit tests using the following command:
-
-```bash
-go test ./...
+- **Status 200 (OK):**
+```json
+{
+  "message": "user updated"
+}
 ```
 
-Ensure that the test dependencies like `testify` are installed.
+### 7. Delete User
+
+**Endpoint:** `DELETE api/v1/user/:id`
+
+Deletes a user by their ID.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "message": "user deleted"
+}
+```
+
+---
+
+## Attendance Endpoints
+
+### 1. Create Attendance
+
+**Endpoint:** `POST api/v1/attendance`
+
+Creates a new attendance record.
+
+#### Request Body:
+
+```json
+{
+  "user_id": 1,
+  "date": 1694019110000, 
+  "entry_time": 1694022710000,
+  "exit_time": 1694030000000
+}
+```
+
+#### Response:
+
+- **Status 201 (Created):**
+```json
+{
+  "message": "attendance record created",
+  "attendance_id": 1
+}
+```
+
+### 2. Get Attendance by User ID and Date
+
+**Endpoint:** `GET api/v1/attendance/:user_id/:date`
+
+Retrieves an attendance record by user ID and date.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "attendance_id": 1,
+  "user_id": 1,
+  "date": 1694019110000,
+  "entry_time": 1694022710000,
+  "exit_time": 1694030000000
+}
+```
+
+### 3. Get All Users' Attendance by Date
+
+**Endpoint:** `GET api/v1/attendances/date/:date`
+
+Retrieves all attendance records for a specific date.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+[
+  {
+    "attendance_id": 1,
+    "user_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "date": 1694019110000,
+    "entry_time": 1694022710000,
+    "exit_time": 1694030000000
+  }
+]
+```
+
+### 4. Update Attendance
+
+**Endpoint:** `PUT api/v1/attendance`
+
+Updates an attendance record by attendance ID.
+
+#### Request Body:
+
+```json
+{
+  "attendance_id": 1,
+  "entry_time": 1694022710000,
+  "exit_time": 1694030000000
+}
+```
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "message": "attendance record updated"
+}
+```
+
+### 5. Delete Attendance
+
+**Endpoint:** `DELETE api/v1/attendance/:attendance_id`
+
+Deletes an attendance record by attendance ID.
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "message": "attendance record deleted"
+}
+```
+
+---
+
+### Error Responses
+
+- **Status 400 (Bad Request):** When the input data is invalid.
+- **Status 404 (Not Found):** When the requested user or attendance record is not found.
+- **Status 500 (Internal Server Error):** When an unexpected error occurs on the server.
