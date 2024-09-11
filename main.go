@@ -33,18 +33,16 @@ func main() {
 	store := db.New(database)
 	handlers := handler.NewHandlers(store)
 
-	// Create a default admin user if not present
 	createDefaultAdmin(store)
 
 	app := fiber.New()
 
 	app.Use(logger.New())
 
-	authMiddleware := handler.JWTAuthentication(store) // Your authentication middleware
+	authMiddleware := handler.JWTAuthentication(store) 
 
-	app.Post("/login", handlers.HandleAuthenticate) // For handling login/authentication
+	app.Post("/login", handlers.HandleAuthenticate) 
 
-	// Secure the /api/v1 routes with JWTAuthentication
 	apiv1 := app.Group("/api/v1", authMiddleware)
 
 	// User routes
@@ -63,7 +61,7 @@ func main() {
 	apiv1.Put("attendance/", handlers.HandleUpdateAttendanceByID)
 	apiv1.Delete("attendance/:attendance_id", handlers.HandleDeleteAttendanceByID)
 
-	// Add this to your /api/v1 routes
+	// admin routes
 	apiv1.Put("admin/:username/password", handlers.HandleUpdateAdmin)
 
 	// Start server
@@ -79,16 +77,13 @@ func createDefaultAdmin(store db.Querier) {
 	adminUsername := "admin"
 	defaultPassword := "admin"
 
-	// Check if the admin exists
 	_, err := store.GetAdminByUserName(context.Background(), adminUsername)
 	if err != nil {
-		// If no admin exists, create the default admin
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(defaultPassword), bcrypt.DefaultCost)
 		if err != nil {
 			log.Fatalf("Failed to hash password: %v", err)
 		}
 
-		// Create the admin
 		adminParams := db.CreateAdminParams{
 			UserName: adminUsername,
 			Password: string(hashedPassword),

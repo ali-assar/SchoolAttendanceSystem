@@ -2,16 +2,27 @@
 
 This system is designed to manage users and attendance records in a school. It includes functionalities for creating, updating, retrieving, and deleting users and attendance records. The system also supports authentication for securing routes, ensuring only authorized users have access to sensitive endpoints.
 
+Here is the updated section for **Authentication** in your Markdown file to match the current setup, which includes JWT-based authentication:
+
+---
+
 ## Authentication
 
-In this system, authentication ensures that only authorized individuals can add, modify, or delete user and attendance data. This protects the integrity of the system and ensures compliance with privacy standards.
+The system uses **JWT (JSON Web Token)** authentication to secure the routes, ensuring that only authorized users can access or modify user and attendance data. The admin role (username: `admin`, password: `admin`) has full access to all routes. After logging in, a JWT token is issued, which must be included in the `Authorization` header for all subsequent requests to protected routes.
 
-In this system, the admin role (username: `admin`, password: `admin`) has access to all routes. Non-admin users might be restricted based on their role, ensuring secure access management.
+### JWT Token Authentication Flow:
 
-### login Endpoints
+1. **Login Endpoint**: Users must authenticate by providing valid credentials. A JWT token is generated upon successful login and must be used for any further requests to the system.
+2. **Authorization**: JWT tokens should be included in the `Authorization` header of requests to protected routes. The format is `Bearer <token>`.
 
-#### 1. login
-**login** `POST login`
+---
+
+### Login Endpoint
+
+#### 1. Login
+- **Method**: `POST /login`
+- **Description**: Authenticates a user and provides a JWT token for subsequent requests.
+  
 ##### Request Body:
 
 ```json
@@ -21,9 +32,23 @@ In this system, the admin role (username: `admin`, password: `admin`) has access
 }
 ```
 
+##### Response:
 
-#### 2. logout
-**login** `POST logout`
+- **Status 200 (OK)**: JWT token is provided.
+  
+```json
+{
+  "token": "your_jwt_token"
+}
+```
+
+- **Status 401 (Unauthorized)**: When the username or password is incorrect.
+
+
+### Securing Endpoints with JWT
+
+Protected routes are secured by the `JWTAuthentication` middleware. You must include a valid JWT token in the `Authorization` header to access these routes.
+
 
 ## User Endpoints
 
