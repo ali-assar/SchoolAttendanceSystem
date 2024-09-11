@@ -12,6 +12,15 @@ In this system, the admin role (username: `admin`, password: `admin`) has access
 
 #### 1. login
 **login** `POST login`
+##### Request Body:
+
+```json
+{
+  "username": "admin",
+  "password": "admin"
+}
+```
+
 
 #### 2. logout
 **login** `POST logout`
