@@ -8,6 +8,11 @@ import (
 	"database/sql"
 )
 
+type Admin struct {
+	UserName string `json:"user_name"`
+	Password string `json:"password"`
+}
+
 type Attendance struct {
 	AttendanceID int64         `json:"attendance_id"`
 	UserID       int64         `json:"user_id"`

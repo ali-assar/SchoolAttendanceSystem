@@ -13,6 +13,7 @@ import (
 var (
 	ErrorCreateUsersTable = errors.New("could not create users table")
 	ErrorCreateAttendance = errors.New("could not create attendance table")
+	ErrorCreateAdmin      = errors.New("could not create admin table")
 )
 
 type DBParameter struct {
@@ -61,12 +62,16 @@ func CreateTables(db *sql.DB) error {
 		return err
 	}
 
+	if err := CreateAdminTable(db); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func TearDown(db *sql.DB) {
 	db.Exec("DROP TABLE IF EXISTS users")
-	db.Exec("DROP TABLE IF EXISTS roles")
+	db.Exec("DROP TABLE IF EXISTS admin")
 	db.Exec("DROP TABLE IF EXISTS attendance")
 }
 
@@ -106,6 +111,20 @@ func CreateAttendanceTable(db *sql.DB) error {
 	_, err := db.Exec(createAttendanceTable)
 	if err != nil {
 		return errors.Join(ErrorCreateAttendance, err)
+	}
+	return nil
+}
+
+func CreateAdminTable(db *sql.DB) error {
+	createAdminTable := `
+	CREATE TABLE IF NOT EXISTS admin (
+		user_name VARCHAR(100) PRIMARY KEY,
+		password VARCHAR(100) NOT NULL UNIQUE
+	);	
+	`
+	_, err := db.Exec(createAdminTable)
+	if err != nil {
+		return errors.Join(ErrorCreateAdmin, err)
 	}
 	return nil
 }

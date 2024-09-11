@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(100) NOT NULL,
     phone_number VARCHAR(50) NOT NULL,
     is_teacher BOOLEAN NOT NULL DEFAULT FALSE,
-
     image_path TEXT,
     finger_id TEXT,
     is_biometric_active BOOLEAN DEFAULT FALSE
@@ -18,3 +17,9 @@ CREATE TABLE IF NOT EXISTS attendance (
     exit_time INT,            -- Same for exit time
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS admin (
+    user_name VARCHAR(100) PRIMARY KEY,
+    password VARCHAR(100) NOT NULL UNIQUE
+);
+

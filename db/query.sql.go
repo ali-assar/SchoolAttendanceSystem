@@ -10,6 +10,24 @@ import (
 	"database/sql"
 )
 
+const createAdmin = `-- name: CreateAdmin :one
+INSERT INTO admin (user_name, password) 
+VALUES (?, ?)
+RETURNING user_name
+`
+
+type CreateAdminParams struct {
+	UserName string `json:"user_name"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (string, error) {
+	row := q.db.QueryRowContext(ctx, createAdmin, arg.UserName, arg.Password)
+	var user_name string
+	err := row.Scan(&user_name)
+	return user_name, err
+}
+
 const createAttendance = `-- name: CreateAttendance :one
 INSERT INTO attendance (user_id, date, entry_time, exit_time) 
 VALUES (?, ?, ?, ?)
@@ -66,6 +84,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 	return user_id, err
 }
 
+const deleteAdmin = `-- name: DeleteAdmin :exec
+DELETE FROM admin 
+WHERE user_name = ?
+`
+
+func (q *Queries) DeleteAdmin(ctx context.Context, userName string) error {
+	_, err := q.db.ExecContext(ctx, deleteAdmin, userName)
+	return err
+}
+
 const deleteAttendance = `-- name: DeleteAttendance :exec
 DELETE FROM attendance WHERE attendance_id = ?
 `
@@ -82,6 +110,19 @@ DELETE FROM users WHERE user_id = ?
 func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, userID)
 	return err
+}
+
+const getAdminByUserName = `-- name: GetAdminByUserName :one
+SELECT user_name, password
+FROM admin
+WHERE user_name = ?
+`
+
+func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admin, error) {
+	row := q.db.QueryRowContext(ctx, getAdminByUserName, userName)
+	var i Admin
+	err := row.Scan(&i.UserName, &i.Password)
+	return i, err
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
@@ -316,6 +357,22 @@ func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) 
 		&i.FingerID,
 	)
 	return i, err
+}
+
+const updateAdmin = `-- name: UpdateAdmin :exec
+UPDATE admin
+SET password = ?
+WHERE user_name = ?
+`
+
+type UpdateAdminParams struct {
+	Password string `json:"password"`
+	UserName string `json:"user_name"`
+}
+
+func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error {
+	_, err := q.db.ExecContext(ctx, updateAdmin, arg.Password, arg.UserName)
+	return err
 }
 
 const updateAttendance = `-- name: UpdateAttendance :exec

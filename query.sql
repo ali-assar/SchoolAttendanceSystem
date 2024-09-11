@@ -64,3 +64,23 @@ WHERE user_id = ? AND attendance_id = ? AND date = ?;
 
 -- name: DeleteAttendance :exec
 DELETE FROM attendance WHERE attendance_id = ?;
+
+
+-- name: CreateAdmin :one
+INSERT INTO admin (user_name, password) 
+VALUES (?, ?)
+RETURNING user_name;
+
+-- name: DeleteAdmin :exec
+DELETE FROM admin 
+WHERE user_name = ?;
+
+-- name: GetAdminByUserName :one
+SELECT user_name, password
+FROM admin
+WHERE user_name = ?;
+
+-- name: UpdateAdmin :exec
+UPDATE admin
+SET password = ?
+WHERE user_name = ?;
