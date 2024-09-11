@@ -6,6 +6,10 @@ RPI_EXECUTABLE = attendence_raspberry_api
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
+sqlc:
+	@echo "Generating database code ... "
+	@ sqlc/sqlc generate
+	
 build: $(BIN_DIR)
 	@echo "Building the main application..."
 	@go build -o $(BIN_DIR)/$(EXECUTABLE) 
