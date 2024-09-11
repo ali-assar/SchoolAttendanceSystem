@@ -29,7 +29,6 @@ func (h *Handlers) HandleAuthenticate(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid username or password"})
 	}
 
-	// Compare the hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(params.Password))
 	if err != nil {
 		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid username or password"})

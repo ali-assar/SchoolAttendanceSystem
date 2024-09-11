@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -33,15 +31,15 @@ func main() {
 	store := db.New(database)
 	handlers := handler.NewHandlers(store)
 
-	createDefaultAdmin(store)
+	handler.CreateDefaultAdmin(store)
 
 	app := fiber.New()
 
 	app.Use(logger.New())
 
-	authMiddleware := handler.JWTAuthentication(store) 
+	authMiddleware := handler.JWTAuthentication(store)
 
-	app.Post("/login", handlers.HandleAuthenticate) 
+	app.Post("/login", handlers.HandleAuthenticate)
 
 	apiv1 := app.Group("/api/v1", authMiddleware)
 
@@ -71,31 +69,4 @@ func main() {
 	}
 
 	log.Fatal(app.Listen(ip))
-}
-
-func createDefaultAdmin(store db.Querier) {
-	adminUsername := "admin"
-	defaultPassword := "admin"
-
-	_, err := store.GetAdminByUserName(context.Background(), adminUsername)
-	if err != nil {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(defaultPassword), bcrypt.DefaultCost)
-		if err != nil {
-			log.Fatalf("Failed to hash password: %v", err)
-		}
-
-		adminParams := db.CreateAdminParams{
-			UserName: adminUsername,
-			Password: string(hashedPassword),
-		}
-
-		_, err = store.CreateAdmin(context.Background(), adminParams)
-		if err != nil {
-			log.Fatalf("Failed to create default admin: %v", err)
-		}
-
-		log.Println("Default admin created with username 'admin' and password 'admin'. Please change the password after login.")
-	} else {
-		log.Println("Admin already exists, skipping default admin creation.")
-	}
 }
