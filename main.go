@@ -12,8 +12,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var store = session.New() // Session middleware for storing login information
-
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -37,15 +35,16 @@ func main() {
 
 	store := db.New(database)
 
+	sessionStore := session.New()
+
+	authHandler := &handler.AuthHandler{Store: sessionStore}
 	handlers := handler.NewHandlers(store)
 
-	// Login route
-	app.Post("/login", handleLogin)
+	app.Post("/login", authHandler.Login)
+	app.Post("/logout", authHandler.Logout)
 
-	// Protect all routes with authentication middleware
-	apiv1 := app.Group("/api/v1", authRequired)
+	apiv1 := app.Group("/api/v1", authHandler.IsAuthenticated)
 
-	// User routes
 	apiv1.Post("user/", handlers.HandlePostUser)
 	apiv1.Get("user/:id", handlers.HandleGetUserByID)
 	apiv1.Get("user/", handlers.HandleGetAllUsers)
@@ -54,7 +53,6 @@ func main() {
 	apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
 	apiv1.Delete("user/:id", handlers.HandleDeleteUserByID)
 
-	// Attendance routes
 	apiv1.Post("attendance/", handlers.HandlePostAttendance)
 	apiv1.Get("attendance/:user_id/:date", handlers.HandleGetAttendanceByUserIDAndDate)
 	apiv1.Get("attendances/:date", handlers.HandleGetAllUsersAttendanceByDate)
@@ -67,52 +65,4 @@ func main() {
 	}
 
 	log.Fatal(app.Listen(":" + port))
-}
-
-// handleLogin handles login for the admin
-func handleLogin(c *fiber.Ctx) error {
-	var loginData struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
-	if err := c.BodyParser(&loginData); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
-	}
-
-	// Check if the username and password are correct
-	if loginData.Username == "admin" && loginData.Password == "admin" {
-		// Create a session
-		sess, err := store.Get(c)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create session"})
-		}
-
-		// Set session attribute
-		sess.Set("authenticated", true)
-
-		// Save session
-		if err := sess.Save(); err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save session"})
-		}
-
-		return c.JSON(fiber.Map{"message": "Login successful"})
-	}
-
-	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid credentials"})
-}
-
-// authRequired middleware checks if the user is authenticated
-func authRequired(c *fiber.Ctx) error {
-	sess, err := store.Get(c)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
-	}
-
-	// Check if the user is authenticated
-	if auth, ok := sess.Get("authenticated").(bool); !ok || !auth {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
-	}
-
-	return c.Next()
 }

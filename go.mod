@@ -12,6 +12,8 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gofiber/jwt/v3 v3.3.10 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/kavenegar/kavenegar-go v0.0.0-20240205151018-77039f51467d // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
