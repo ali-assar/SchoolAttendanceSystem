@@ -59,10 +59,10 @@ func main() {
 	apiv1.Put("attendance/", handlers.HandleUpdateAttendanceByID)
 	apiv1.Delete("attendance/:attendance_id", handlers.HandleDeleteAttendanceByID)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
+	ip := os.Getenv("IP")
+	if ip == "" {
+		ip = "127.0.0.1:3000"
 	}
 
-	log.Fatal(app.Listen(":" + port))
+	log.Fatal(app.Listen(ip))
 }
