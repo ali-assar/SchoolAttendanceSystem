@@ -1,6 +1,7 @@
 BIN_DIR = ./bin
 
 EXECUTABLE = attendence_api
+EXECUTABLE_reduce = attendence_api_reduce
 RPI_EXECUTABLE = attendence_raspberry_api
 
 $(BIN_DIR):
@@ -9,7 +10,11 @@ $(BIN_DIR):
 sqlc:
 	@echo "Generating database code ... "
 	@ sqlc/sqlc generate
-	
+
+build-reduce: $(BIN_DIR)
+	@echo "Building the main application..."
+	@go build -ldflags="-s -w" -o $(BIN_DIR)/$(EXECUTABLE_reduce) 
+
 build: $(BIN_DIR)
 	@echo "Building the main application..."
 	@go build -o $(BIN_DIR)/$(EXECUTABLE) 
