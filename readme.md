@@ -8,6 +8,14 @@ In this system, authentication ensures that only authorized individuals can add,
 
 In this system, the admin role (username: `admin`, password: `admin`) has access to all routes. Non-admin users might be restricted based on their role, ensuring secure access management.
 
+### login Endpoints
+
+#### 1. login
+**login** `POST login`
+
+#### 2. logout
+**login** `POST logout`
+
 ## User Endpoints
 
 ### 1. Create User
