@@ -1,63 +1,59 @@
 package handler
 
 import (
+	"fmt"
+	"net/http"
+	"os"
 	"time"
+
+	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthHandler struct {
-	Store *session.Store
+type AuthResponse struct {
+	User  db.Admin `json:"user"`
+	Token string   `json:"token"`
 }
 
-func (h *AuthHandler) IsAuthenticated(c *fiber.Ctx) error {
-	sess, err := h.Store.Get(c)
+func (h *Handlers) HandleAuthenticate(c *fiber.Ctx) error {
+	var params db.Admin
+
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+
+	admin, err := h.Store.GetAdminByUserName(c.Context(), params.UserName)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Could not retrieve session")
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid username or password"})
 	}
 
-	if auth, ok := sess.Get("authenticated").(bool); !ok || !auth {
-		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized access, please login")
-	}
-
-	return c.Next()
-}
-
-// Login route for admin authentication
-func (h *AuthHandler) Login(c *fiber.Ctx) error {
-	var login struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
-	if err := c.BodyParser(&login); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Invalid login payload")
-	}
-
-	if login.Username == "admin" && login.Password == "admin" {
-		sess, err := h.Store.Get(c)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Failed to create session")
-		}
-
-		sess.Set("authenticated", true)
-		sess.SetExpiry(2 * time.Hour) 
-		if err := sess.Save(); err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Failed to save session")
-		}
-
-		return c.SendString("Login successful")
-	}
-
-	return c.Status(fiber.StatusUnauthorized).SendString("Invalid credentials")
-}
-
-func (h *AuthHandler) Logout(c *fiber.Ctx) error {
-	sess, err := h.Store.Get(c)
+	// Compare the hashed password
+	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(params.Password))
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Could not retrieve session")
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid username or password"})
 	}
 
-	sess.Destroy()
-	return c.SendString("Logged out successfully")
+	resp := AuthResponse{
+		User:  admin,
+		Token: CreateTokenFromUser(admin),
+	}
+	return c.JSON(resp)
+}
+
+func CreateTokenFromUser(user db.Admin) string {
+	expires := time.Now().Add(time.Hour * 4).Format(time.RFC3339)
+	claims := jwt.MapClaims{
+		"user_name": user.UserName, // Add the username here
+		"expires":   expires,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	secret := os.Getenv("JWT_SECRET")
+	tokenStr, err := token.SignedString([]byte(secret))
+	if err != nil {
+		fmt.Println("failed to sign token:", err)
+	}
+	return tokenStr
 }
