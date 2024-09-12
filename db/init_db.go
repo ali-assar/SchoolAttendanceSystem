@@ -86,15 +86,14 @@ func CreateUsersTable(db *sql.DB) error {
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
 		user_id INTEGER PRIMARY KEY,
-		first_name VARCHAR(100) NOT NULL,
-		last_name VARCHAR(100) NOT NULL,
-		phone_number VARCHAR(50) NOT NULL,
-		is_teacher BOOLEAN NOT NULL DEFAULT FALSE,
-	
-		image_path TEXT,
-		finger_id TEXT,
-		is_biometric_active BOOLEAN DEFAULT FALSE
-	);
+    	first_name VARCHAR(100) NOT NULL,
+    	last_name VARCHAR(100) NOT NULL,
+    	phone_number VARCHAR(50) NOT NULL,
+    	is_teacher BOOLEAN NOT NULL DEFAULT FALSE,
+    	image_path TEXT NOT NULL DEFAULT NULL,
+    	finger_id TEXT NOT NULL DEFAULT NULL,
+    	is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE
+);
 	`
 	_, err := db.Exec(createUsersTable)
 	if err != nil {

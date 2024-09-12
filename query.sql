@@ -25,7 +25,12 @@ FROM users;
 
 -- name: UpdateUser :exec
 UPDATE users 
-SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?, is_teacher = ?, is_biometric_active = ?, finger_id = ? 
+SET image_path = ?, is_biometric_active = ?, finger_id = ? 
+WHERE user_id = ?;
+
+-- name: UpdateUserImage :exec
+UPDATE users 
+SET image_path = ?
 WHERE user_id = ?;
 
 -- name: DeleteUser :exec
@@ -80,6 +85,7 @@ WHERE id = ?;
 
 -- name: GetTimeRange :many
 SELECT 
+    u.user_id,
     u.first_name,
     u.last_name,
     u.phone_number,

@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createAdmin = `-- name: CreateAdmin :one
@@ -71,13 +70,13 @@ RETURNING user_id
 `
 
 type CreateUserParams struct {
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	ImagePath         string       `json:"image_path"`
-	IsTeacher         bool         `json:"is_teacher"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
-	FingerID          string       `json:"finger_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	IsTeacher         bool   `json:"is_teacher"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FingerID          string `json:"finger_id"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
@@ -153,14 +152,14 @@ FROM users
 `
 
 type GetAllUsersRow struct {
-	UserID            int64        `json:"user_id"`
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	ImagePath         string       `json:"image_path"`
-	IsTeacher         bool         `json:"is_teacher"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
-	FingerID          string       `json:"finger_id"`
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	IsTeacher         bool   `json:"is_teacher"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FingerID          string `json:"finger_id"`
 }
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
@@ -197,6 +196,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 
 const getTimeRange = `-- name: GetTimeRange :many
 SELECT 
+    u.user_id,
     u.first_name,
     u.last_name,
     u.phone_number,
@@ -220,6 +220,7 @@ type GetTimeRangeParams struct {
 }
 
 type GetTimeRangeRow struct {
+	UserID      int64  `json:"user_id"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
 	PhoneNumber string `json:"phone_number"`
@@ -237,6 +238,7 @@ func (q *Queries) GetTimeRange(ctx context.Context, arg GetTimeRangeParams) ([]G
 	for rows.Next() {
 		var i GetTimeRangeRow
 		if err := rows.Scan(
+			&i.UserID,
 			&i.FirstName,
 			&i.LastName,
 			&i.PhoneNumber,
@@ -329,14 +331,14 @@ WHERE user_id = ?
 `
 
 type GetUserByIDRow struct {
-	UserID            int64        `json:"user_id"`
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	ImagePath         string       `json:"image_path"`
-	IsTeacher         bool         `json:"is_teacher"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
-	FingerID          string       `json:"finger_id"`
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	IsTeacher         bool   `json:"is_teacher"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FingerID          string `json:"finger_id"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error) {
@@ -367,14 +369,14 @@ type GetUserByNameParams struct {
 }
 
 type GetUserByNameRow struct {
-	UserID            int64        `json:"user_id"`
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	ImagePath         string       `json:"image_path"`
-	IsTeacher         bool         `json:"is_teacher"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
-	FingerID          string       `json:"finger_id"`
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	IsTeacher         bool   `json:"is_teacher"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FingerID          string `json:"finger_id"`
 }
 
 func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) (GetUserByNameRow, error) {
@@ -400,14 +402,14 @@ WHERE phone_number = ?
 `
 
 type GetUserByPhoneNumberRow struct {
-	UserID            int64        `json:"user_id"`
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	ImagePath         string       `json:"image_path"`
-	IsTeacher         bool         `json:"is_teacher"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
-	FingerID          string       `json:"finger_id"`
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	IsTeacher         bool   `json:"is_teacher"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FingerID          string `json:"finger_id"`
 }
 
 func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (GetUserByPhoneNumberRow, error) {
@@ -476,31 +478,39 @@ func (q *Queries) UpdateExit(ctx context.Context, arg UpdateExitParams) error {
 
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users 
-SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?, is_teacher = ?, is_biometric_active = ?, finger_id = ? 
+SET image_path = ?, is_biometric_active = ?, finger_id = ? 
 WHERE user_id = ?
 `
 
 type UpdateUserParams struct {
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	ImagePath         string       `json:"image_path"`
-	IsTeacher         bool         `json:"is_teacher"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
-	FingerID          string       `json:"finger_id"`
-	UserID            int64        `json:"user_id"`
+	ImagePath         string `json:"image_path"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FingerID          string `json:"finger_id"`
+	UserID            int64  `json:"user_id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 	_, err := q.db.ExecContext(ctx, updateUser,
-		arg.FirstName,
-		arg.LastName,
-		arg.PhoneNumber,
 		arg.ImagePath,
-		arg.IsTeacher,
 		arg.IsBiometricActive,
 		arg.FingerID,
 		arg.UserID,
 	)
+	return err
+}
+
+const updateUserImage = `-- name: UpdateUserImage :exec
+UPDATE users 
+SET image_path = ?
+WHERE user_id = ?
+`
+
+type UpdateUserImageParams struct {
+	ImagePath string `json:"image_path"`
+	UserID    int64  `json:"user_id"`
+}
+
+func (q *Queries) UpdateUserImage(ctx context.Context, arg UpdateUserImageParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserImage, arg.ImagePath, arg.UserID)
 	return err
 }

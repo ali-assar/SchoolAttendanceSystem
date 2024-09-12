@@ -4,10 +4,6 @@
 
 package db
 
-import (
-	"database/sql"
-)
-
 type Admin struct {
 	UserName string `json:"user_name"`
 	Password string `json:"password"`
@@ -26,12 +22,12 @@ type Exit struct {
 }
 
 type User struct {
-	UserID            int64        `json:"user_id"`
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	PhoneNumber       string       `json:"phone_number"`
-	IsTeacher         bool         `json:"is_teacher"`
-	ImagePath         string       `json:"image_path"`
-	FingerID          string       `json:"finger_id"`
-	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	IsTeacher         bool   `json:"is_teacher"`
+	ImagePath         string `json:"image_path"`
+	FingerID          string `json:"finger_id"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     is_teacher BOOLEAN NOT NULL DEFAULT FALSE,
     image_path TEXT NOT NULL DEFAULT NULL,
     finger_id TEXT NOT NULL DEFAULT NULL,
-    is_biometric_active BOOLEAN DEFAULT FALSE
+    is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS entrance (

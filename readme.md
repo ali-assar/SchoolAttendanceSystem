@@ -66,9 +66,7 @@ Creates a new user in the system.
   "last_name": "Doe",
   "phone_number": "123456789",
   "image_path": null,
-  "is_teacher": true,
-  "is_biometric_active": false,
-  "finger_id": null
+  "is_teacher": true
 }
 ```
 
@@ -77,7 +75,7 @@ Creates a new user in the system.
 - **Status 201 (Created):** 
 ```json
 {
-  "message": "user with id 1 created"
+  "message": "id: 1"
 }
 ```
 
@@ -93,15 +91,15 @@ Retrieves a list of all users in the system.
 ```json
 [
   {
-    "user_id": 1,
-    "first_name": "John",
-    "last_name": "Doe",
-    "phone_number": "123456789",
-    "image_path": null,
-    "is_teacher": true,
-    "is_biometric_active": false,
-    "finger_id": null
-  }
+        "user_id": 1,
+        "first_name": "John",
+        "last_name": "Doe",
+        "phone_number": "123456789",
+        "image_path": "",
+        "is_teacher": true,
+        "is_biometric_active": false,
+        "finger_id": ""
+  },
 ]
 ```
 
@@ -116,14 +114,14 @@ Retrieves a user by their ID.
 - **Status 200 (OK):**
 ```json
 {
-  "user_id": 1,
-  "first_name": "John",
-  "last_name": "Doe",
-  "phone_number": "123456789",
-  "image_path": null,
-  "is_teacher": true,
-  "is_biometric_active": false,
-  "finger_id": null
+    "user_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone_number": "123456789",
+    "image_path": "",
+    "is_teacher": true,
+    "is_biometric_active": false,
+    "finger_id": ""
 }
 ```
 
@@ -138,14 +136,14 @@ Retrieves a user by their phone number.
 - **Status 200 (OK):**
 ```json
 {
-  "user_id": 1,
-  "first_name": "John",
-  "last_name": "Doe",
-  "phone_number": "123456789",
-  "image_path": null,
-  "is_teacher": true,
-  "is_biometric_active": false,
-  "finger_id": null
+   "user_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone_number": "123456789",
+    "image_path": "",
+    "is_teacher": true,
+    "is_biometric_active": false,
+    "finger_id": ""
 }
 ```
 
@@ -160,34 +158,32 @@ Retrieves a user by their first and last name.
 - **Status 200 (OK):**
 ```json
 {
-  "user_id": 1,
-  "first_name": "John",
-  "last_name": "Doe",
-  "phone_number": "123456789",
-  "image_path": null,
-  "is_teacher": true,
-  "is_biometric_active": false,
-  "finger_id": null
+   "user_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone_number": "123456789",
+    "image_path": "",
+    "is_teacher": true,
+    "is_biometric_active": false,
+    "finger_id": ""
 }
 ```
 
-### 6. Update User
+### 6. Update User biometrics
 
 **Endpoint:** `PUT api/v1/user/:id`
 
-Updates a user's information.
+Updates a user's biometrics information.
 
 #### Request Body:
 
 ```json
 {
-  "first_name": "Jane",
-  "last_name": "Smith",
-  "phone_number": "987654321",
-  "image_path": null,
-  "is_teacher": true,
+{
+  "image_path": "/home/pic",
   "is_biometric_active": true,
-  "finger_id": null
+  "finger_id":  "asdfjdshf4456"
+}
 }
 ```
 
@@ -196,11 +192,36 @@ Updates a user's information.
 - **Status 200 (OK):**
 ```json
 {
-  "message": "user updated"
+  "message": "ID: 1"
 }
 ```
 
-### 7. Delete User
+### 7. Update User image
+
+**Endpoint:** `PUT api/v1/user/image/:id`
+
+Updates a user's image.
+
+#### Request Body:
+
+```json
+{
+{
+  "image_path": "/home/pic"
+}
+}
+```
+
+#### Response:
+
+- **Status 200 (OK):**
+```json
+{
+  "message": "ID: 1"
+}
+```
+
+### 8. Delete User
 
 **Endpoint:** `DELETE api/v1/user/:id`
 
@@ -219,20 +240,18 @@ Deletes a user by their ID.
 
 ## Attendance Endpoints
 
-### 1. Create Attendance
+### 1. Create Entrance
 
-**Endpoint:** `POST api/v1/attendance`
+**Endpoint:** `POST api/v1/entrance`
 
-Creates a new attendance record.
+Creates a new entrance record.
 
 #### Request Body:
 
 ```json
 {
   "user_id": 1,
-  "date": 1694019110000, 
-  "entry_time": 1694022710000,
-  "exit_time": 1694030000000
+  "entry_time": 1726115400
 }
 ```
 
@@ -241,97 +260,220 @@ Creates a new attendance record.
 - **Status 201 (Created):**
 ```json
 {
-  "message": "attendance record created",
-  "attendance_id": 1
+  "id": 1
 }
 ```
 
-### 2. Get Attendance by User ID and Date
+### 2. Update Entrance
 
-**Endpoint:** `GET api/v1/attendance/:user_id/:date`
+**Endpoint:** `PUT api/v1/entrance/:id`
 
-Retrieves an attendance record by user ID and date.
-
-#### Response:
-
-- **Status 200 (OK):**
-```json
-{
-  "attendance_id": 1,
-  "user_id": 1,
-  "date": 1694019110000,
-  "entry_time": 1694022710000,
-  "exit_time": 1694030000000
-}
-```
-
-### 3. Get All Users' Attendance by Date
-
-**Endpoint:** `GET api/v1/attendances/date/:date`
-
-Retrieves all attendance records for a specific date.
-
-#### Response:
-
-- **Status 200 (OK):**
-```json
-[
-  {
-    "attendance_id": 1,
-    "user_id": 1,
-    "first_name": "John",
-    "last_name": "Doe",
-    "date": 1694019110000,
-    "entry_time": 1694022710000,
-    "exit_time": 1694030000000
-  }
-]
-```
-
-### 4. Update Attendance
-
-**Endpoint:** `PUT api/v1/attendance`
-
-Updates an attendance record by attendance ID.
+Updates an entrance record.
 
 #### Request Body:
 
 ```json
 {
-  "attendance_id": 1,
-  "entry_time": 1694022710000,
-  "exit_time": 1694030000000
+  "entry_time": 1726115400
+}
+```
+
+#### Response:
+
+- **Status 201 (Created):**
+```json
+{
+  "id": 1
+}
+```
+
+### 3. DELETE Entrance
+
+**Endpoint:** `POST api/v1/entrance/:id`
+
+Deletes an entrance record.
+
+#### Response:
+
+- **Status 201 (Created):**
+```json
+{
+  "deleted"
+}
+```
+
+### 4. Create Exit
+
+**Endpoint:** `POST api/v1/exit`
+
+Creates a new exit record.
+
+#### Request Body:
+
+```json
+{
+  "user_id": 1,
+  "exit_time": 1726115400
+}
+```
+
+#### Response:
+
+- **Status 201 (Created):**
+```json
+{
+  "id": 1
+}
+```
+
+### 5. Update Exit
+
+**Endpoint:** `PUT api/v1/exit/:id`
+
+Updates an exit record.
+
+#### Request Body:
+
+```json
+{
+  "exit_time": 1726115400
+}
+```
+
+#### Response:
+
+- **Status 201 (Created):**
+```json
+{
+  "id": 1
+}
+```
+
+### 6. DELETE Exit
+
+**Endpoint:** `POST api/v1/exit/:id`
+
+Deletes an exit record.
+
+#### Response:
+
+- **Status 201 (Created):**
+```json
+{
+  "deleted"
+}
+```
+## Attendance Endpoints (Time Range and Absent Users)
+
+### 1. Get Attendance by Time Range
+
+**Endpoint:** `GET api/v1/attendance/`
+
+This endpoint retrieves all users' attendance records (entry and exit times) within a specified time range.
+
+#### Request Body (Example for JSON input):
+
+```json
+{
+  "start_time": 1726115400,
+  "end_time": 1726175400
 }
 ```
 
 #### Response:
 
 - **Status 200 (OK):**
+  
 ```json
-{
-  "message": "attendance record updated"
-}
+[
+  {
+    "user_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "phone_number": "123456789",
+    "entry_time": 1726115400,
+    "exit_time": 1726165400
+  },
+  {
+    "user_id": 2,
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "phone_number": "987654321",
+    "entry_time": 1726116400,
+    "exit_time": 1726170400
+  }
+]
 ```
 
-### 5. Delete Attendance
+---
 
-**Endpoint:** `DELETE api/v1/attendance/:attendance_id`
+### 2. Get Attendance by User ID (Time Range)
 
-Deletes an attendance record by attendance ID.
+**Endpoint:** `GET api/v1/attendance/user`
+
+This endpoint retrieves a specific user's attendance records (entry and exit times) within a specified time range, with the user's ID.
+
+#### Request Body (Example for JSON input):
+
+```json
+{
+  "user_id": 1,
+  "start_time": 1726115400,
+  "end_time": 1726175400
+}
+```
 
 #### Response:
 
 - **Status 200 (OK):**
+
 ```json
 {
-  "message": "attendance record deleted"
+  "user_id": 1,
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone_number": "123456789",
+  "entry_time": 1726115400,
+  "exit_time": 1726165400
 }
 ```
 
 ---
 
-### Error Responses
+### 3. Get Absent Users
 
-- **Status 400 (Bad Request):** When the input data is invalid.
-- **Status 404 (Not Found):** When the requested user or attendance record is not found.
-- **Status 500 (Internal Server Error):** When an unexpected error occurs on the server.
+**Endpoint:** `GET api/v1/absents/`
+
+This endpoint retrieves users who are absent (i.e., those who have no attendance records within a specified time range).
+
+#### Request Body (Example for JSON input):
+
+```json
+{
+  "start_time": 1726115400,
+  "end_time": 1726175400
+}
+```
+
+#### Response:
+
+- **Status 200 (OK):**
+  
+```json
+[
+  {
+    "user_id": 3,
+    "first_name": "Emily",
+    "last_name": "Johnson",
+    "phone_number": "555555555",
+    "entry_time": null
+  },
+  {
+    "user_id": 4,
+    "first_name": "Michael",
+    "last_name": "Brown",
+    "phone_number": "444444444",
+    "entry_time": null
+  }
+]
+```

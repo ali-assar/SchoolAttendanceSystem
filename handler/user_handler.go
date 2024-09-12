@@ -89,6 +89,26 @@ func (h *Handlers) HandleUpdateUser(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
 }
 
+func (h *Handlers) HandleUpdateUserImage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err.Error())
+	}
+
+	var updateParams db.UpdateUserImageParams
+	if err := c.BodyParser(&updateParams); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err.Error())
+	}
+
+	updateParams.UserID = id
+
+	if err := h.Store.UpdateUserImage(c.Context(), updateParams); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+}
+
 func (h *Handlers) HandleDeleteUserByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)

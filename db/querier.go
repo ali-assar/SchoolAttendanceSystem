@@ -18,9 +18,9 @@ type Querier interface {
 	DeleteExit(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, userID int64) error
 	GetAdminByUserName(ctx context.Context, userName string) (Admin, error)
-	GetAbsentUsers(ctx context.Context, startTime, endTime int64) ([]GetAbsentUsersRow, error) 
 	GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error)
 	GetTimeRange(ctx context.Context, arg GetTimeRangeParams) ([]GetTimeRangeRow, error)
+	GetAbsentUsers(ctx context.Context, startTime, endTime int64) ([]GetAbsentUsersRow, error) 
 	GetTimeRangeByUserID(ctx context.Context, arg GetTimeRangeByUserIDParams) ([]GetTimeRangeByUserIDRow, error)
 	GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) (GetUserByNameRow, error)
@@ -29,6 +29,7 @@ type Querier interface {
 	UpdateEntrance(ctx context.Context, arg UpdateEntranceParams) error
 	UpdateExit(ctx context.Context, arg UpdateExitParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) error
+	UpdateUserImage(ctx context.Context, arg UpdateUserImageParams) error
 }
 
 var _ Querier = (*Queries)(nil)
