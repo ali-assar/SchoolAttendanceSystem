@@ -15,6 +15,7 @@ type Querier interface {
 	DeleteAdmin(ctx context.Context, userName string) error
 	DeleteAttendance(ctx context.Context, attendanceID int64) error
 	DeleteUser(ctx context.Context, userID int64) error
+	GetAbsentUsersUntil9AM(ctx context.Context, date int64) ([]GetAbsentUsersUntil9AMRow, error)
 	GetAdminByUserName(ctx context.Context, userName string) (Admin, error)
 	GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error)
 	GetAllUsersAttendanceByDate(ctx context.Context, date int64) ([]GetAllUsersAttendanceByDateRow, error)

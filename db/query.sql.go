@@ -112,6 +112,55 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
 	return err
 }
 
+const getAbsentUsersUntil9AM = `-- name: GetAbsentUsersUntil9AM :many
+SELECT 
+    users.user_id, 
+    users.first_name, 
+    users.last_name, 
+    users.phone_number
+FROM 
+    users
+LEFT JOIN 
+    attendance ON users.user_id = attendance.user_id AND attendance.date = ? 
+WHERE 
+    attendance.entry_time IS NULL OR attendance.entry_time > 32400
+`
+
+type GetAbsentUsersUntil9AMRow struct {
+	UserID      int64  `json:"user_id"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+func (q *Queries) GetAbsentUsersUntil9AM(ctx context.Context, date int64) ([]GetAbsentUsersUntil9AMRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAbsentUsersUntil9AM, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAbsentUsersUntil9AMRow
+	for rows.Next() {
+		var i GetAbsentUsersUntil9AMRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.PhoneNumber,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAdminByUserName = `-- name: GetAdminByUserName :one
 SELECT user_name, password
 FROM admin

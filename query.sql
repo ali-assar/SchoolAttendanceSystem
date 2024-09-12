@@ -84,3 +84,16 @@ WHERE user_name = ?;
 UPDATE admin
 SET password = ?
 WHERE user_name = ?;
+
+-- name: GetAbsentUsersUntil9AM :many
+SELECT 
+    users.user_id, 
+    users.first_name, 
+    users.last_name, 
+    users.phone_number
+FROM 
+    users
+LEFT JOIN 
+    attendance ON users.user_id = attendance.user_id AND attendance.date = ? 
+WHERE 
+    attendance.entry_time IS NULL OR attendance.entry_time > 32400 -- 9 AM in seconds (9 * 60 * 60)
