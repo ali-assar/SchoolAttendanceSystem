@@ -100,7 +100,9 @@ JOIN
 WHERE 
     e.entry_time >= ?
     AND ex.exit_time <= ?
-    AND e.entry_time <= ex.exit_time;
+    AND e.entry_time <= ex.exit_time
+ORDER BY 
+    e.entry_time ASC;
 
 -- name: GetTimeRangeByUserID :many
 SELECT 
@@ -120,5 +122,8 @@ WHERE
     u.user_id = ?           
     AND e.entry_time >= ?   
     AND ex.exit_time <= ?   
-    AND e.entry_time <= ex.exit_time; 
+    AND e.entry_time <= ex.exit_time
+ORDER BY 
+    e.entry_time ASC;
+
 

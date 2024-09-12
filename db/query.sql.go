@@ -212,6 +212,8 @@ WHERE
     e.entry_time >= ?
     AND ex.exit_time <= ?
     AND e.entry_time <= ex.exit_time
+ORDER BY 
+    e.entry_time ASC
 `
 
 type GetTimeRangeParams struct {
@@ -277,6 +279,8 @@ WHERE
     AND e.entry_time >= ?   
     AND ex.exit_time <= ?   
     AND e.entry_time <= ex.exit_time
+ORDER BY 
+    e.entry_time ASC
 `
 
 type GetTimeRangeByUserIDParams struct {
