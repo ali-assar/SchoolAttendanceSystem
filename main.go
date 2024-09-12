@@ -53,11 +53,21 @@ func main() {
 	apiv1.Delete("user/:id", handlers.HandleDeleteUserByID)
 
 	// Attendance routes
-	apiv1.Post("attendance/", handlers.HandlePostAttendance)
-	apiv1.Get("attendance/:user_id/:date", handlers.HandleGetAttendanceByUserIDAndDate)
-	apiv1.Get("attendances/:date", handlers.HandleGetAllUsersAttendanceByDate)
-	apiv1.Put("attendance/", handlers.HandleUpdateAttendanceByID)
-	apiv1.Delete("attendance/:attendance_id", handlers.HandleDeleteAttendanceByID)
+
+	apiv1.Post("entrance/", handlers.HandlePostEntrance)
+	apiv1.Post("exit/", handlers.HandlePostExit)
+	apiv1.Put("entrance/:id", handlers.HandleUpdateEntrance)
+	apiv1.Put("exit/:id", handlers.HandleUpdateExit)
+	apiv1.Delete("entrance/:id", handlers.HandleDeleteEntrance)
+	apiv1.Delete("exit/:id", handlers.HandleDeleteExit)
+
+	apiv1.Get("attendance/", handlers.HandleGetTimeRange)
+	apiv1.Get("attendance/user", handlers.HandleGetTimeRangeByUserID)
+	apiv1.Get("absents/", handlers.HandleGetAbsentUsers)
+
+	// apiv1.Get("attendance/:id", handlers.HandleGetUserWithEntranceExitTimeRangeByID)
+	// apiv1.Get("attendance/time-range", handlers.HandleGetUsersEntranceExitForSpecificTime)
+	// apiv1.Get("attendance/absent", handlers.HandleGetAbsentUsersForDay)
 
 	// admin routes
 	apiv1.Put("admin/:username/password", handlers.HandleUpdateAdmin)

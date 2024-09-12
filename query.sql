@@ -31,41 +31,6 @@ WHERE user_id = ?;
 -- name: DeleteUser :exec
 DELETE FROM users WHERE user_id = ?;
 
--- name: CreateAttendance :one
-INSERT INTO attendance (user_id, date, entry_time, exit_time) 
-VALUES (?, ?, ?, ?)
-RETURNING attendance_id;
-
--- name: GetAttendanceByUserIDAndDate :one
-SELECT attendance_id, user_id, date, entry_time, exit_time 
-FROM attendance 
-WHERE user_id = ? AND date = ?;
-
--- name: GetAllUsersAttendanceByDate :many
-SELECT 
-    attendance.attendance_id, 
-    attendance.user_id, 
-    users.first_name, 
-    users.last_name, 
-    attendance.date, 
-    attendance.entry_time, 
-    attendance.exit_time
-FROM 
-    attendance
-INNER JOIN 
-    users ON attendance.user_id = users.user_id
-WHERE 
-    attendance.date = ?;
-
--- name: UpdateAttendance :exec
-UPDATE attendance 
-SET entry_time = ?, exit_time = ? 
-WHERE user_id = ? AND attendance_id = ? AND date = ?;
-
--- name: DeleteAttendance :exec
-DELETE FROM attendance WHERE attendance_id = ?;
-
-
 -- name: CreateAdmin :one
 INSERT INTO admin (user_name, password) 
 VALUES (?, ?)
@@ -85,15 +50,69 @@ UPDATE admin
 SET password = ?
 WHERE user_name = ?;
 
--- name: GetAbsentUsersUntil9AM :many
+-- name: CreateEntrance :one
+INSERT INTO entrance (user_id, entry_time) 
+VALUES (?, ?)
+RETURNING id;
+
+-- name: UpdateEntrance :exec
+UPDATE entrance 
+SET entry_time = ?
+WHERE id = ?;
+
+-- name: DeleteEntrance :exec
+DELETE FROM entrance 
+WHERE id = ?;
+
+-- name: CreateExit :one
+INSERT INTO exit (user_id, exit_time) 
+VALUES (?, ?)
+RETURNING id;
+
+-- name: UpdateExit :exec
+UPDATE exit 
+SET exit_time = ?
+WHERE id = ?;
+
+-- name: DeleteExit :exec
+DELETE FROM exit 
+WHERE id = ?;
+
+-- name: GetTimeRange :many
 SELECT 
-    users.user_id, 
-    users.first_name, 
-    users.last_name, 
-    users.phone_number
+    u.first_name,
+    u.last_name,
+    u.phone_number,
+    e.entry_time,
+    ex.exit_time
 FROM 
-    users
-LEFT JOIN 
-    attendance ON users.user_id = attendance.user_id AND attendance.date = ? 
+    users u
+JOIN 
+    entrance e ON u.user_id = e.user_id
+JOIN 
+    exit ex ON u.user_id = ex.user_id
 WHERE 
-    attendance.entry_time IS NULL OR attendance.entry_time > 32400 -- 9 AM in seconds (9 * 60 * 60)
+    e.entry_time >= ?
+    AND ex.exit_time <= ?
+    AND e.entry_time <= ex.exit_time;
+
+-- name: GetTimeRangeByUserID :many
+SELECT 
+    u.user_id,           
+    u.first_name,
+    u.last_name,
+    u.phone_number,
+    e.entry_time,
+    ex.exit_time
+FROM 
+    users u
+JOIN 
+    entrance e ON u.user_id = e.user_id
+JOIN 
+    exit ex ON u.user_id = ex.user_id
+WHERE 
+    u.user_id = ?           
+    AND e.entry_time >= ?   
+    AND ex.exit_time <= ?   
+    AND e.entry_time <= ex.exit_time; 
+

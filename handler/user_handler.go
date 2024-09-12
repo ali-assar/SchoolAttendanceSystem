@@ -20,7 +20,7 @@ func (h *Handlers) HandlePostUser(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("user with id %d created", userID))
+	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", userID))
 }
 
 func (h *Handlers) HandleGetAllUsers(c *fiber.Ctx) error {
@@ -86,7 +86,7 @@ func (h *Handlers) HandleUpdateUser(c *fiber.Ctx) error {
 	if err := h.Store.UpdateUser(c.Context(), updateParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusOK).JSON("user updated")
+	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
 }
 
 func (h *Handlers) HandleDeleteUserByID(c *fiber.Ctx) error {

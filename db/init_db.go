@@ -12,7 +12,8 @@ import (
 
 var (
 	ErrorCreateUsersTable = errors.New("could not create users table")
-	ErrorCreateAttendance = errors.New("could not create attendance table")
+	ErrorCreateEntrance   = errors.New("could not create entrance table")
+	ErrorCreateExit       = errors.New("could not create exit table")
 	ErrorCreateAdmin      = errors.New("could not create admin table")
 )
 
@@ -58,7 +59,11 @@ func CreateTables(db *sql.DB) error {
 		return err
 	}
 
-	if err := CreateAttendanceTable(db); err != nil {
+	if err := CreateEntranceTable(db); err != nil {
+		return err
+	}
+
+	if err := CreateExitTable(db); err != nil {
 		return err
 	}
 
@@ -72,7 +77,9 @@ func CreateTables(db *sql.DB) error {
 func TearDown(db *sql.DB) {
 	db.Exec("DROP TABLE IF EXISTS users")
 	db.Exec("DROP TABLE IF EXISTS admin")
-	db.Exec("DROP TABLE IF EXISTS attendance")
+	db.Exec("DROP TABLE IF EXISTS exit")
+	db.Exec("DROP TABLE IF EXISTS entrance")
+
 }
 
 func CreateUsersTable(db *sql.DB) error {
@@ -96,21 +103,34 @@ func CreateUsersTable(db *sql.DB) error {
 	return nil
 }
 
-func CreateAttendanceTable(db *sql.DB) error {
-	createAttendanceTable := `
-	CREATE TABLE IF NOT EXISTS attendance (
-		attendance_id INTEGER PRIMARY KEY,
-		user_id INT NOT NULL,
-		date INT NOT NULL,        -- Store date as integer in YYYYMMDD format
-		entry_time INT,           -- Store time as integer in seconds (or minutes) since midnight
-		exit_time INT,            -- Same for exit time
-		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-	);
-	
-	`
-	_, err := db.Exec(createAttendanceTable)
+func CreateEntranceTable(db *sql.DB) error {
+	createEntranceTable := `
+	CREATE TABLE IF NOT EXISTS entrance (
+    	id INTEGER PRIMARY KEY,
+    	user_id INTEGER NOT NULL,
+    	entry_time INTEGER NOT NULL,
+    	FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);	
+`
+	_, err := db.Exec(createEntranceTable)
 	if err != nil {
-		return errors.Join(ErrorCreateAttendance, err)
+		return errors.Join(ErrorCreateEntrance, err)
+	}
+	return nil
+}
+
+func CreateExitTable(db *sql.DB) error {
+	createExitTable := `
+	CREATE TABLE IF NOT EXISTS exit (
+    	id INTEGER PRIMARY KEY,
+    	user_id INTEGER NOT NULL,
+    	exit_time INTEGER NOT NULL,
+   		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);	
+`
+	_, err := db.Exec(createExitTable)
+	if err != nil {
+		return errors.Join(ErrorCreateExit, err)
 	}
 	return nil
 }

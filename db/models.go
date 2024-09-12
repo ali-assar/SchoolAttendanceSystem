@@ -13,21 +13,25 @@ type Admin struct {
 	Password string `json:"password"`
 }
 
-type Attendance struct {
-	AttendanceID int64         `json:"attendance_id"`
-	UserID       int64         `json:"user_id"`
-	Date         int64         `json:"date"`
-	EntryTime    sql.NullInt64 `json:"entry_time"`
-	ExitTime     sql.NullInt64 `json:"exit_time"`
+type Entrance struct {
+	ID        int64 `json:"id"`
+	UserID    int64 `json:"user_id"`
+	EntryTime int64 `json:"entry_time"`
+}
+
+type Exit struct {
+	ID       int64 `json:"id"`
+	UserID   int64 `json:"user_id"`
+	ExitTime int64 `json:"exit_time"`
 }
 
 type User struct {
-	UserID            int64          `json:"user_id"`
-	FirstName         string         `json:"first_name"`
-	LastName          string         `json:"last_name"`
-	PhoneNumber       string         `json:"phone_number"`
-	IsTeacher         bool           `json:"is_teacher"`
-	ImagePath         sql.NullString `json:"image_path"`
-	FingerID          sql.NullString `json:"finger_id"`
-	IsBiometricActive sql.NullBool   `json:"is_biometric_active"`
+	UserID            int64        `json:"user_id"`
+	FirstName         string       `json:"first_name"`
+	LastName          string       `json:"last_name"`
+	PhoneNumber       string       `json:"phone_number"`
+	IsTeacher         bool         `json:"is_teacher"`
+	ImagePath         string       `json:"image_path"`
+	FingerID          string       `json:"finger_id"`
+	IsBiometricActive sql.NullBool `json:"is_biometric_active"`
 }
