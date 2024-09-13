@@ -21,12 +21,29 @@ type Exit struct {
 	ExitTime int64 `json:"exit_time"`
 }
 
+type Student struct {
+	StudentID         int64 `json:"student_id"`
+	UserID            int64 `json:"user_id"`
+	RequiredEntryTime int64 `json:"required_entry_time"`
+}
+
+type Teacher struct {
+	TeacherID          int64 `json:"teacher_id"`
+	UserID             int64 `json:"user_id"`
+	SundayEntryTime    int64 `json:"sunday_entry_time"`
+	MondayEntryTime    int64 `json:"monday_entry_time"`
+	TuesdayEntryTime   int64 `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64 `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64 `json:"thursday_entry_time"`
+	FridayEntryTime    int64 `json:"friday_entry_time"`
+	SaturdayEntryTime  int64 `json:"saturday_entry_time"`
+}
+
 type User struct {
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
 	PhoneNumber       string `json:"phone_number"`
-	IsTeacher         bool   `json:"is_teacher"`
 	ImagePath         string `json:"image_path"`
 	FingerID          string `json:"finger_id"`
 	IsBiometricActive bool   `json:"is_biometric_active"`

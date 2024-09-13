@@ -44,25 +44,36 @@ func main() {
 	apiv1 := app.Group("/api/v1", authMiddleware)
 
 	// User routes
-	apiv1.Post("user/", handlers.HandlePostUser)
-	apiv1.Get("user/:id", handlers.HandleGetUserByID)
-	apiv1.Get("user/", handlers.HandleGetAllUsers)
-	apiv1.Put("user/:id", handlers.HandleUpdateUser)
-	apiv1.Put("user/image/:id", handlers.HandleUpdateUserImage)
-	apiv1.Get("user/phone/:phone", handlers.HandleGetUserByPhoneNumber)
-	apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
-	apiv1.Delete("user/:id", handlers.HandleDeleteUserByID)
+	apiv1.Post("teacher/", handlers.HandlePostTeacher)
+	apiv1.Post("student/", handlers.HandlePostStudent)
 
-	// Attendance routes
-	apiv1.Post("entrance/", handlers.HandlePostEntrance)
-	apiv1.Post("exit/", handlers.HandlePostExit)
-	apiv1.Put("entrance/:id", handlers.HandleUpdateEntrance)
-	apiv1.Put("exit/:id", handlers.HandleUpdateExit)
-	apiv1.Delete("entrance/:id", handlers.HandleDeleteEntrance)
-	apiv1.Delete("exit/:id", handlers.HandleDeleteExit)
-	apiv1.Get("attendance/", handlers.HandleGetTimeRange)
-	apiv1.Get("attendance/user", handlers.HandleGetTimeRangeByUserID)
-	apiv1.Get("absents/", handlers.HandleGetAbsentUsers)
+	apiv1.Get("user/:id", handlers.HandleGetUserByID)
+	apiv1.Get("teacher/:id", handlers.HandleGetTeacherByID)
+	apiv1.Get("student/:id", handlers.HandleGetStudentByID)
+	apiv1.Get("user/phone/:phone", handlers.HandleGetUserByPhoneNumber)
+
+	apiv1.Put("user/:id", handlers.HandleUpdateUser)
+	apiv1.Put("student/:id", handlers.HandleUpdateStudentAllowedTime)
+	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacherAllowedTime)
+
+	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
+
+
+
+	// apiv1.Get("user/", handlers.HandleGetAllUsers)
+	// apiv1.Put("user/image/:id", handlers.HandleUpdateUserImage)
+	// apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
+
+	// // Attendance routes
+	// apiv1.Post("entrance/", handlers.HandlePostEntrance)
+	// apiv1.Post("exit/", handlers.HandlePostExit)
+	// apiv1.Put("entrance/:id", handlers.HandleUpdateEntrance)
+	// apiv1.Put("exit/:id", handlers.HandleUpdateExit)
+	// apiv1.Delete("entrance/:id", handlers.HandleDeleteEntrance)
+	// apiv1.Delete("exit/:id", handlers.HandleDeleteExit)
+	// apiv1.Get("attendance/", handlers.HandleGetTimeRange)
+	// apiv1.Get("attendance/user", handlers.HandleGetTimeRangeByUserID)
+	// apiv1.Get("absents/", handlers.HandleGetAbsentUsers)
 
 	// admin routes
 	apiv1.Put("admin/:username/password", handlers.HandleUpdateAdmin)
