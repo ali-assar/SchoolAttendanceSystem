@@ -69,7 +69,7 @@ INSERT INTO entrance (user_id, entry_time)
 VALUES (?, ?)
 RETURNING id;
 
--- name: GetEntranceByUserID :one
+-- name: GetEntrancesByUserID :one
 SELECT id, user_id, entry_time
 FROM entrance
 WHERE user_id = ?;
@@ -89,7 +89,7 @@ INSERT INTO exit (user_id, exit_time)
 VALUES (?, ?)
 RETURNING id;
 
--- name: GetExitByUserID :one
+-- name: GetExitsByUserID :one
 SELECT id, user_id, exit_time
 FROM exit
 WHERE user_id = ?;

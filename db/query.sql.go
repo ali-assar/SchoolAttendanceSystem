@@ -178,26 +178,6 @@ func (q *Queries) DeleteExit(ctx context.Context, id int64) error {
 	return err
 }
 
-const deleteStudent = `-- name: DeleteStudent :exec
-DELETE FROM students
-WHERE student_id = ?
-`
-
-func (q *Queries) DeleteStudent(ctx context.Context, studentID int64) error {
-	_, err := q.db.ExecContext(ctx, deleteStudent, studentID)
-	return err
-}
-
-const deleteTeacher = `-- name: DeleteTeacher :exec
-DELETE FROM teachers
-WHERE teacher_id = ?
-`
-
-func (q *Queries) DeleteTeacher(ctx context.Context, teacherID int64) error {
-	_, err := q.db.ExecContext(ctx, deleteTeacher, teacherID)
-	return err
-}
-
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE user_id = ?
@@ -221,27 +201,27 @@ func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admi
 	return i, err
 }
 
-const getEntranceByUserID = `-- name: GetEntranceByUserID :one
+const getEntrancesByUserID = `-- name: GetEntrancesByUserID :one
 SELECT id, user_id, entry_time
 FROM entrance
 WHERE user_id = ?
 `
 
-func (q *Queries) GetEntranceByUserID(ctx context.Context, userID int64) (Entrance, error) {
-	row := q.db.QueryRowContext(ctx, getEntranceByUserID, userID)
+func (q *Queries) GetEntrancesByUserID(ctx context.Context, userID int64) (Entrance, error) {
+	row := q.db.QueryRowContext(ctx, getEntrancesByUserID, userID)
 	var i Entrance
 	err := row.Scan(&i.ID, &i.UserID, &i.EntryTime)
 	return i, err
 }
 
-const getExitByUserID = `-- name: GetExitByUserID :one
+const getExitsByUserID = `-- name: GetExitsByUserID :one
 SELECT id, user_id, exit_time
 FROM exit
 WHERE user_id = ?
 `
 
-func (q *Queries) GetExitByUserID(ctx context.Context, userID int64) (Exit, error) {
-	row := q.db.QueryRowContext(ctx, getExitByUserID, userID)
+func (q *Queries) GetExitsByUserID(ctx context.Context, userID int64) (Exit, error) {
+	row := q.db.QueryRowContext(ctx, getExitsByUserID, userID)
 	var i Exit
 	err := row.Scan(&i.ID, &i.UserID, &i.ExitTime)
 	return i, err

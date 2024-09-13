@@ -23,12 +23,10 @@ type Querier interface {
 	DeleteAdmin(ctx context.Context, userName string) error
 	DeleteEntrance(ctx context.Context, id int64) error
 	DeleteExit(ctx context.Context, id int64) error
-	DeleteStudent(ctx context.Context, studentID int64) error
-	DeleteTeacher(ctx context.Context, teacherID int64) error
 	DeleteUser(ctx context.Context, userID int64) error
 	GetAdminByUserName(ctx context.Context, userName string) (Admin, error)
-	GetEntranceByUserID(ctx context.Context, userID int64) (Entrance, error)
-	GetExitByUserID(ctx context.Context, userID int64) (Exit, error)
+	GetEntrancesByUserID(ctx context.Context, userID int64) (Entrance, error)
+	GetExitsByUserID(ctx context.Context, userID int64) (Exit, error)
 	GetStudentByID(ctx context.Context, studentID int64) (GetStudentByIDRow, error)
 	GetTeacherByID(ctx context.Context, teacherID int64) (GetTeacherByIDRow, error)
 	// Queries for Time Range
