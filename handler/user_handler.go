@@ -185,4 +185,3 @@ func (h *Handlers) HandleDeleteUser(c *fiber.Ctx) error {
 	}
 	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
 }
-
