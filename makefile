@@ -26,3 +26,9 @@ run: build
 build-raspberry: $(BIN_DIR)
 	@echo "Cross-compiling for Raspberry Pi..."
 	@GOOS=linux GOARCH=arm GOARM=7 go build -o $(BIN_DIR)/$(RPI_EXECUTABLE) -v
+
+seed:
+	@echo "seeding the database..."
+	@go run seed/seed.go
+
+.PHONY: seed
