@@ -466,14 +466,20 @@ This endpoint retrieves users who are absent (i.e., those who have no attendance
     "first_name": "Emily",
     "last_name": "Johnson",
     "phone_number": "555555555",
-    "entry_time": null
+    "entry_time": {
+            "Int64": 0,
+            "Valid": false
+        }
   },
   {
     "user_id": 4,
     "first_name": "Michael",
     "last_name": "Brown",
     "phone_number": "444444444",
-    "entry_time": null
+    "entry_time": {
+            "Int64": 0,
+            "Valid": false
+        }
   }
 ]
 ```
