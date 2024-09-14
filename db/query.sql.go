@@ -28,8 +28,8 @@ func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (strin
 }
 
 const createEntrance = `-- name: CreateEntrance :one
-INSERT INTO attendance (user_id, date, enter_time)
-VALUES (?, ?, ?)
+INSERT INTO attendance (user_id, date, enter_time, exit_time)
+VALUES (?, ?, ?, 0)
 RETURNING attendance_id
 `
 
@@ -363,6 +363,81 @@ func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) ([
 	return items, nil
 }
 
+const getUsersWithFalseBiometric = `-- name: GetUsersWithFalseBiometric :many
+SELECT user_id, is_biometric_active
+FROM users
+WHERE is_biometric_active = false
+`
+
+type GetUsersWithFalseBiometricRow struct {
+	UserID            int64 `json:"user_id"`
+	IsBiometricActive bool  `json:"is_biometric_active"`
+}
+
+func (q *Queries) GetUsersWithFalseBiometric(ctx context.Context) ([]GetUsersWithFalseBiometricRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersWithFalseBiometric)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersWithFalseBiometricRow
+	for rows.Next() {
+		var i GetUsersWithFalseBiometricRow
+		if err := rows.Scan(&i.UserID, &i.IsBiometricActive); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUsersWithTrueBiometric = `-- name: GetUsersWithTrueBiometric :many
+SELECT user_id, is_biometric_active, image_path, finger_id
+FROM users
+WHERE is_biometric_active = true
+`
+
+type GetUsersWithTrueBiometricRow struct {
+	UserID            int64  `json:"user_id"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	ImagePath         string `json:"image_path"`
+	FingerID          string `json:"finger_id"`
+}
+
+func (q *Queries) GetUsersWithTrueBiometric(ctx context.Context) ([]GetUsersWithTrueBiometricRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersWithTrueBiometric)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersWithTrueBiometricRow
+	for rows.Next() {
+		var i GetUsersWithTrueBiometricRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.IsBiometricActive,
+			&i.ImagePath,
+			&i.FingerID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateAdmin = `-- name: UpdateAdmin :exec
 UPDATE admin
 SET password = ?
@@ -442,31 +517,6 @@ func (q *Queries) UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeache
 	return err
 }
 
-const updateUser = `-- name: UpdateUser :exec
-UPDATE users
-SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?
-WHERE user_id = ?
-`
-
-type UpdateUserParams struct {
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	PhoneNumber string `json:"phone_number"`
-	ImagePath   string `json:"image_path"`
-	UserID      int64  `json:"user_id"`
-}
-
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser,
-		arg.FirstName,
-		arg.LastName,
-		arg.PhoneNumber,
-		arg.ImagePath,
-		arg.UserID,
-	)
-	return err
-}
-
 const updateUserBiometric = `-- name: UpdateUserBiometric :exec
 UPDATE users
 SET image_path = ?, finger_id = ?, is_biometric_active = ?
@@ -485,6 +535,31 @@ func (q *Queries) UpdateUserBiometric(ctx context.Context, arg UpdateUserBiometr
 		arg.ImagePath,
 		arg.FingerID,
 		arg.IsBiometricActive,
+		arg.UserID,
+	)
+	return err
+}
+
+const updateUserDetails = `-- name: UpdateUserDetails :exec
+UPDATE users
+SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?
+WHERE user_id = ?
+`
+
+type UpdateUserDetailsParams struct {
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	PhoneNumber string `json:"phone_number"`
+	ImagePath   string `json:"image_path"`
+	UserID      int64  `json:"user_id"`
+}
+
+func (q *Queries) UpdateUserDetails(ctx context.Context, arg UpdateUserDetailsParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserDetails,
+		arg.FirstName,
+		arg.LastName,
+		arg.PhoneNumber,
+		arg.ImagePath,
 		arg.UserID,
 	)
 	return err

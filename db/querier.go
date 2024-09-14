@@ -24,12 +24,14 @@ type Querier interface {
 	GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error)
 	GetUserByID(ctx context.Context, userID int64) (User, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error)
+	GetUsersWithFalseBiometric(ctx context.Context) ([]GetUsersWithFalseBiometricRow, error)
+	GetUsersWithTrueBiometric(ctx context.Context) ([]GetUsersWithTrueBiometricRow, error)
 	UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error
 	UpdateExit(ctx context.Context, arg UpdateExitParams) error
 	UpdateStudentAllowedTime(ctx context.Context, arg UpdateStudentAllowedTimeParams) error
 	UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeacherAllowedTimeParams) error
-	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 	UpdateUserBiometric(ctx context.Context, arg UpdateUserBiometricParams) error
+	UpdateUserDetails(ctx context.Context, arg UpdateUserDetailsParams) error
 }
 
 var _ Querier = (*Queries)(nil)

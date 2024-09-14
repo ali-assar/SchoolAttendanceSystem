@@ -52,6 +52,10 @@ func main() {
 	apiv1.Get("student/:id", handlers.HandleGetStudentByID)
 	apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
 
+	apiv1.Get("biometric/", handlers.HandleGetUsersWithFalseBiometric)
+	apiv1.Get("biometric/user", handlers.HandleGetUsersWithTrueBiometric)
+	apiv1.Put("biometric/:id", handlers.HandleUpdateUserBiometric)
+
 	apiv1.Put("user/:id", handlers.HandleUpdateUser)
 	apiv1.Put("student/:id", handlers.HandleUpdateStudentAllowedTime)
 	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacherAllowedTime)
@@ -59,8 +63,7 @@ func main() {
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
 	// Entrance routes
-	apiv1.Post("entrance/", handlers.HandlePostEntrance)
-	apiv1.Put("exit/", handlers.HandleUpdateExit)
+	apiv1.Post("attendance/", handlers.HandleAttendance)
 
 	// apiv1.Get("attendance/", handlers.HandleGetTimeRange)
 	// apiv1.Get("attendance/user/:id", handlers.HandleGetTimeRangeByUserID)

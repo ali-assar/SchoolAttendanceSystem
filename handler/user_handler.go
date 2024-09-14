@@ -111,6 +111,24 @@ func (h *Handlers) HandleGetStudentByID(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(user)
 }
 
+func (h *Handlers) HandleGetUsersWithFalseBiometric(c *fiber.Ctx) error {
+
+	users, err := h.Store.GetUsersWithFalseBiometric(c.Context())
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	return c.Status(http.StatusOK).JSON(users)
+}
+
+func (h *Handlers) HandleGetUsersWithTrueBiometric(c *fiber.Ctx) error {
+
+	users, err := h.Store.GetUsersWithTrueBiometric(c.Context())
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	return c.Status(http.StatusOK).JSON(users)
+}
+
 // UPDATE handlers
 
 func (h *Handlers) HandleUpdateUser(c *fiber.Ctx) error {
@@ -120,19 +138,43 @@ func (h *Handlers) HandleUpdateUser(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(err.Error())
 	}
 
-	teacher, err := h.Store.GetUserByID(c.Context(), id)
-	fmt.Println(teacher)
+	_, err = h.Store.GetUserByID(c.Context(), id)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON("User not found")
 	}
-	var updateParams db.UpdateUserParams
+	var updateParams db.UpdateUserDetailsParams
 	if err := c.BodyParser(&updateParams); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err.Error())
 	}
 
 	updateParams.UserID = id
 
-	if err := h.Store.UpdateUser(c.Context(), updateParams); err != nil {
+	if err := h.Store.UpdateUserDetails(c.Context(), updateParams); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+}
+
+func (h *Handlers) HandleUpdateUserBiometric(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err.Error())
+	}
+
+	_, err = h.Store.GetUserByID(c.Context(), id)
+	if err != nil {
+		return c.Status(http.StatusNotFound).JSON("User not found")
+	}
+	var updateParams db.UpdateUserBiometricParams
+	if err := c.BodyParser(&updateParams); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err.Error())
+	}
+
+	updateParams.UserID = id
+	updateParams.IsBiometricActive = true
+
+	if err := h.Store.UpdateUserBiometric(c.Context(), updateParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))

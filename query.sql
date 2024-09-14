@@ -14,11 +14,20 @@ SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_ac
 FROM users
 WHERE first_name = ? AND last_name = ?;
 
--- name: UpdateUser :exec
+-- name: UpdateUserDetails :exec
 UPDATE users
 SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?
 WHERE user_id = ?;
 
+-- name: GetUsersWithFalseBiometric :many
+SELECT user_id, is_biometric_active
+FROM users
+WHERE is_biometric_active = false;
+
+-- name: GetUsersWithTrueBiometric :many
+SELECT user_id, is_biometric_active, image_path, finger_id
+FROM users
+WHERE is_biometric_active = true;
 
 -- name: UpdateUserBiometric :exec
 UPDATE users
@@ -82,8 +91,8 @@ WHERE user_name = ?;
 
 
 -- name: CreateEntrance :one
-INSERT INTO attendance (user_id, date, enter_time)
-VALUES (?, ?, ?)
+INSERT INTO attendance (user_id, date, enter_time, exit_time)
+VALUES (?, ?, ?, 0)
 RETURNING attendance_id;
 
 -- name: UpdateExit :exec
