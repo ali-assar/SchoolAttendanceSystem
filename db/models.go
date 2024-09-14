@@ -9,16 +9,12 @@ type Admin struct {
 	Password string `json:"password"`
 }
 
-type Entrance struct {
-	ID        int64 `json:"id"`
-	UserID    int64 `json:"user_id"`
-	EntryTime int64 `json:"entry_time"`
-}
-
-type Exit struct {
-	ID       int64 `json:"id"`
-	UserID   int64 `json:"user_id"`
-	ExitTime int64 `json:"exit_time"`
+type Attendance struct {
+	AttendanceID int64 `json:"attendance_id"`
+	UserID       int64 `json:"user_id"`
+	Date         int64 `json:"date"`
+	EnterTime    int64 `json:"enter_time"`
+	ExitTime     int64 `json:"exit_time"`
 }
 
 type Student struct {

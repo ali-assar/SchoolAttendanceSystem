@@ -29,19 +29,12 @@ CREATE TABLE IF NOT EXISTS students (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Entrance Table 
-CREATE TABLE IF NOT EXISTS entrance (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS attendance (
+    attendance_id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    entry_time INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
--- Exit Table 
-CREATE TABLE IF NOT EXISTS exit (
-    id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    exit_time INTEGER NOT NULL,
+    date INTEGER NOT NULL DEFAULT NULL,
+    enter_time INTEGER NOT NULL DEFAULT NULL,
+    exit_time INTEGER NOT NULL DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
