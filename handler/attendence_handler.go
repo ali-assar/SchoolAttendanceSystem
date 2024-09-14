@@ -8,74 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-/*
-
-// Entrance Handlers
-func (h *Handlers) HandlePostEntrance(c *fiber.Ctx) error {
-	var postParams db.CreateEntranceParams
-	if err := c.BodyParser(&postParams); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(err.Error())
-	}
-
-	postParams.Date = (postParams.EnterTime / 86400) * 86400
-
-	_, err := h.Store.GetAttendanceByUserIDAndDate(c.Context(), db.GetAttendanceByUserIDAndDateParams{
-		UserID: postParams.UserID,
-		Date:   postParams.Date,
-	})
-
-	if err == nil {
-		return c.Status(http.StatusConflict).JSON(fmt.Sprintf("Attendance for user %d on date %d already exists", postParams.UserID, postParams.Date))
-	}
-
-	fmt.Println("1")
-
-	attendanceID, err := h.Store.CreateEntrance(c.Context(), postParams)
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(err.Error())
-	}
-	fmt.Println("2")
-
-	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"message": "Entrance created",
-		"id":      attendanceID,
-	})
-}
-
-type updateExit struct {
-	db.GetAttendanceByUserIDAndDateParams
-	db.UpdateExitParams
-}
-
-func (h *Handlers) HandleUpdateExit(c *fiber.Ctx) error {
-	var args updateExit
-	if err := c.BodyParser(&args); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(err.Error())
-	}
-
-	args.Date = (args.ExitTime / 86400) * 86400
-
-	attendance, err := h.Store.GetAttendanceByUserIDAndDate(c.Context(), args.GetAttendanceByUserIDAndDateParams)
-	if err != nil {
-		return c.Status(http.StatusNotFound).JSON(err.Error())
-	}
-
-	if attendance.ExitTime != 0 {
-		return c.Status(http.StatusConflict).JSON(fmt.Sprintf("exit time for user %d on date %d already exists", args.UserID, args.Date))
-	}
-	args.UpdateExitParams.AttendanceID = attendance.AttendanceID
-
-	err = h.Store.UpdateExit(c.Context(), args.UpdateExitParams)
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(err.Error())
-	}
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "Exit created",
-		"id":      attendance.AttendanceID,
-	})
-}
-*/
-
 type AttendanceParams struct {
 	UserID int64 `json:"user_id"`
 	Time   int64 `json:"time"`
@@ -88,7 +20,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 	}
 
 	// Calculate the date based on the provided time (assuming time is in Unix format)
-	date := (params.Time / 86400) * 86400
+	date := ExtractUnixDate(params.Time)
 
 	// Try to retrieve an attendance record for the user and date
 	attendance, err := h.Store.GetAttendanceByUserIDAndDate(c.Context(), db.GetAttendanceByUserIDAndDateParams{
@@ -114,7 +46,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	if unixToMinute(params.Time)-unixToMinute(attendance.EnterTime) < 1 {
+	if UnixToMinute(params.Time)-UnixToMinute(attendance.EnterTime) < 1 {
 		return c.Status(http.StatusBadRequest).JSON("repetitive record")
 	}
 
@@ -137,4 +69,55 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		"message": "Exit created",
 		"id":      attendance.AttendanceID,
 	})
+}
+
+func (h *Handlers) GetAttendanceByDate(c *fiber.Ctx) error {
+	date, err := c.ParamsInt("date")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+
+	attendanceRecords, err := h.Store.GetAttendanceByDate(c.Context(), int64(date))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(attendanceRecords)
+}
+
+func (h *Handlers) GetAttendanceBetweenDates(c *fiber.Ctx) error {
+	startDate, err := c.ParamsInt("startDate")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid start date format")
+	}
+
+	endDate, err := c.ParamsInt("endDate")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid end date format")
+	}
+
+	attendanceRecords, err := h.Store.GetAttendanceBetweenDates(c.Context(), db.GetAttendanceBetweenDatesParams{
+		FromDate: int64(startDate),
+		ToDate:   int64(endDate),
+	})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(attendanceRecords)
+}
+
+// Handler to fetch absent users on a particular date (int)
+func (h *Handlers) GetAbsentUsersByDate(c *fiber.Ctx) error {
+	date, err := c.ParamsInt("date")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+
+	absentUsers, err := h.Store.GetAbsentUsersByDate(c.Context(), int64(date))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(absentUsers)
 }

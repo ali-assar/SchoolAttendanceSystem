@@ -156,6 +156,42 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
 	return err
 }
 
+const getAbsentUsersByDate = `-- name: GetAbsentUsersByDate :many
+SELECT u.user_id, u.first_name, u.last_name
+FROM users u
+LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
+WHERE a.user_id IS NULL
+`
+
+type GetAbsentUsersByDateRow struct {
+	UserID    int64  `json:"user_id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+func (q *Queries) GetAbsentUsersByDate(ctx context.Context, date int64) ([]GetAbsentUsersByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAbsentUsersByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAbsentUsersByDateRow
+	for rows.Next() {
+		var i GetAbsentUsersByDateRow
+		if err := rows.Scan(&i.UserID, &i.FirstName, &i.LastName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAdminByUserName = `-- name: GetAdminByUserName :one
 SELECT user_name, password
 FROM admin
@@ -167,6 +203,81 @@ func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admi
 	var i Admin
 	err := row.Scan(&i.UserName, &i.Password)
 	return i, err
+}
+
+const getAttendanceBetweenDates = `-- name: GetAttendanceBetweenDates :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE date BETWEEN ? AND ?
+`
+
+type GetAttendanceBetweenDatesParams struct {
+	FromDate int64 `json:"from_date"`
+	ToDate   int64 `json:"to_date"`
+}
+
+func (q *Queries) GetAttendanceBetweenDates(ctx context.Context, arg GetAttendanceBetweenDatesParams) ([]Attendance, error) {
+	rows, err := q.db.QueryContext(ctx, getAttendanceBetweenDates, arg.FromDate, arg.ToDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Attendance
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceByDate = `-- name: GetAttendanceByDate :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE date = ?
+`
+
+func (q *Queries) GetAttendanceByDate(ctx context.Context, date int64) ([]Attendance, error) {
+	rows, err := q.db.QueryContext(ctx, getAttendanceByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Attendance
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getAttendanceByUserID = `-- name: GetAttendanceByUserID :many

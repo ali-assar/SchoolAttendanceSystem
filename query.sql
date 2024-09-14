@@ -114,3 +114,18 @@ SELECT attendance_id, user_id, date, enter_time, exit_time
 FROM attendance
 WHERE user_id = ?;
 
+-- name: GetAttendanceByDate :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE date = ?;
+
+-- name: GetAttendanceBetweenDates :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE date BETWEEN ? AND ?;
+
+-- name: GetAbsentUsersByDate :many
+SELECT u.user_id, u.first_name, u.last_name
+FROM users u
+LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
+WHERE a.user_id IS NULL;

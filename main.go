@@ -62,11 +62,11 @@ func main() {
 
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
-	// Entrance routes
+	// attendance routes
 	apiv1.Post("attendance/", handlers.HandleAttendance)
-
-	// apiv1.Get("attendance/", handlers.HandleGetTimeRange)
-	// apiv1.Get("attendance/user/:id", handlers.HandleGetTimeRangeByUserID)
+	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)                           // Get attendance for a particular date
+	apiv1.Get("attendance/range/:startDate/:endDate", handlers.GetAttendanceBetweenDates) // Get attendance between date A and B
+	apiv1.Get("attendance/absent/:date", handlers.GetAbsentUsersByDate)
 
 	// admin routes
 	apiv1.Put("admin/:username/password", handlers.HandleUpdateAdmin)
