@@ -29,9 +29,6 @@ type Querier interface {
 	GetExitsByUserID(ctx context.Context, userID int64) ([]Exit, error)
 	GetStudentByID(ctx context.Context, userID int64) (GetStudentByIDRow, error)
 	GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error)
-	// Queries for Time Range
-	GetTimeRange(ctx context.Context, arg GetTimeRangeParams) ([]GetTimeRangeRow, error)
-	GetTimeRangeByUserID(ctx context.Context, arg GetTimeRangeByUserIDParams) ([]GetTimeRangeByUserIDRow, error)
 	GetUserByID(ctx context.Context, userID int64) (User, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error)
 	UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error

@@ -71,8 +71,8 @@ func main() {
 	apiv1.Delete("exit/:id", handlers.HandleDeleteExit)
 
 	// Attendance routes
-	apiv1.Get("attendance/", handlers.HandleGetTimeRange)
-	apiv1.Get("attendance/user/:id", handlers.HandleGetTimeRangeByUserID)
+	// apiv1.Get("attendance/", handlers.HandleGetTimeRange)
+	// apiv1.Get("attendance/user/:id", handlers.HandleGetTimeRangeByUserID)
 
 	// admin routes
 	apiv1.Put("admin/:username/password", handlers.HandleUpdateAdmin)
