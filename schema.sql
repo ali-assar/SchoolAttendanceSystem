@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS students (
 CREATE TABLE IF NOT EXISTS attendance (
     attendance_id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    date DATE NOT NULL,
-    enter_time INTEGER DEFAULT NULL,
-    exit_time INTEGER DEFAULT NULL,
+    date INTEGER NOT NULL DEFAULT NULL,
+    enter_time INTEGER NOT NULL DEFAULT NULL,
+    exit_time INTEGER NOT NULL DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 

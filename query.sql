@@ -81,12 +81,12 @@ DELETE FROM admin
 WHERE user_name = ?;
 
 
--- name: CreateAttendance :one
+-- name: CreateEntrance :one
 INSERT INTO attendance (user_id, date, enter_time)
 VALUES (?, ?, ?)
 RETURNING attendance_id;
 
--- name: UpdateAttendance :exec
+-- name: UpdateExit :exec
 UPDATE attendance
 SET exit_time = ?
 WHERE attendance_id = ?;
@@ -95,7 +95,7 @@ WHERE attendance_id = ?;
 DELETE FROM attendance
 WHERE attendance_id = ?;
 
--- name: GetAttendanceByUserIDAndDate :many
+-- name: GetAttendanceByUserIDAndDate :one
 SELECT attendance_id, user_id, date, enter_time, exit_time
 FROM attendance
 WHERE user_id = ? AND date = ?;

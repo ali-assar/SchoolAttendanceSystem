@@ -4,22 +4,17 @@
 
 package db
 
-import (
-	"database/sql"
-	"time"
-)
-
 type Admin struct {
 	UserName string `json:"user_name"`
 	Password string `json:"password"`
 }
 
 type Attendance struct {
-	AttendanceID int64         `json:"attendance_id"`
-	UserID       int64         `json:"user_id"`
-	Date         time.Time     `json:"date"`
-	EnterTime    sql.NullInt64 `json:"enter_time"`
-	ExitTime     sql.NullInt64 `json:"exit_time"`
+	AttendanceID int64 `json:"attendance_id"`
+	UserID       int64 `json:"user_id"`
+	Date         int64 `json:"date"`
+	EnterTime    int64 `json:"enter_time"`
+	ExitTime     int64 `json:"exit_time"`
 }
 
 type Student struct {

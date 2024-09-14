@@ -59,18 +59,9 @@ func main() {
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
 	// Entrance routes
-	apiv1.Post("entrance/", handlers.HandleCreateEntrance)
-	apiv1.Get("entrance/user/:id", handlers.HandleGetEntrancesByUserID)
-	apiv1.Put("entrance/:id", handlers.HandleUpdateEntrance)
-	apiv1.Delete("entrance/:id", handlers.HandleDeleteEntrance)
+	apiv1.Post("entrance/", handlers.HandlePostEntrance)
+	apiv1.Put("exit/", handlers.HandleUpdateExit)
 
-	// Exit routes
-	apiv1.Post("exit/", handlers.HandleCreateExit)
-	apiv1.Get("exit/user/:id", handlers.HandleGetExitsByUserID)
-	apiv1.Put("exit/:id", handlers.HandleUpdateExit)
-	apiv1.Delete("exit/:id", handlers.HandleDeleteExit)
-
-	// Attendance routes
 	// apiv1.Get("attendance/", handlers.HandleGetTimeRange)
 	// apiv1.Get("attendance/user/:id", handlers.HandleGetTimeRangeByUserID)
 
