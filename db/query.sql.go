@@ -10,7 +10,7 @@ import (
 )
 
 const createAdmin = `-- name: CreateAdmin :one
-INSERT INTO admin (user_name, password) 
+INSERT INTO admin (user_name, password)
 VALUES (?, ?)
 RETURNING user_name
 `
@@ -20,6 +20,7 @@ type CreateAdminParams struct {
 	Password string `json:"password"`
 }
 
+// Queries for Admin
 func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (string, error) {
 	row := q.db.QueryRowContext(ctx, createAdmin, arg.UserName, arg.Password)
 	var user_name string
@@ -28,7 +29,7 @@ func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (strin
 }
 
 const createEntrance = `-- name: CreateEntrance :one
-INSERT INTO entrance (user_id, entry_time) 
+INSERT INTO entrance (user_id, entry_time)
 VALUES (?, ?)
 RETURNING id
 `
@@ -38,6 +39,7 @@ type CreateEntranceParams struct {
 	EntryTime int64 `json:"entry_time"`
 }
 
+// Queries for Entrance
 func (q *Queries) CreateEntrance(ctx context.Context, arg CreateEntranceParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createEntrance, arg.UserID, arg.EntryTime)
 	var id int64
@@ -46,7 +48,7 @@ func (q *Queries) CreateEntrance(ctx context.Context, arg CreateEntranceParams) 
 }
 
 const createExit = `-- name: CreateExit :one
-INSERT INTO exit (user_id, exit_time) 
+INSERT INTO exit (user_id, exit_time)
 VALUES (?, ?)
 RETURNING id
 `
@@ -56,6 +58,7 @@ type CreateExitParams struct {
 	ExitTime int64 `json:"exit_time"`
 }
 
+// Queries for Exit
 func (q *Queries) CreateExit(ctx context.Context, arg CreateExitParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createExit, arg.UserID, arg.ExitTime)
 	var id int64
@@ -63,9 +66,62 @@ func (q *Queries) CreateExit(ctx context.Context, arg CreateExitParams) (int64, 
 	return id, err
 }
 
+const createStudent = `-- name: CreateStudent :one
+INSERT INTO students (user_id, required_entry_time)
+VALUES (?, ?)
+RETURNING user_id
+`
+
+type CreateStudentParams struct {
+	UserID            int64 `json:"user_id"`
+	RequiredEntryTime int64 `json:"required_entry_time"`
+}
+
+// Queries for Students
+func (q *Queries) CreateStudent(ctx context.Context, arg CreateStudentParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createStudent, arg.UserID, arg.RequiredEntryTime)
+	var user_id int64
+	err := row.Scan(&user_id)
+	return user_id, err
+}
+
+const createTeacher = `-- name: CreateTeacher :one
+INSERT INTO teachers (user_id, sunday_entry_time, monday_entry_time, tuesday_entry_time, wednesday_entry_time, thursday_entry_time, friday_entry_time, saturday_entry_time)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+RETURNING user_id
+`
+
+type CreateTeacherParams struct {
+	UserID             int64 `json:"user_id"`
+	SundayEntryTime    int64 `json:"sunday_entry_time"`
+	MondayEntryTime    int64 `json:"monday_entry_time"`
+	TuesdayEntryTime   int64 `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64 `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64 `json:"thursday_entry_time"`
+	FridayEntryTime    int64 `json:"friday_entry_time"`
+	SaturdayEntryTime  int64 `json:"saturday_entry_time"`
+}
+
+// Queries for Teachers
+func (q *Queries) CreateTeacher(ctx context.Context, arg CreateTeacherParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createTeacher,
+		arg.UserID,
+		arg.SundayEntryTime,
+		arg.MondayEntryTime,
+		arg.TuesdayEntryTime,
+		arg.WednesdayEntryTime,
+		arg.ThursdayEntryTime,
+		arg.FridayEntryTime,
+		arg.SaturdayEntryTime,
+	)
+	var user_id int64
+	err := row.Scan(&user_id)
+	return user_id, err
+}
+
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id) 
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO users (first_name, last_name, phone_number, image_path, finger_id, is_biometric_active)
+VALUES (?, ?, ?, ?, ?, ?)
 RETURNING user_id
 `
 
@@ -74,9 +130,8 @@ type CreateUserParams struct {
 	LastName          string `json:"last_name"`
 	PhoneNumber       string `json:"phone_number"`
 	ImagePath         string `json:"image_path"`
-	IsTeacher         bool   `json:"is_teacher"`
-	IsBiometricActive bool   `json:"is_biometric_active"`
 	FingerID          string `json:"finger_id"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
@@ -85,9 +140,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.LastName,
 		arg.PhoneNumber,
 		arg.ImagePath,
-		arg.IsTeacher,
-		arg.IsBiometricActive,
 		arg.FingerID,
+		arg.IsBiometricActive,
 	)
 	var user_id int64
 	err := row.Scan(&user_id)
@@ -95,7 +149,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 }
 
 const deleteAdmin = `-- name: DeleteAdmin :exec
-DELETE FROM admin 
+DELETE FROM admin
 WHERE user_name = ?
 `
 
@@ -105,7 +159,7 @@ func (q *Queries) DeleteAdmin(ctx context.Context, userName string) error {
 }
 
 const deleteEntrance = `-- name: DeleteEntrance :exec
-DELETE FROM entrance 
+DELETE FROM entrance
 WHERE id = ?
 `
 
@@ -115,7 +169,7 @@ func (q *Queries) DeleteEntrance(ctx context.Context, id int64) error {
 }
 
 const deleteExit = `-- name: DeleteExit :exec
-DELETE FROM exit 
+DELETE FROM exit
 WHERE id = ?
 `
 
@@ -125,7 +179,8 @@ func (q *Queries) DeleteExit(ctx context.Context, id int64) error {
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM users WHERE user_id = ?
+DELETE FROM users
+WHERE user_id = ?
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
@@ -146,223 +201,151 @@ func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admi
 	return i, err
 }
 
-const getAllUsers = `-- name: GetAllUsers :many
-SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id 
-FROM users
-`
-
-type GetAllUsersRow struct {
-	UserID            int64  `json:"user_id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
-	PhoneNumber       string `json:"phone_number"`
-	ImagePath         string `json:"image_path"`
-	IsTeacher         bool   `json:"is_teacher"`
-	IsBiometricActive bool   `json:"is_biometric_active"`
-	FingerID          string `json:"finger_id"`
-}
-
-func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllUsers)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetAllUsersRow
-	for rows.Next() {
-		var i GetAllUsersRow
-		if err := rows.Scan(
-			&i.UserID,
-			&i.FirstName,
-			&i.LastName,
-			&i.PhoneNumber,
-			&i.ImagePath,
-			&i.IsTeacher,
-			&i.IsBiometricActive,
-			&i.FingerID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getTimeRange = `-- name: GetTimeRange :many
-SELECT 
-    u.user_id,
-    u.first_name,
-    u.last_name,
-    u.phone_number,
-    e.entry_time,
-    ex.exit_time
-FROM 
-    users u
-JOIN 
-    entrance e ON u.user_id = e.user_id
-JOIN 
-    exit ex ON u.user_id = ex.user_id
-WHERE 
-    e.entry_time >= ?
-    AND ex.exit_time <= ?
-    AND e.entry_time <= ex.exit_time
-ORDER BY 
-    e.entry_time ASC
-`
-
-type GetTimeRangeParams struct {
-	EntryTime int64 `json:"entry_time"`
-	ExitTime  int64 `json:"exit_time"`
-}
-
-type GetTimeRangeRow struct {
-	UserID      int64  `json:"user_id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	PhoneNumber string `json:"phone_number"`
-	EntryTime   int64  `json:"entry_time"`
-	ExitTime    int64  `json:"exit_time"`
-}
-
-func (q *Queries) GetTimeRange(ctx context.Context, arg GetTimeRangeParams) ([]GetTimeRangeRow, error) {
-	rows, err := q.db.QueryContext(ctx, getTimeRange, arg.EntryTime, arg.ExitTime)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetTimeRangeRow
-	for rows.Next() {
-		var i GetTimeRangeRow
-		if err := rows.Scan(
-			&i.UserID,
-			&i.FirstName,
-			&i.LastName,
-			&i.PhoneNumber,
-			&i.EntryTime,
-			&i.ExitTime,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getTimeRangeByUserID = `-- name: GetTimeRangeByUserID :many
-SELECT 
-    u.user_id,           
-    u.first_name,
-    u.last_name,
-    u.phone_number,
-    e.entry_time,
-    ex.exit_time
-FROM 
-    users u
-JOIN 
-    entrance e ON u.user_id = e.user_id
-JOIN 
-    exit ex ON u.user_id = ex.user_id
-WHERE 
-    u.user_id = ?           
-    AND e.entry_time >= ?   
-    AND ex.exit_time <= ?   
-    AND e.entry_time <= ex.exit_time
-ORDER BY 
-    e.entry_time ASC
-`
-
-type GetTimeRangeByUserIDParams struct {
-	UserID    int64 `json:"user_id"`
-	EntryTime int64 `json:"entry_time"`
-	ExitTime  int64 `json:"exit_time"`
-}
-
-type GetTimeRangeByUserIDRow struct {
-	UserID      int64  `json:"user_id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	PhoneNumber string `json:"phone_number"`
-	EntryTime   int64  `json:"entry_time"`
-	ExitTime    int64  `json:"exit_time"`
-}
-
-func (q *Queries) GetTimeRangeByUserID(ctx context.Context, arg GetTimeRangeByUserIDParams) ([]GetTimeRangeByUserIDRow, error) {
-	rows, err := q.db.QueryContext(ctx, getTimeRangeByUserID, arg.UserID, arg.EntryTime, arg.ExitTime)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetTimeRangeByUserIDRow
-	for rows.Next() {
-		var i GetTimeRangeByUserIDRow
-		if err := rows.Scan(
-			&i.UserID,
-			&i.FirstName,
-			&i.LastName,
-			&i.PhoneNumber,
-			&i.EntryTime,
-			&i.ExitTime,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getUserByID = `-- name: GetUserByID :one
-SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id
-FROM users 
+const getEntrancesByUserID = `-- name: GetEntrancesByUserID :many
+SELECT id, user_id, entry_time
+FROM entrance
 WHERE user_id = ?
 `
 
-type GetUserByIDRow struct {
+func (q *Queries) GetEntrancesByUserID(ctx context.Context, userID int64) ([]Entrance, error) {
+	rows, err := q.db.QueryContext(ctx, getEntrancesByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Entrance
+	for rows.Next() {
+		var i Entrance
+		if err := rows.Scan(&i.ID, &i.UserID, &i.EntryTime); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getExitsByUserID = `-- name: GetExitsByUserID :many
+SELECT id, user_id, exit_time
+FROM exit
+WHERE user_id = ?
+`
+
+func (q *Queries) GetExitsByUserID(ctx context.Context, userID int64) ([]Exit, error) {
+	rows, err := q.db.QueryContext(ctx, getExitsByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Exit
+	for rows.Next() {
+		var i Exit
+		if err := rows.Scan(&i.ID, &i.UserID, &i.ExitTime); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStudentByID = `-- name: GetStudentByID :one
+SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
+FROM students s
+JOIN users u ON s.user_id = u.user_id
+WHERE s.user_id = ?
+`
+
+type GetStudentByIDRow struct {
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
-	PhoneNumber       string `json:"phone_number"`
-	ImagePath         string `json:"image_path"`
-	IsTeacher         bool   `json:"is_teacher"`
-	IsBiometricActive bool   `json:"is_biometric_active"`
-	FingerID          string `json:"finger_id"`
+	RequiredEntryTime int64  `json:"required_entry_time"`
 }
 
-func (q *Queries) GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error) {
+func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getStudentByID, userID)
+	var i GetStudentByIDRow
+	err := row.Scan(
+		&i.UserID,
+		&i.FirstName,
+		&i.LastName,
+		&i.RequiredEntryTime,
+	)
+	return i, err
+}
+
+const getTeacherByID = `-- name: GetTeacherByID :one
+SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+FROM teachers t
+JOIN users u ON t.user_id = u.user_id
+WHERE t.user_id = ?
+`
+
+type GetTeacherByIDRow struct {
+	UserID             int64  `json:"user_id"`
+	FirstName          string `json:"first_name"`
+	LastName           string `json:"last_name"`
+	SundayEntryTime    int64  `json:"sunday_entry_time"`
+	MondayEntryTime    int64  `json:"monday_entry_time"`
+	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64  `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64  `json:"thursday_entry_time"`
+	FridayEntryTime    int64  `json:"friday_entry_time"`
+	SaturdayEntryTime  int64  `json:"saturday_entry_time"`
+}
+
+func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getTeacherByID, userID)
+	var i GetTeacherByIDRow
+	err := row.Scan(
+		&i.UserID,
+		&i.FirstName,
+		&i.LastName,
+		&i.SundayEntryTime,
+		&i.MondayEntryTime,
+		&i.TuesdayEntryTime,
+		&i.WednesdayEntryTime,
+		&i.ThursdayEntryTime,
+		&i.FridayEntryTime,
+		&i.SaturdayEntryTime,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active
+FROM users
+WHERE user_id = ?
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, userID int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, userID)
-	var i GetUserByIDRow
+	var i User
 	err := row.Scan(
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
 		&i.PhoneNumber,
 		&i.ImagePath,
-		&i.IsTeacher,
-		&i.IsBiometricActive,
 		&i.FingerID,
+		&i.IsBiometricActive,
 	)
 	return i, err
 }
 
-const getUserByName = `-- name: GetUserByName :one
-SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id
+const getUserByName = `-- name: GetUserByName :many
+SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active
 FROM users
 WHERE first_name = ? AND last_name = ?
 `
@@ -378,58 +361,37 @@ type GetUserByNameRow struct {
 	LastName          string `json:"last_name"`
 	PhoneNumber       string `json:"phone_number"`
 	ImagePath         string `json:"image_path"`
-	IsTeacher         bool   `json:"is_teacher"`
 	IsBiometricActive bool   `json:"is_biometric_active"`
-	FingerID          string `json:"finger_id"`
 }
 
-func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) (GetUserByNameRow, error) {
-	row := q.db.QueryRowContext(ctx, getUserByName, arg.FirstName, arg.LastName)
-	var i GetUserByNameRow
-	err := row.Scan(
-		&i.UserID,
-		&i.FirstName,
-		&i.LastName,
-		&i.PhoneNumber,
-		&i.ImagePath,
-		&i.IsTeacher,
-		&i.IsBiometricActive,
-		&i.FingerID,
-	)
-	return i, err
-}
-
-const getUserByPhoneNumber = `-- name: GetUserByPhoneNumber :one
-SELECT user_id, first_name, last_name, phone_number, image_path, is_teacher, is_biometric_active, finger_id
-FROM users
-WHERE phone_number = ?
-`
-
-type GetUserByPhoneNumberRow struct {
-	UserID            int64  `json:"user_id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
-	PhoneNumber       string `json:"phone_number"`
-	ImagePath         string `json:"image_path"`
-	IsTeacher         bool   `json:"is_teacher"`
-	IsBiometricActive bool   `json:"is_biometric_active"`
-	FingerID          string `json:"finger_id"`
-}
-
-func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (GetUserByPhoneNumberRow, error) {
-	row := q.db.QueryRowContext(ctx, getUserByPhoneNumber, phoneNumber)
-	var i GetUserByPhoneNumberRow
-	err := row.Scan(
-		&i.UserID,
-		&i.FirstName,
-		&i.LastName,
-		&i.PhoneNumber,
-		&i.ImagePath,
-		&i.IsTeacher,
-		&i.IsBiometricActive,
-		&i.FingerID,
-	)
-	return i, err
+func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserByName, arg.FirstName, arg.LastName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserByNameRow
+	for rows.Next() {
+		var i GetUserByNameRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.PhoneNumber,
+			&i.ImagePath,
+			&i.IsBiometricActive,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateAdmin = `-- name: UpdateAdmin :exec
@@ -449,7 +411,7 @@ func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error 
 }
 
 const updateEntrance = `-- name: UpdateEntrance :exec
-UPDATE entrance 
+UPDATE entrance
 SET entry_time = ?
 WHERE id = ?
 `
@@ -465,7 +427,7 @@ func (q *Queries) UpdateEntrance(ctx context.Context, arg UpdateEntranceParams) 
 }
 
 const updateExit = `-- name: UpdateExit :exec
-UPDATE exit 
+UPDATE exit
 SET exit_time = ?
 WHERE id = ?
 `
@@ -480,41 +442,97 @@ func (q *Queries) UpdateExit(ctx context.Context, arg UpdateExitParams) error {
 	return err
 }
 
-const updateUser = `-- name: UpdateUser :exec
-UPDATE users 
-SET image_path = ?, is_biometric_active = ?, finger_id = ? 
+const updateStudentAllowedTime = `-- name: UpdateStudentAllowedTime :exec
+UPDATE students
+SET required_entry_time = ?
 WHERE user_id = ?
 `
 
-type UpdateUserParams struct {
-	ImagePath         string `json:"image_path"`
-	IsBiometricActive bool   `json:"is_biometric_active"`
-	FingerID          string `json:"finger_id"`
-	UserID            int64  `json:"user_id"`
+type UpdateStudentAllowedTimeParams struct {
+	RequiredEntryTime int64 `json:"required_entry_time"`
+	UserID            int64 `json:"user_id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser,
-		arg.ImagePath,
-		arg.IsBiometricActive,
-		arg.FingerID,
+func (q *Queries) UpdateStudentAllowedTime(ctx context.Context, arg UpdateStudentAllowedTimeParams) error {
+	_, err := q.db.ExecContext(ctx, updateStudentAllowedTime, arg.RequiredEntryTime, arg.UserID)
+	return err
+}
+
+const updateTeacherAllowedTime = `-- name: UpdateTeacherAllowedTime :exec
+UPDATE teachers
+SET sunday_entry_time = ?, monday_entry_time = ?, tuesday_entry_time = ?, wednesday_entry_time = ?, thursday_entry_time = ?, friday_entry_time = ?, saturday_entry_time = ?
+WHERE user_id = ?
+`
+
+type UpdateTeacherAllowedTimeParams struct {
+	SundayEntryTime    int64 `json:"sunday_entry_time"`
+	MondayEntryTime    int64 `json:"monday_entry_time"`
+	TuesdayEntryTime   int64 `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64 `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64 `json:"thursday_entry_time"`
+	FridayEntryTime    int64 `json:"friday_entry_time"`
+	SaturdayEntryTime  int64 `json:"saturday_entry_time"`
+	UserID             int64 `json:"user_id"`
+}
+
+func (q *Queries) UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeacherAllowedTimeParams) error {
+	_, err := q.db.ExecContext(ctx, updateTeacherAllowedTime,
+		arg.SundayEntryTime,
+		arg.MondayEntryTime,
+		arg.TuesdayEntryTime,
+		arg.WednesdayEntryTime,
+		arg.ThursdayEntryTime,
+		arg.FridayEntryTime,
+		arg.SaturdayEntryTime,
 		arg.UserID,
 	)
 	return err
 }
 
-const updateUserImage = `-- name: UpdateUserImage :exec
-UPDATE users 
-SET image_path = ?
+const updateUser = `-- name: UpdateUser :exec
+UPDATE users
+SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?
 WHERE user_id = ?
 `
 
-type UpdateUserImageParams struct {
-	ImagePath string `json:"image_path"`
-	UserID    int64  `json:"user_id"`
+type UpdateUserParams struct {
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	PhoneNumber string `json:"phone_number"`
+	ImagePath   string `json:"image_path"`
+	UserID      int64  `json:"user_id"`
 }
 
-func (q *Queries) UpdateUserImage(ctx context.Context, arg UpdateUserImageParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserImage, arg.ImagePath, arg.UserID)
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.ExecContext(ctx, updateUser,
+		arg.FirstName,
+		arg.LastName,
+		arg.PhoneNumber,
+		arg.ImagePath,
+		arg.UserID,
+	)
+	return err
+}
+
+const updateUserBiometric = `-- name: UpdateUserBiometric :exec
+UPDATE users
+SET image_path = ?, finger_id = ?, is_biometric_active = ?
+WHERE user_id = ?
+`
+
+type UpdateUserBiometricParams struct {
+	ImagePath         string `json:"image_path"`
+	FingerID          string `json:"finger_id"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	UserID            int64  `json:"user_id"`
+}
+
+func (q *Queries) UpdateUserBiometric(ctx context.Context, arg UpdateUserBiometricParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserBiometric,
+		arg.ImagePath,
+		arg.FingerID,
+		arg.IsBiometricActive,
+		arg.UserID,
+	)
 	return err
 }
