@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
 
 const createAdmin = `-- name: CreateAdmin :one
@@ -20,7 +22,6 @@ type CreateAdminParams struct {
 	Password string `json:"password"`
 }
 
-// Queries for Admin
 func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (string, error) {
 	row := q.db.QueryRowContext(ctx, createAdmin, arg.UserName, arg.Password)
 	var user_name string
@@ -28,42 +29,23 @@ func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (strin
 	return user_name, err
 }
 
-const createEntrance = `-- name: CreateEntrance :one
-INSERT INTO entrance (user_id, entry_time)
-VALUES (?, ?)
-RETURNING id
+const createAttendance = `-- name: CreateAttendance :one
+INSERT INTO attendance (user_id, date, enter_time)
+VALUES (?, ?, ?)
+RETURNING attendance_id
 `
 
-type CreateEntranceParams struct {
-	UserID    int64 `json:"user_id"`
-	EntryTime int64 `json:"entry_time"`
+type CreateAttendanceParams struct {
+	UserID    int64         `json:"user_id"`
+	Date      time.Time     `json:"date"`
+	EnterTime sql.NullInt64 `json:"enter_time"`
 }
 
-// Queries for Entrance
-func (q *Queries) CreateEntrance(ctx context.Context, arg CreateEntranceParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, createEntrance, arg.UserID, arg.EntryTime)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
-}
-
-const createExit = `-- name: CreateExit :one
-INSERT INTO exit (user_id, exit_time)
-VALUES (?, ?)
-RETURNING id
-`
-
-type CreateExitParams struct {
-	UserID   int64 `json:"user_id"`
-	ExitTime int64 `json:"exit_time"`
-}
-
-// Queries for Exit
-func (q *Queries) CreateExit(ctx context.Context, arg CreateExitParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, createExit, arg.UserID, arg.ExitTime)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+func (q *Queries) CreateAttendance(ctx context.Context, arg CreateAttendanceParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createAttendance, arg.UserID, arg.Date, arg.EnterTime)
+	var attendance_id int64
+	err := row.Scan(&attendance_id)
+	return attendance_id, err
 }
 
 const createStudent = `-- name: CreateStudent :one
@@ -77,7 +59,6 @@ type CreateStudentParams struct {
 	RequiredEntryTime int64 `json:"required_entry_time"`
 }
 
-// Queries for Students
 func (q *Queries) CreateStudent(ctx context.Context, arg CreateStudentParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createStudent, arg.UserID, arg.RequiredEntryTime)
 	var user_id int64
@@ -102,7 +83,6 @@ type CreateTeacherParams struct {
 	SaturdayEntryTime  int64 `json:"saturday_entry_time"`
 }
 
-// Queries for Teachers
 func (q *Queries) CreateTeacher(ctx context.Context, arg CreateTeacherParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createTeacher,
 		arg.UserID,
@@ -158,23 +138,13 @@ func (q *Queries) DeleteAdmin(ctx context.Context, userName string) error {
 	return err
 }
 
-const deleteEntrance = `-- name: DeleteEntrance :exec
-DELETE FROM entrance
-WHERE id = ?
+const deleteAttendance = `-- name: DeleteAttendance :exec
+DELETE FROM attendance
+WHERE attendance_id = ?
 `
 
-func (q *Queries) DeleteEntrance(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteEntrance, id)
-	return err
-}
-
-const deleteExit = `-- name: DeleteExit :exec
-DELETE FROM exit
-WHERE id = ?
-`
-
-func (q *Queries) DeleteExit(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteExit, id)
+func (q *Queries) DeleteAttendance(ctx context.Context, attendanceID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAttendance, attendanceID)
 	return err
 }
 
@@ -201,22 +171,28 @@ func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admi
 	return i, err
 }
 
-const getEntrancesByUserID = `-- name: GetEntrancesByUserID :many
-SELECT id, user_id, entry_time
-FROM entrance
+const getAttendanceByUserID = `-- name: GetAttendanceByUserID :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
 WHERE user_id = ?
 `
 
-func (q *Queries) GetEntrancesByUserID(ctx context.Context, userID int64) ([]Entrance, error) {
-	rows, err := q.db.QueryContext(ctx, getEntrancesByUserID, userID)
+func (q *Queries) GetAttendanceByUserID(ctx context.Context, userID int64) ([]Attendance, error) {
+	rows, err := q.db.QueryContext(ctx, getAttendanceByUserID, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Entrance
+	var items []Attendance
 	for rows.Next() {
-		var i Entrance
-		if err := rows.Scan(&i.ID, &i.UserID, &i.EntryTime); err != nil {
+		var i Attendance
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -230,22 +206,33 @@ func (q *Queries) GetEntrancesByUserID(ctx context.Context, userID int64) ([]Ent
 	return items, nil
 }
 
-const getExitsByUserID = `-- name: GetExitsByUserID :many
-SELECT id, user_id, exit_time
-FROM exit
-WHERE user_id = ?
+const getAttendanceByUserIDAndDate = `-- name: GetAttendanceByUserIDAndDate :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE user_id = ? AND date = ?
 `
 
-func (q *Queries) GetExitsByUserID(ctx context.Context, userID int64) ([]Exit, error) {
-	rows, err := q.db.QueryContext(ctx, getExitsByUserID, userID)
+type GetAttendanceByUserIDAndDateParams struct {
+	UserID int64     `json:"user_id"`
+	Date   time.Time `json:"date"`
+}
+
+func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) ([]Attendance, error) {
+	rows, err := q.db.QueryContext(ctx, getAttendanceByUserIDAndDate, arg.UserID, arg.Date)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Exit
+	var items []Attendance
 	for rows.Next() {
-		var i Exit
-		if err := rows.Scan(&i.ID, &i.UserID, &i.ExitTime); err != nil {
+		var i Attendance
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -410,35 +397,19 @@ func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error 
 	return err
 }
 
-const updateEntrance = `-- name: UpdateEntrance :exec
-UPDATE entrance
-SET entry_time = ?
-WHERE id = ?
-`
-
-type UpdateEntranceParams struct {
-	EntryTime int64 `json:"entry_time"`
-	ID        int64 `json:"id"`
-}
-
-func (q *Queries) UpdateEntrance(ctx context.Context, arg UpdateEntranceParams) error {
-	_, err := q.db.ExecContext(ctx, updateEntrance, arg.EntryTime, arg.ID)
-	return err
-}
-
-const updateExit = `-- name: UpdateExit :exec
-UPDATE exit
+const updateAttendance = `-- name: UpdateAttendance :exec
+UPDATE attendance
 SET exit_time = ?
-WHERE id = ?
+WHERE attendance_id = ?
 `
 
-type UpdateExitParams struct {
-	ExitTime int64 `json:"exit_time"`
-	ID       int64 `json:"id"`
+type UpdateAttendanceParams struct {
+	ExitTime     sql.NullInt64 `json:"exit_time"`
+	AttendanceID int64         `json:"attendance_id"`
 }
 
-func (q *Queries) UpdateExit(ctx context.Context, arg UpdateExitParams) error {
-	_, err := q.db.ExecContext(ctx, updateExit, arg.ExitTime, arg.ID)
+func (q *Queries) UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error {
+	_, err := q.db.ExecContext(ctx, updateAttendance, arg.ExitTime, arg.AttendanceID)
 	return err
 }
 

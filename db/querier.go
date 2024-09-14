@@ -9,31 +9,23 @@ import (
 )
 
 type Querier interface {
-	// Queries for Admin
 	CreateAdmin(ctx context.Context, arg CreateAdminParams) (string, error)
-	// Queries for Entrance
-	CreateEntrance(ctx context.Context, arg CreateEntranceParams) (int64, error)
-	// Queries for Exit
-	CreateExit(ctx context.Context, arg CreateExitParams) (int64, error)
-	// Queries for Students
+	CreateAttendance(ctx context.Context, arg CreateAttendanceParams) (int64, error)
 	CreateStudent(ctx context.Context, arg CreateStudentParams) (int64, error)
-	// Queries for Teachers
 	CreateTeacher(ctx context.Context, arg CreateTeacherParams) (int64, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 	DeleteAdmin(ctx context.Context, userName string) error
-	DeleteEntrance(ctx context.Context, id int64) error
-	DeleteExit(ctx context.Context, id int64) error
+	DeleteAttendance(ctx context.Context, attendanceID int64) error
 	DeleteUser(ctx context.Context, userID int64) error
 	GetAdminByUserName(ctx context.Context, userName string) (Admin, error)
-	GetEntrancesByUserID(ctx context.Context, userID int64) ([]Entrance, error)
-	GetExitsByUserID(ctx context.Context, userID int64) ([]Exit, error)
+	GetAttendanceByUserID(ctx context.Context, userID int64) ([]Attendance, error)
+	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) ([]Attendance, error)
 	GetStudentByID(ctx context.Context, userID int64) (GetStudentByIDRow, error)
 	GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error)
 	GetUserByID(ctx context.Context, userID int64) (User, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error)
 	UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error
-	UpdateEntrance(ctx context.Context, arg UpdateEntranceParams) error
-	UpdateExit(ctx context.Context, arg UpdateExitParams) error
+	UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) error
 	UpdateStudentAllowedTime(ctx context.Context, arg UpdateStudentAllowedTimeParams) error
 	UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeacherAllowedTimeParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) error

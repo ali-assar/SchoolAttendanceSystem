@@ -29,7 +29,6 @@ WHERE user_id = ?;
 DELETE FROM users
 WHERE user_id = ?;
 
--- Queries for Teachers
 -- name: CreateTeacher :one
 INSERT INTO teachers (user_id, sunday_entry_time, monday_entry_time, tuesday_entry_time, wednesday_entry_time, thursday_entry_time, friday_entry_time, saturday_entry_time)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -46,7 +45,6 @@ UPDATE teachers
 SET sunday_entry_time = ?, monday_entry_time = ?, tuesday_entry_time = ?, wednesday_entry_time = ?, thursday_entry_time = ?, friday_entry_time = ?, saturday_entry_time = ?
 WHERE user_id = ?;
 
--- Queries for Students
 -- name: CreateStudent :one
 INSERT INTO students (user_id, required_entry_time)
 VALUES (?, ?)
@@ -63,47 +61,6 @@ UPDATE students
 SET required_entry_time = ?
 WHERE user_id = ?;
 
--- Queries for Entrance
--- name: CreateEntrance :one
-INSERT INTO entrance (user_id, entry_time)
-VALUES (?, ?)
-RETURNING id;
-
--- name: GetEntrancesByUserID :many
-SELECT id, user_id, entry_time
-FROM entrance
-WHERE user_id = ?;
-
--- name: UpdateEntrance :exec
-UPDATE entrance
-SET entry_time = ?
-WHERE id = ?;
-
--- name: DeleteEntrance :exec
-DELETE FROM entrance
-WHERE id = ?;
-
--- Queries for Exit
--- name: CreateExit :one
-INSERT INTO exit (user_id, exit_time)
-VALUES (?, ?)
-RETURNING id;
-
--- name: GetExitsByUserID :many
-SELECT id, user_id, exit_time
-FROM exit
-WHERE user_id = ?;
-
--- name: UpdateExit :exec
-UPDATE exit
-SET exit_time = ?
-WHERE id = ?;
-
--- name: DeleteExit :exec
-DELETE FROM exit
-WHERE id = ?;
-
--- Queries for Admin
 -- name: CreateAdmin :one
 INSERT INTO admin (user_name, password)
 VALUES (?, ?)
@@ -122,3 +79,29 @@ WHERE user_name = ?;
 -- name: DeleteAdmin :exec
 DELETE FROM admin
 WHERE user_name = ?;
+
+
+-- name: CreateAttendance :one
+INSERT INTO attendance (user_id, date, enter_time)
+VALUES (?, ?, ?)
+RETURNING attendance_id;
+
+-- name: UpdateAttendance :exec
+UPDATE attendance
+SET exit_time = ?
+WHERE attendance_id = ?;
+
+-- name: DeleteAttendance :exec
+DELETE FROM attendance
+WHERE attendance_id = ?;
+
+-- name: GetAttendanceByUserIDAndDate :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE user_id = ? AND date = ?;
+
+-- name: GetAttendanceByUserID :many
+SELECT attendance_id, user_id, date, enter_time, exit_time
+FROM attendance
+WHERE user_id = ?;
+
