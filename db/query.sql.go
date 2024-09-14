@@ -69,7 +69,7 @@ func (q *Queries) CreateExit(ctx context.Context, arg CreateExitParams) (int64, 
 const createStudent = `-- name: CreateStudent :one
 INSERT INTO students (user_id, required_entry_time)
 VALUES (?, ?)
-RETURNING student_id
+RETURNING user_id
 `
 
 type CreateStudentParams struct {
@@ -80,15 +80,15 @@ type CreateStudentParams struct {
 // Queries for Students
 func (q *Queries) CreateStudent(ctx context.Context, arg CreateStudentParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createStudent, arg.UserID, arg.RequiredEntryTime)
-	var student_id int64
-	err := row.Scan(&student_id)
-	return student_id, err
+	var user_id int64
+	err := row.Scan(&user_id)
+	return user_id, err
 }
 
 const createTeacher = `-- name: CreateTeacher :one
 INSERT INTO teachers (user_id, sunday_entry_time, monday_entry_time, tuesday_entry_time, wednesday_entry_time, thursday_entry_time, friday_entry_time, saturday_entry_time)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-RETURNING teacher_id
+RETURNING user_id
 `
 
 type CreateTeacherParams struct {
@@ -114,9 +114,9 @@ func (q *Queries) CreateTeacher(ctx context.Context, arg CreateTeacherParams) (i
 		arg.FridayEntryTime,
 		arg.SaturdayEntryTime,
 	)
-	var teacher_id int64
-	err := row.Scan(&teacher_id)
-	return teacher_id, err
+	var user_id int64
+	err := row.Scan(&user_id)
+	return user_id, err
 }
 
 const createUser = `-- name: CreateUser :one
@@ -201,52 +201,82 @@ func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admi
 	return i, err
 }
 
-const getEntrancesByUserID = `-- name: GetEntrancesByUserID :one
+const getEntrancesByUserID = `-- name: GetEntrancesByUserID :many
 SELECT id, user_id, entry_time
 FROM entrance
 WHERE user_id = ?
 `
 
-func (q *Queries) GetEntrancesByUserID(ctx context.Context, userID int64) (Entrance, error) {
-	row := q.db.QueryRowContext(ctx, getEntrancesByUserID, userID)
-	var i Entrance
-	err := row.Scan(&i.ID, &i.UserID, &i.EntryTime)
-	return i, err
+func (q *Queries) GetEntrancesByUserID(ctx context.Context, userID int64) ([]Entrance, error) {
+	rows, err := q.db.QueryContext(ctx, getEntrancesByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Entrance
+	for rows.Next() {
+		var i Entrance
+		if err := rows.Scan(&i.ID, &i.UserID, &i.EntryTime); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-const getExitsByUserID = `-- name: GetExitsByUserID :one
+const getExitsByUserID = `-- name: GetExitsByUserID :many
 SELECT id, user_id, exit_time
 FROM exit
 WHERE user_id = ?
 `
 
-func (q *Queries) GetExitsByUserID(ctx context.Context, userID int64) (Exit, error) {
-	row := q.db.QueryRowContext(ctx, getExitsByUserID, userID)
-	var i Exit
-	err := row.Scan(&i.ID, &i.UserID, &i.ExitTime)
-	return i, err
+func (q *Queries) GetExitsByUserID(ctx context.Context, userID int64) ([]Exit, error) {
+	rows, err := q.db.QueryContext(ctx, getExitsByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Exit
+	for rows.Next() {
+		var i Exit
+		if err := rows.Scan(&i.ID, &i.UserID, &i.ExitTime); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getStudentByID = `-- name: GetStudentByID :one
-SELECT s.student_id, s.user_id, u.first_name, u.last_name, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
-WHERE s.student_id = ?
+WHERE s.user_id = ?
 `
 
 type GetStudentByIDRow struct {
-	StudentID         int64  `json:"student_id"`
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
 	RequiredEntryTime int64  `json:"required_entry_time"`
 }
 
-func (q *Queries) GetStudentByID(ctx context.Context, studentID int64) (GetStudentByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, getStudentByID, studentID)
+func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getStudentByID, userID)
 	var i GetStudentByIDRow
 	err := row.Scan(
-		&i.StudentID,
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
@@ -256,14 +286,13 @@ func (q *Queries) GetStudentByID(ctx context.Context, studentID int64) (GetStude
 }
 
 const getTeacherByID = `-- name: GetTeacherByID :one
-SELECT t.teacher_id, t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
-WHERE t.teacher_id = ?
+WHERE t.user_id = ?
 `
 
 type GetTeacherByIDRow struct {
-	TeacherID          int64  `json:"teacher_id"`
 	UserID             int64  `json:"user_id"`
 	FirstName          string `json:"first_name"`
 	LastName           string `json:"last_name"`
@@ -276,11 +305,10 @@ type GetTeacherByIDRow struct {
 	SaturdayEntryTime  int64  `json:"saturday_entry_time"`
 }
 
-func (q *Queries) GetTeacherByID(ctx context.Context, teacherID int64) (GetTeacherByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, getTeacherByID, teacherID)
+func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getTeacherByID, userID)
 	var i GetTeacherByIDRow
 	err := row.Scan(
-		&i.TeacherID,
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
@@ -311,7 +339,6 @@ JOIN
 WHERE 
     e.entry_time >= ? 
     AND ex.exit_time <= ?
-    AND e.entry_time <= ex.exit_time
 ORDER BY e.entry_time ASC
 `
 
@@ -443,25 +470,54 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int64) (User, error) {
 	return i, err
 }
 
-const getUserByPhoneNumber = `-- name: GetUserByPhoneNumber :one
-SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active
+const getUserByName = `-- name: GetUserByName :many
+SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active
 FROM users
-WHERE phone_number = ?
+WHERE first_name = ? AND last_name = ?
 `
 
-func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByPhoneNumber, phoneNumber)
-	var i User
-	err := row.Scan(
-		&i.UserID,
-		&i.FirstName,
-		&i.LastName,
-		&i.PhoneNumber,
-		&i.ImagePath,
-		&i.FingerID,
-		&i.IsBiometricActive,
-	)
-	return i, err
+type GetUserByNameParams struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+type GetUserByNameRow struct {
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+}
+
+func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserByName, arg.FirstName, arg.LastName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserByNameRow
+	for rows.Next() {
+		var i GetUserByNameRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.PhoneNumber,
+			&i.ImagePath,
+			&i.IsBiometricActive,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateAdmin = `-- name: UpdateAdmin :exec
@@ -515,23 +571,23 @@ func (q *Queries) UpdateExit(ctx context.Context, arg UpdateExitParams) error {
 const updateStudentAllowedTime = `-- name: UpdateStudentAllowedTime :exec
 UPDATE students
 SET required_entry_time = ?
-WHERE student_id = ?
+WHERE user_id = ?
 `
 
 type UpdateStudentAllowedTimeParams struct {
 	RequiredEntryTime int64 `json:"required_entry_time"`
-	StudentID         int64 `json:"student_id"`
+	UserID            int64 `json:"user_id"`
 }
 
 func (q *Queries) UpdateStudentAllowedTime(ctx context.Context, arg UpdateStudentAllowedTimeParams) error {
-	_, err := q.db.ExecContext(ctx, updateStudentAllowedTime, arg.RequiredEntryTime, arg.StudentID)
+	_, err := q.db.ExecContext(ctx, updateStudentAllowedTime, arg.RequiredEntryTime, arg.UserID)
 	return err
 }
 
 const updateTeacherAllowedTime = `-- name: UpdateTeacherAllowedTime :exec
 UPDATE teachers
 SET sunday_entry_time = ?, monday_entry_time = ?, tuesday_entry_time = ?, wednesday_entry_time = ?, thursday_entry_time = ?, friday_entry_time = ?, saturday_entry_time = ?
-WHERE teacher_id = ?
+WHERE user_id = ?
 `
 
 type UpdateTeacherAllowedTimeParams struct {
@@ -542,7 +598,7 @@ type UpdateTeacherAllowedTimeParams struct {
 	ThursdayEntryTime  int64 `json:"thursday_entry_time"`
 	FridayEntryTime    int64 `json:"friday_entry_time"`
 	SaturdayEntryTime  int64 `json:"saturday_entry_time"`
-	TeacherID          int64 `json:"teacher_id"`
+	UserID             int64 `json:"user_id"`
 }
 
 func (q *Queries) UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeacherAllowedTimeParams) error {
@@ -554,7 +610,7 @@ func (q *Queries) UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeache
 		arg.ThursdayEntryTime,
 		arg.FridayEntryTime,
 		arg.SaturdayEntryTime,
-		arg.TeacherID,
+		arg.UserID,
 	)
 	return err
 }

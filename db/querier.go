@@ -25,15 +25,15 @@ type Querier interface {
 	DeleteExit(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, userID int64) error
 	GetAdminByUserName(ctx context.Context, userName string) (Admin, error)
-	GetEntrancesByUserID(ctx context.Context, userID int64) (Entrance, error)
-	GetExitsByUserID(ctx context.Context, userID int64) (Exit, error)
-	GetStudentByID(ctx context.Context, studentID int64) (GetStudentByIDRow, error)
-	GetTeacherByID(ctx context.Context, teacherID int64) (GetTeacherByIDRow, error)
+	GetEntrancesByUserID(ctx context.Context, userID int64) ([]Entrance, error)
+	GetExitsByUserID(ctx context.Context, userID int64) ([]Exit, error)
+	GetStudentByID(ctx context.Context, userID int64) (GetStudentByIDRow, error)
+	GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error)
 	// Queries for Time Range
 	GetTimeRange(ctx context.Context, arg GetTimeRangeParams) ([]GetTimeRangeRow, error)
 	GetTimeRangeByUserID(ctx context.Context, arg GetTimeRangeByUserIDParams) ([]GetTimeRangeByUserIDRow, error)
 	GetUserByID(ctx context.Context, userID int64) (User, error)
-	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (User, error)
+	GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error)
 	UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error
 	UpdateEntrance(ctx context.Context, arg UpdateEntranceParams) error
 	UpdateExit(ctx context.Context, arg UpdateExitParams) error

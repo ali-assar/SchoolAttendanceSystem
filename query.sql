@@ -9,10 +9,10 @@ SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_b
 FROM users
 WHERE user_id = ?;
 
--- name: GetUserByPhoneNumber :one
-SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active
+-- name: GetUserByName :many
+SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active
 FROM users
-WHERE phone_number = ?;
+WHERE first_name = ? AND last_name = ?;
 
 -- name: UpdateUser :exec
 UPDATE users
@@ -33,35 +33,35 @@ WHERE user_id = ?;
 -- name: CreateTeacher :one
 INSERT INTO teachers (user_id, sunday_entry_time, monday_entry_time, tuesday_entry_time, wednesday_entry_time, thursday_entry_time, friday_entry_time, saturday_entry_time)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-RETURNING teacher_id;
+RETURNING user_id;
 
 -- name: GetTeacherByID :one
-SELECT t.teacher_id, t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
-WHERE t.teacher_id = ?;
+WHERE t.user_id = ?;
 
 -- name: UpdateTeacherAllowedTime :exec
 UPDATE teachers
 SET sunday_entry_time = ?, monday_entry_time = ?, tuesday_entry_time = ?, wednesday_entry_time = ?, thursday_entry_time = ?, friday_entry_time = ?, saturday_entry_time = ?
-WHERE teacher_id = ?;
+WHERE user_id = ?;
 
 -- Queries for Students
 -- name: CreateStudent :one
 INSERT INTO students (user_id, required_entry_time)
 VALUES (?, ?)
-RETURNING student_id;
+RETURNING user_id;
 
 -- name: GetStudentByID :one
-SELECT s.student_id, s.user_id, u.first_name, u.last_name, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
-WHERE s.student_id = ?;
+WHERE s.user_id = ?;
 
 -- name: UpdateStudentAllowedTime :exec
 UPDATE students
 SET required_entry_time = ?
-WHERE student_id = ?;
+WHERE user_id = ?;
 
 -- Queries for Entrance
 -- name: CreateEntrance :one
@@ -69,7 +69,7 @@ INSERT INTO entrance (user_id, entry_time)
 VALUES (?, ?)
 RETURNING id;
 
--- name: GetEntrancesByUserID :one
+-- name: GetEntrancesByUserID :many
 SELECT id, user_id, entry_time
 FROM entrance
 WHERE user_id = ?;
@@ -89,7 +89,7 @@ INSERT INTO exit (user_id, exit_time)
 VALUES (?, ?)
 RETURNING id;
 
--- name: GetExitsByUserID :one
+-- name: GetExitsByUserID :many
 SELECT id, user_id, exit_time
 FROM exit
 WHERE user_id = ?;

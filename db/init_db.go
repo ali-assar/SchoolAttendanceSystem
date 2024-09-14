@@ -97,12 +97,12 @@ func CreateUsersTable(db *sql.DB) error {
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
 		user_id INTEGER PRIMARY KEY,
-    	first_name VARCHAR(100) NOT NULL,
-    	last_name VARCHAR(100) NOT NULL,
-    	phone_number VARCHAR(50) NOT NULL,
-    	image_path TEXT DEFAULT NULL,
-    	finger_id TEXT DEFAULT NULL,
-    	is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE
+		first_name VARCHAR(100) NOT NULL,
+		last_name VARCHAR(100) NOT NULL,
+		phone_number VARCHAR(50) NOT NULL,
+		image_path TEXT NOT NULL DEFAULT NULL,
+		finger_id TEXT NOT NULL DEFAULT NULL,
+		is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE
 	);
 	`
 	_, err := db.Exec(createUsersTable)
@@ -115,8 +115,7 @@ func CreateUsersTable(db *sql.DB) error {
 func CreateTeachersTable(db *sql.DB) error {
 	createTeachersTable := `
 	CREATE TABLE IF NOT EXISTS teachers (
-		teacher_id INTEGER PRIMARY KEY,
-		user_id INTEGER NOT NULL,
+		user_id INTEGER PRIMARY KEY,
 		sunday_entry_time INTEGER NOT NULL,
 		monday_entry_time INTEGER NOT NULL,
 		tuesday_entry_time INTEGER NOT NULL,
@@ -137,8 +136,7 @@ func CreateTeachersTable(db *sql.DB) error {
 func CreateStudentsTable(db *sql.DB) error {
 	createStudentsTable := `
 	CREATE TABLE IF NOT EXISTS students (
-		student_id INTEGER PRIMARY KEY,
-		user_id INTEGER NOT NULL,
+		user_id INTEGER PRIMARY KEY,
 		required_entry_time INTEGER NOT NULL,
 		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 	);

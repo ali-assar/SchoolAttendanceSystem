@@ -22,13 +22,11 @@ type Exit struct {
 }
 
 type Student struct {
-	StudentID         int64 `json:"student_id"`
 	UserID            int64 `json:"user_id"`
 	RequiredEntryTime int64 `json:"required_entry_time"`
 }
 
 type Teacher struct {
-	TeacherID          int64 `json:"teacher_id"`
 	UserID             int64 `json:"user_id"`
 	SundayEntryTime    int64 `json:"sunday_entry_time"`
 	MondayEntryTime    int64 `json:"monday_entry_time"`

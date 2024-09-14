@@ -1,4 +1,4 @@
--- User Table (common for both students and teachers)
+-- User Table 
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -9,10 +9,9 @@ CREATE TABLE IF NOT EXISTS users (
     is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- Teacher Table (specific rules for teachers)
+-- Teacher Table 
 CREATE TABLE IF NOT EXISTS teachers (
-    teacher_id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER PRIMARY KEY,
     sunday_entry_time INTEGER NOT NULL,
     monday_entry_time INTEGER NOT NULL,
     tuesday_entry_time INTEGER NOT NULL,
@@ -23,15 +22,14 @@ CREATE TABLE IF NOT EXISTS teachers (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Student Table (specific rules for students)
+-- Student Table 
 CREATE TABLE IF NOT EXISTS students (
-    student_id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER PRIMARY KEY,
     required_entry_time INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Entrance Table (same for both students and teachers)
+-- Entrance Table 
 CREATE TABLE IF NOT EXISTS entrance (
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -39,7 +37,7 @@ CREATE TABLE IF NOT EXISTS entrance (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Exit Table (same for both students and teachers)
+-- Exit Table 
 CREATE TABLE IF NOT EXISTS exit (
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
