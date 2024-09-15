@@ -45,6 +45,15 @@ These routes require a valid JWT token.
   }
   ```
 
+
+  **response Body (JSON)**:
+  ```json
+  {
+    "id": 1,
+    "message": "Teacher created"
+  }
+  ```
+
 - **Add Student**:  
   `POST /api/v1/student/`  
   Adds a new student to the system by inserting into both the users and students tables.
@@ -59,21 +68,80 @@ These routes require a valid JWT token.
   }
   ```
 
+  **response Body (JSON)**:
+  ```json
+  {
+    "id": 1,
+    "message": "Student created"
+  }
+  ```
+
 - **Get User by ID**:  
   `GET /api/v1/user/:id`  
   Retrieves user details by user ID.
 
+
+  **response Body (JSON)**:
+  ```json
+  {
+    "user_id": 12,
+    "first_name": "1 Student",
+    "last_name": "Lastname 1",
+    "phone_number": "09108969774",
+    "image_path": "",
+    "finger_id": "",
+    "is_biometric_active": false
+  }
+  ```
+
 - **Get Teacher by ID**:  
   `GET /api/v1/teacher/:id`  
   Retrieves teacher details by teacher ID.
+    ```json
+  {
+    "user_id": 1,
+    "first_name": "0 Teacher",
+    "last_name": "Lastname 0",
+    "sunday_entry_time": 0,
+    "monday_entry_time": 800,
+    "tuesday_entry_time": 0,
+    "wednesday_entry_time": 800,
+    "thursday_entry_time": 800,
+    "friday_entry_time": 800,
+    "saturday_entry_time": 800
+  }
+  ```
+  
 
 - **Get Student by ID**:  
   `GET /api/v1/student/:id`  
   Retrieves student details by student ID.
 
+  **response Body (JSON)**:
+    ```json
+  {
+    "user_id": 12,
+    "first_name": "1 Student",
+    "last_name": "Lastname 1",
+    "required_entry_time": 0
+  }
+  ```
 - **Get User by Name**:  
   `GET /api/v1/user/name/:first_name/:last_name`  
   Retrieves user details by first and last name.
+
+
+  **response Body (JSON)**:
+    ```json
+    {
+        "user_id": 103,
+        "first_name": "bar",
+        "last_name": "baz",
+        "phone_number": "789456123",
+        "image_path": "",
+        "is_biometric_active": false
+    }
+  ```
 
 - **Update User**:  
   `PUT /api/v1/user/:id`  
@@ -89,6 +157,14 @@ These routes require a valid JWT token.
   }
   ```
 
+   **response Body (JSON)**:
+    ```json
+  {
+    "id": 1,
+    "message": "user updated"
+  }
+  ```
+
 - **Update Student's Allowed Entry Time**:  
   `PUT /api/v1/student/:id`  
   Updates allowed entry time for a student by student ID.
@@ -97,6 +173,14 @@ These routes require a valid JWT token.
   ```json
   {
     "required_entry_time": 900
+  }
+  ```
+
+  **response Body (JSON)**:
+    ```json
+  {
+    "id": 1,
+    "message": "student allowed updated"
   }
   ```
 
@@ -116,10 +200,26 @@ These routes require a valid JWT token.
     "saturday_entry_time":800
   }
   ```
+  **response Body (JSON)**:
+    ```json
+  {
+    "id": 1,
+    "message": "teacher allowed updated"
+  }
+  ```
+
 
 - **Delete User**:  
   `DELETE /api/v1/user/:id`  
   Deletes a user from the system by user ID.
+
+**response Body (JSON)**:
+  ```json
+  {
+    "id": 1,
+    "message": "user deleted"
+  }
+  ```
 
 #### **Attendance**
 

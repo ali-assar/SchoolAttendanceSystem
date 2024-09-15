@@ -61,7 +61,7 @@ func main() {
 	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacherAllowedTime)
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
-	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)                           // Get attendance for a particular date
+	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)                    
 	apiv1.Get("attendance/range/:startDate/:endDate", handlers.GetAttendanceBetweenDates) // Get attendance between date A and B
 	apiv1.Get("attendance/absent/:date", handlers.GetAbsentUsersByDate)
 	apiv1.Get("attendance/absent/teacher/:date", handlers.GetAbsentTeachersByDate)

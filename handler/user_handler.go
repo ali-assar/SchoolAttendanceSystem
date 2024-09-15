@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,7 +28,11 @@ func (h *Handlers) HandlePostTeacher(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "Teacher created",
+		"id":      id,
+	})
 }
 
 type createStudentInput struct {
@@ -51,7 +54,10 @@ func (h *Handlers) HandlePostStudent(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "Student created",
+		"id":      id,
+	})
 }
 
 // Get Handlers
@@ -152,7 +158,11 @@ func (h *Handlers) HandleUpdateUser(c *fiber.Ctx) error {
 	if err := h.Store.UpdateUserDetails(c.Context(), updateParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "user updated",
+		"id":      id,
+	})
 }
 
 func (h *Handlers) HandleUpdateUserBiometric(c *fiber.Ctx) error {
@@ -177,7 +187,10 @@ func (h *Handlers) HandleUpdateUserBiometric(c *fiber.Ctx) error {
 	if err := h.Store.UpdateUserBiometric(c.Context(), updateParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "user biometric updated",
+		"id":      id,
+	})
 }
 
 func (h *Handlers) HandleUpdateStudentAllowedTime(c *fiber.Ctx) error {
@@ -202,7 +215,10 @@ func (h *Handlers) HandleUpdateStudentAllowedTime(c *fiber.Ctx) error {
 	if err := h.Store.UpdateStudentAllowedTime(c.Context(), updateParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "student allowed time updated",
+		"id":      id,
+	})
 }
 
 func (h *Handlers) HandleUpdateTeacherAllowedTime(c *fiber.Ctx) error {
@@ -227,7 +243,10 @@ func (h *Handlers) HandleUpdateTeacherAllowedTime(c *fiber.Ctx) error {
 	if err := h.Store.UpdateTeacherAllowedTime(c.Context(), updateParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "teacher allowed time updated",
+		"id":      id,
+	})
 }
 
 // Delete handlers
@@ -243,5 +262,8 @@ func (h *Handlers) HandleDeleteUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(err)
 	}
-	return c.Status(http.StatusCreated).JSON(fmt.Sprintf("ID: %d", id))
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "user deleted",
+		"id":      id,
+	})
 }
