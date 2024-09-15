@@ -7,6 +7,7 @@ import (
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/handler"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
@@ -35,6 +36,11 @@ func main() {
 
 	app := fiber.New()
 
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",                            // Specify allowed origins
+		AllowMethods: "GET,POST,PUT,DELETE",          // Specify allowed methods
+		AllowHeaders: "Origin, Content-Type, Accept", // Specify allowed headers
+	}))
 	app.Use(logger.New())
 
 	authMiddleware := handler.JWTAuthentication(store)
@@ -58,6 +64,7 @@ func main() {
 	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)                           // Get attendance for a particular date
 	apiv1.Get("attendance/range/:startDate/:endDate", handlers.GetAttendanceBetweenDates) // Get attendance between date A and B
 	apiv1.Get("attendance/absent/:date", handlers.GetAbsentUsersByDate)
+	apiv1.Get("attendance/absent/teacher/:date", handlers.GetAbsentTeachersByDate)
 
 	apiv1.Put("admin/", handlers.HandleUpdateAdmin)
 

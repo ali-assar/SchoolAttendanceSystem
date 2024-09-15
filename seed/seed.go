@@ -14,7 +14,7 @@ import (
 
 const (
 	numberOfDays  = 30
-	numberOfUsers = 10
+	numberOfUsers = 100
 )
 
 func main() {
@@ -68,8 +68,14 @@ func seedDB(ctx context.Context, store db.Querier) error {
 
 		// Insert teacher-specific data
 		teacherParams := db.CreateTeacherParams{
-			UserID: userID,
-			// Add other fields as per your schema
+			UserID:             userID,
+			SundayEntryTime:    randomEntryTime(),
+			SaturdayEntryTime:  randomEntryTime(),
+			MondayEntryTime:    randomEntryTime(),
+			TuesdayEntryTime:   randomEntryTime(),
+			WednesdayEntryTime: randomEntryTime(),
+			ThursdayEntryTime:  randomEntryTime(),
+			FridayEntryTime:    randomEntryTime(),
 		}
 
 		_, err = store.CreateTeacher(ctx, teacherParams)
@@ -161,4 +167,11 @@ func seedAttendance(ctx context.Context, store db.Querier, userID int64) error {
 		}
 	}
 	return nil
+}
+
+func randomEntryTime() int64 {
+	if rand.Intn(3) == 0 { // 33% chance to return 0
+		return 0
+	}
+	return 800 // 8:00 AM
 }

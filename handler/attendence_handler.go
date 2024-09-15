@@ -114,10 +114,84 @@ func (h *Handlers) GetAbsentUsersByDate(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
 	}
 
+	date = int(ExtractUnixDate(int64(date)))
+
 	absentUsers, err := h.Store.GetAbsentUsersByDate(c.Context(), int64(date))
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return c.Status(http.StatusOK).JSON(absentUsers)
+}
+
+/*
+func (h *Handlers) GetAbsentTeachersByDate(c *fiber.Ctx) error {
+	// var arg db.GetAbsentTeachersByDateParams
+	date, err := c.ParamsInt("date")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+	date = int(ExtractUnixDate(int64(date)))
+
+	// arg.Strftime = ((date / 86400) + 4) % 7
+	// arg.Date = int64(date)
+
+	absentUsers, err := h.Store.GetAbsentTeachersByDate(c.Context(), int64(date))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(absentUsers)
+}
+*/
+
+func (h *Handlers) GetAbsentTeachersByDate(c *fiber.Ctx) error {
+	date, err := c.ParamsInt("date")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+	date = int(ExtractUnixDate(int64(date)))
+
+	dayOfWeek := ((date / 86400) + 4) % 7
+
+	absentUsers, err := h.Store.GetAbsentTeachersByDate(c.Context(), int64(date))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	var absentOnDay []db.GetAbsentTeachersByDateRow
+	for _, user := range absentUsers {
+		switch dayOfWeek {
+		case 1:
+			if user.MondayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		case 2:
+			if user.TuesdayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		case 3:
+			if user.WednesdayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		case 4:
+			if user.ThursdayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		case 5:
+			if user.FridayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		case 6:
+			if user.SaturdayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		case 0:
+			if user.SundayEntryTime != 0 {
+				absentOnDay = append(absentOnDay, user)
+			}
+		}
+	}
+
+	return c.Status(http.StatusOK).JSON(absentOnDay)
 }

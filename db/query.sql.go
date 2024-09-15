@@ -156,6 +156,61 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
 	return err
 }
 
+const getAbsentTeachersByDate = `-- name: GetAbsentTeachersByDate :many
+SELECT u.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+FROM users u
+JOIN teachers t ON u.user_id = t.user_id
+LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
+WHERE a.user_id IS NULL
+`
+
+type GetAbsentTeachersByDateRow struct {
+	UserID             int64  `json:"user_id"`
+	FirstName          string `json:"first_name"`
+	LastName           string `json:"last_name"`
+	SundayEntryTime    int64  `json:"sunday_entry_time"`
+	MondayEntryTime    int64  `json:"monday_entry_time"`
+	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64  `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64  `json:"thursday_entry_time"`
+	FridayEntryTime    int64  `json:"friday_entry_time"`
+	SaturdayEntryTime  int64  `json:"saturday_entry_time"`
+}
+
+func (q *Queries) GetAbsentTeachersByDate(ctx context.Context, date int64) ([]GetAbsentTeachersByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAbsentTeachersByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAbsentTeachersByDateRow
+	for rows.Next() {
+		var i GetAbsentTeachersByDateRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.SundayEntryTime,
+			&i.MondayEntryTime,
+			&i.TuesdayEntryTime,
+			&i.WednesdayEntryTime,
+			&i.ThursdayEntryTime,
+			&i.FridayEntryTime,
+			&i.SaturdayEntryTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAbsentUsersByDate = `-- name: GetAbsentUsersByDate :many
 SELECT u.user_id, u.first_name, u.last_name
 FROM users u
