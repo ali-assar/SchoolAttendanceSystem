@@ -50,6 +50,7 @@ func main() {
 	// Routes requiring authentication
 	apiv1 := app.Group("/api/v1", authMiddleware)
 
+	// Teacher and Student routes
 	apiv1.Post("teacher/", handlers.HandlePostTeacher)
 	apiv1.Post("student/", handlers.HandlePostStudent)
 	apiv1.Get("user/:id", handlers.HandleGetUserByID)
@@ -61,11 +62,21 @@ func main() {
 	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacherAllowedTime)
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
-	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)                    
-	apiv1.Get("attendance/range/:startDate/:endDate", handlers.GetAttendanceBetweenDates) // Get attendance between date A and B
+	// Attendance routes for both teachers and students
+	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)
+	apiv1.Get("attendance/range/:startDate/:endDate", handlers.GetAttendanceBetweenDates)
+
+	// New separate routes for teacher and student attendance
+	apiv1.Get("attendance/teacher/:date", handlers.GetTeacherAttendanceByDate)
+	apiv1.Get("attendance/student/:date", handlers.GetStudentAttendanceByDate)
+	apiv1.Get("attendance/range/teacher/:startDate/:endDate", handlers.GetTeacherAttendanceBetweenDates)
+	apiv1.Get("attendance/range/student/:startDate/:endDate", handlers.GetStudentAttendanceBetweenDates)
+
+	// Absent users and teachers
 	apiv1.Get("attendance/absent/:date", handlers.GetAbsentUsersByDate)
 	apiv1.Get("attendance/absent/teacher/:date", handlers.GetAbsentTeachersByDate)
 
+	// Admin routes
 	apiv1.Put("admin/", handlers.HandleUpdateAdmin)
 
 	// Routes without authentication (biometric service)

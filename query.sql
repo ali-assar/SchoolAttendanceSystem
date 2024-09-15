@@ -136,3 +136,59 @@ FROM users u
 JOIN teachers t ON u.user_id = t.user_id
 LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
 WHERE a.user_id IS NULL;
+
+-- name: GetTeacherAttendanceByDate :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN teachers t ON u.user_id = t.user_id
+WHERE a.date = ?;
+
+-- name: GetStudentAttendanceByDate :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN students s ON u.user_id = s.user_id
+WHERE a.date = ?;
+
+-- name: GetTeacherAttendanceBetweenDates :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN teachers t ON u.user_id = t.user_id
+WHERE a.date BETWEEN ? AND ?;
+
+-- name: GetStudentAttendanceBetweenDates :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN students s ON u.user_id = s.user_id
+WHERE a.date BETWEEN ? AND ?;

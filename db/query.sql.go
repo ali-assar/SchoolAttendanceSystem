@@ -394,6 +394,123 @@ func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAtten
 	return i, err
 }
 
+const getStudentAttendanceBetweenDates = `-- name: GetStudentAttendanceBetweenDates :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN students s ON u.user_id = s.user_id
+WHERE a.date BETWEEN ? AND ?
+`
+
+type GetStudentAttendanceBetweenDatesParams struct {
+	FromDate int64 `json:"from_date"`
+	ToDate   int64 `json:"to_date"`
+}
+
+type GetStudentAttendanceBetweenDatesRow struct {
+	AttendanceID int64  `json:"attendance_id"`
+	UserID       int64  `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Date         int64  `json:"date"`
+	EnterTime    int64  `json:"enter_time"`
+	ExitTime     int64  `json:"exit_time"`
+}
+
+func (q *Queries) GetStudentAttendanceBetweenDates(ctx context.Context, arg GetStudentAttendanceBetweenDatesParams) ([]GetStudentAttendanceBetweenDatesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStudentAttendanceBetweenDates, arg.FromDate, arg.ToDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetStudentAttendanceBetweenDatesRow
+	for rows.Next() {
+		var i GetStudentAttendanceBetweenDatesRow
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStudentAttendanceByDate = `-- name: GetStudentAttendanceByDate :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN students s ON u.user_id = s.user_id
+WHERE a.date = ?
+`
+
+type GetStudentAttendanceByDateRow struct {
+	AttendanceID int64  `json:"attendance_id"`
+	UserID       int64  `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Date         int64  `json:"date"`
+	EnterTime    int64  `json:"enter_time"`
+	ExitTime     int64  `json:"exit_time"`
+}
+
+func (q *Queries) GetStudentAttendanceByDate(ctx context.Context, date int64) ([]GetStudentAttendanceByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStudentAttendanceByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetStudentAttendanceByDateRow
+	for rows.Next() {
+		var i GetStudentAttendanceByDateRow
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getStudentByID = `-- name: GetStudentByID :one
 SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
 FROM students s
@@ -418,6 +535,123 @@ func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentB
 		&i.RequiredEntryTime,
 	)
 	return i, err
+}
+
+const getTeacherAttendanceBetweenDates = `-- name: GetTeacherAttendanceBetweenDates :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN teachers t ON u.user_id = t.user_id
+WHERE a.date BETWEEN ? AND ?
+`
+
+type GetTeacherAttendanceBetweenDatesParams struct {
+	FromDate int64 `json:"from_date"`
+	ToDate   int64 `json:"to_date"`
+}
+
+type GetTeacherAttendanceBetweenDatesRow struct {
+	AttendanceID int64  `json:"attendance_id"`
+	UserID       int64  `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Date         int64  `json:"date"`
+	EnterTime    int64  `json:"enter_time"`
+	ExitTime     int64  `json:"exit_time"`
+}
+
+func (q *Queries) GetTeacherAttendanceBetweenDates(ctx context.Context, arg GetTeacherAttendanceBetweenDatesParams) ([]GetTeacherAttendanceBetweenDatesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTeacherAttendanceBetweenDates, arg.FromDate, arg.ToDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTeacherAttendanceBetweenDatesRow
+	for rows.Next() {
+		var i GetTeacherAttendanceBetweenDatesRow
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTeacherAttendanceByDate = `-- name: GetTeacherAttendanceByDate :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    a.date, 
+    a.enter_time, 
+    a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN teachers t ON u.user_id = t.user_id
+WHERE a.date = ?
+`
+
+type GetTeacherAttendanceByDateRow struct {
+	AttendanceID int64  `json:"attendance_id"`
+	UserID       int64  `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Date         int64  `json:"date"`
+	EnterTime    int64  `json:"enter_time"`
+	ExitTime     int64  `json:"exit_time"`
+}
+
+func (q *Queries) GetTeacherAttendanceByDate(ctx context.Context, date int64) ([]GetTeacherAttendanceByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTeacherAttendanceByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTeacherAttendanceByDateRow
+	for rows.Next() {
+		var i GetTeacherAttendanceByDateRow
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getTeacherByID = `-- name: GetTeacherByID :one

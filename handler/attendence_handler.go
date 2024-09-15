@@ -107,7 +107,85 @@ func (h *Handlers) GetAttendanceBetweenDates(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(attendanceRecords)
 }
 
-// Handler to fetch absent users on a particular date (int)
+func (h *Handlers) GetTeacherAttendanceByDate(c *fiber.Ctx) error {
+	date, err := c.ParamsInt("date")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+
+	attendanceRecords, err := h.Store.GetTeacherAttendanceByDate(c.Context(), int64(date))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(attendanceRecords)
+}
+
+func (h *Handlers) GetStudentAttendanceByDate(c *fiber.Ctx) error {
+	date, err := c.ParamsInt("date")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+
+	attendanceRecords, err := h.Store.GetStudentAttendanceByDate(c.Context(), int64(date))
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(attendanceRecords)
+}
+
+
+func (h *Handlers) GetStudentAttendanceBetweenDates(c *fiber.Ctx) error {
+	startDate, err := c.ParamsInt("startDate")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid start date format")
+	}
+
+	endDate, err := c.ParamsInt("endDate")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid end date format")
+	}
+
+	attendanceRecords, err := h.Store.GetStudentAttendanceBetweenDates(c.Context(), db.GetStudentAttendanceBetweenDatesParams{
+		FromDate: int64(startDate),
+		ToDate:   int64(endDate),
+	})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(attendanceRecords)
+}
+
+func (h *Handlers) GetTeacherAttendanceBetweenDates(c *fiber.Ctx) error {
+	startDate, err := c.ParamsInt("startDate")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid start date format")
+	}
+
+	endDate, err := c.ParamsInt("endDate")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid end date format")
+	}
+
+	attendanceRecords, err := h.Store.GetTeacherAttendanceBetweenDates(c.Context(), db.GetTeacherAttendanceBetweenDatesParams{
+		FromDate: int64(startDate),
+		ToDate:   int64(endDate),
+	})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(attendanceRecords)
+}
+
+
+
+
+
+
+
 func (h *Handlers) GetAbsentUsersByDate(c *fiber.Ctx) error {
 	date, err := c.ParamsInt("date")
 	if err != nil {
@@ -124,26 +202,7 @@ func (h *Handlers) GetAbsentUsersByDate(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(absentUsers)
 }
 
-/*
-func (h *Handlers) GetAbsentTeachersByDate(c *fiber.Ctx) error {
-	// var arg db.GetAbsentTeachersByDateParams
-	date, err := c.ParamsInt("date")
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
-	}
-	date = int(ExtractUnixDate(int64(date)))
 
-	// arg.Strftime = ((date / 86400) + 4) % 7
-	// arg.Date = int64(date)
-
-	absentUsers, err := h.Store.GetAbsentTeachersByDate(c.Context(), int64(date))
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(err.Error())
-	}
-
-	return c.Status(http.StatusOK).JSON(absentUsers)
-}
-*/
 
 func (h *Handlers) GetAbsentTeachersByDate(c *fiber.Ctx) error {
 	date, err := c.ParamsInt("date")
