@@ -20,7 +20,7 @@ SET first_name = ?, last_name = ?, phone_number = ?, image_path = ?
 WHERE user_id = ?;
 
 -- name: GetUsersWithFalseBiometric :many
-SELECT user_id, is_biometric_active
+SELECT user_id, is_biometric_active, first_name, last_name
 FROM users
 WHERE is_biometric_active = false;
 

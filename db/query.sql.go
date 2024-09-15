@@ -766,14 +766,16 @@ func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) ([
 }
 
 const getUsersWithFalseBiometric = `-- name: GetUsersWithFalseBiometric :many
-SELECT user_id, is_biometric_active
+SELECT user_id, is_biometric_active, first_name, last_name
 FROM users
 WHERE is_biometric_active = false
 `
 
 type GetUsersWithFalseBiometricRow struct {
-	UserID            int64 `json:"user_id"`
-	IsBiometricActive bool  `json:"is_biometric_active"`
+	UserID            int64  `json:"user_id"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
 }
 
 func (q *Queries) GetUsersWithFalseBiometric(ctx context.Context) ([]GetUsersWithFalseBiometricRow, error) {
@@ -785,7 +787,12 @@ func (q *Queries) GetUsersWithFalseBiometric(ctx context.Context) ([]GetUsersWit
 	var items []GetUsersWithFalseBiometricRow
 	for rows.Next() {
 		var i GetUsersWithFalseBiometricRow
-		if err := rows.Scan(&i.UserID, &i.IsBiometricActive); err != nil {
+		if err := rows.Scan(
+			&i.UserID,
+			&i.IsBiometricActive,
+			&i.FirstName,
+			&i.LastName,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
