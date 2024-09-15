@@ -157,7 +157,7 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
 }
 
 const getAbsentTeachersByDate = `-- name: GetAbsentTeachersByDate :many
-SELECT u.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT u.user_id, u.first_name, u.last_name, u.phone_number,t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM users u
 JOIN teachers t ON u.user_id = t.user_id
 LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
@@ -168,6 +168,7 @@ type GetAbsentTeachersByDateRow struct {
 	UserID             int64  `json:"user_id"`
 	FirstName          string `json:"first_name"`
 	LastName           string `json:"last_name"`
+	PhoneNumber        string `json:"phone_number"`
 	SundayEntryTime    int64  `json:"sunday_entry_time"`
 	MondayEntryTime    int64  `json:"monday_entry_time"`
 	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
@@ -190,6 +191,7 @@ func (q *Queries) GetAbsentTeachersByDate(ctx context.Context, date int64) ([]Ge
 			&i.UserID,
 			&i.FirstName,
 			&i.LastName,
+			&i.PhoneNumber,
 			&i.SundayEntryTime,
 			&i.MondayEntryTime,
 			&i.TuesdayEntryTime,

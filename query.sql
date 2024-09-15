@@ -131,7 +131,7 @@ LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
 WHERE a.user_id IS NULL;
 
 -- name: GetAbsentTeachersByDate :many
-SELECT u.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT u.user_id, u.first_name, u.last_name, u.phone_number,t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM users u
 JOIN teachers t ON u.user_id = t.user_id
 LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
