@@ -263,8 +263,9 @@ func (q *Queries) GetAdminByUserName(ctx context.Context, userName string) (Admi
 }
 
 const getAttendanceBetweenDates = `-- name: GetAttendanceBetweenDates :many
-SELECT attendance_id, user_id, date, enter_time, exit_time
-FROM attendance
+SELECT a.attendance_id, a.user_id, u.first_name, u.last_name, a.date, a.enter_time, a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id 
 WHERE date BETWEEN ? AND ?
 `
 
@@ -273,18 +274,30 @@ type GetAttendanceBetweenDatesParams struct {
 	ToDate   int64 `json:"to_date"`
 }
 
-func (q *Queries) GetAttendanceBetweenDates(ctx context.Context, arg GetAttendanceBetweenDatesParams) ([]Attendance, error) {
+type GetAttendanceBetweenDatesRow struct {
+	AttendanceID int64  `json:"attendance_id"`
+	UserID       int64  `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Date         int64  `json:"date"`
+	EnterTime    int64  `json:"enter_time"`
+	ExitTime     int64  `json:"exit_time"`
+}
+
+func (q *Queries) GetAttendanceBetweenDates(ctx context.Context, arg GetAttendanceBetweenDatesParams) ([]GetAttendanceBetweenDatesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAttendanceBetweenDates, arg.FromDate, arg.ToDate)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Attendance
+	var items []GetAttendanceBetweenDatesRow
 	for rows.Next() {
-		var i Attendance
+		var i GetAttendanceBetweenDatesRow
 		if err := rows.Scan(
 			&i.AttendanceID,
 			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
 			&i.Date,
 			&i.EnterTime,
 			&i.ExitTime,
@@ -303,23 +316,36 @@ func (q *Queries) GetAttendanceBetweenDates(ctx context.Context, arg GetAttendan
 }
 
 const getAttendanceByDate = `-- name: GetAttendanceByDate :many
-SELECT attendance_id, user_id, date, enter_time, exit_time
-FROM attendance
+SELECT a.attendance_id, a.user_id, u.first_name, u.last_name, a.date, a.enter_time, a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id 
 WHERE date = ?
 `
 
-func (q *Queries) GetAttendanceByDate(ctx context.Context, date int64) ([]Attendance, error) {
+type GetAttendanceByDateRow struct {
+	AttendanceID int64  `json:"attendance_id"`
+	UserID       int64  `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Date         int64  `json:"date"`
+	EnterTime    int64  `json:"enter_time"`
+	ExitTime     int64  `json:"exit_time"`
+}
+
+func (q *Queries) GetAttendanceByDate(ctx context.Context, date int64) ([]GetAttendanceByDateRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAttendanceByDate, date)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Attendance
+	var items []GetAttendanceByDateRow
 	for rows.Next() {
-		var i Attendance
+		var i GetAttendanceByDateRow
 		if err := rows.Scan(
 			&i.AttendanceID,
 			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
 			&i.Date,
 			&i.EnterTime,
 			&i.ExitTime,

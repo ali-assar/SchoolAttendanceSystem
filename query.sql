@@ -115,13 +115,15 @@ FROM attendance
 WHERE user_id = ?;
 
 -- name: GetAttendanceByDate :many
-SELECT attendance_id, user_id, date, enter_time, exit_time
-FROM attendance
+SELECT a.attendance_id, a.user_id, u.first_name, u.last_name, a.date, a.enter_time, a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id 
 WHERE date = ?;
 
 -- name: GetAttendanceBetweenDates :many
-SELECT attendance_id, user_id, date, enter_time, exit_time
-FROM attendance
+SELECT a.attendance_id, a.user_id, u.first_name, u.last_name, a.date, a.enter_time, a.exit_time
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id 
 WHERE date BETWEEN ? AND ?;
 
 -- name: GetAbsentUsersByDate :many

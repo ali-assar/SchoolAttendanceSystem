@@ -62,15 +62,9 @@ func main() {
 	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacherAllowedTime)
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
-	// Attendance routes for both teachers and students
-	apiv1.Get("attendance/:date", handlers.GetAttendanceByDate)
-	apiv1.Get("attendance/range/:startDate/:endDate", handlers.GetAttendanceBetweenDates)
-
-	// New separate routes for teacher and student attendance
-	apiv1.Get("attendance/teacher/:date", handlers.GetTeacherAttendanceByDate)
-	apiv1.Get("attendance/student/:date", handlers.GetStudentAttendanceByDate)
-	apiv1.Get("attendance/range/teacher/:startDate/:endDate", handlers.GetTeacherAttendanceBetweenDates)
-	apiv1.Get("attendance/range/student/:startDate/:endDate", handlers.GetStudentAttendanceBetweenDates)
+	// Combined Attendance routes (all, teacher, student)
+	apiv1.Get("attendance/:type/:date", handlers.GetAttendanceByTypeAndDate)
+	apiv1.Get("attendance/range/:type/:startDate/:endDate", handlers.GetAttendanceByTypeAndDateRange)
 
 	// Absent users and teachers
 	apiv1.Get("attendance/absent/:date", handlers.GetAbsentUsersByDate)

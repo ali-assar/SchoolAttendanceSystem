@@ -219,59 +219,89 @@ These routes require a valid JWT token.
   }
   ```
 
-#### **Attendance**
+
+
+### **Attendance**
 
 - **Get Attendance by Date**:  
-  `GET /api/v1/attendance/:date`  
-  Retrieves attendance records for a specific date.
+  `GET /api/v1/attendance/:type/:date`  
+  Retrieves attendance records for a specific date. The `type` parameter can be `all`, `teacher`, or `student`.
+
+  - **`type`**:
+    - `all`: Fetches attendance records for all users.
+    - `teacher`: Fetches attendance records for teachers only.
+    - `student`: Fetches attendance records for students only.
+
+  **Example Request**:
+  ```bash
+  GET /api/v1/attendance/all/1726099200
+  GET /api/v1/attendance/teacher/1726099200
+  GET /api/v1/attendance/student/1726099200
+  ```
 
   **Response Body (JSON)**:
   ```json
-  {
-    "attendance_id": 4,
-    "user_id": 1,
-    "date": 1726099200,
-    "enter_time": 1726113885,
-    "exit_time": 1726143493
-  },
-  {
-    "attendance_id": 28,
-    "user_id": 2,
-    "date": 1726099200,
-    "enter_time": 1726112748,
-    "exit_time": 1726140590
-  }
+  [
+    {
+      "attendance_id": 28,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726099200,
+      "enter_time": 1726112748,
+      "exit_time": 1726140590
+    },
+    {
+      "attendance_id": 29,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726012800,
+      "enter_time": 1726029204,
+      "exit_time": 1726054903
+    }
+  ]
   ```
 
 - **Get Attendance Between Dates**:  
-  `GET /api/v1/attendance/range/:startDate/:endDate`  
-  Retrieves attendance records between two dates.
+  `GET /api/v1/attendance/range/:type/:startDate/:endDate`  
+  Retrieves attendance records between two dates. The `type` parameter can be `all`, `teacher`, or `student`.
+
+  - **`type`**:
+    - `all`: Fetches attendance records for all users.
+    - `teacher`: Fetches attendance records for teachers only.
+    - `student`: Fetches attendance records for students only.
+
+  **Example Request**:
+  ```bash
+  GET /api/v1/attendance/range/all/1726012800/1726099200
+  GET /api/v1/attendance/range/teacher/1726012800/1726099200
+  GET /api/v1/attendance/range/student/1726012800/1726099200
+  ```
 
   **Response Body (JSON)**:
   ```json
-  {
-    "attendance_id": 7,
-    "user_id": 1,
-    "date": 1725840000,
-    "enter_time": 1725858917,
-    "exit_time": 1725881716
-  },
-  {
-    "attendance_id": 8,
-    "user_id": 1,
-    "date": 1725753600,
-    "enter_time": 1725767238,
-    "exit_time": 1725796310
-  }
+  [
+    {
+      "attendance_id": 28,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726099200,
+      "enter_time": 1726112748,
+      "exit_time": 1726140590
+    },
+    {
+      "attendance_id": 29,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726012800,
+      "enter_time": 1726029204,
+      "exit_time": 1726054903
+    }
+  ]
   ```
-
-- **Get Absent Users by Date**:  
-  `GET /api/v1/attendance/absent/:date`  
-  Retrieves users who were absent on a specific date.
-
-- **Get Absent Teachers by Date**:  
-  `GET /api/v1/attendance/absent/teacher/:date`  
-  Retrieves teachers who were absent based on their allowed entry times.
 
 #### **Admin**
 
@@ -286,6 +316,209 @@ These routes require a valid JWT token.
     "password": "newPassword456"
   }
   ```
+
+### **Attendance**
+
+- **Get Attendance by Date**:  
+  `GET /api/v1/attendance/:type/:date`  
+  Retrieves attendance records for a specific date. The `type` parameter can be `all`, `teacher`, or `student`.
+
+  - **`type`**:
+    - `all`: Fetches attendance records for all users.
+    - `teacher`: Fetches attendance records for teachers only.
+    - `student`: Fetches attendance records for students only.
+
+  **Example Request**:
+  ```bash
+  GET /api/v1/attendance/all/1726099200
+  GET /api/v1/attendance/teacher/1726099200
+  GET /api/v1/attendance/student/1726099200
+  ```
+
+  **Response Body (JSON)**:
+  ```json
+  [
+    {
+      "attendance_id": 28,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726099200,
+      "enter_time": 1726112748,
+      "exit_time": 1726140590
+    },
+    {
+      "attendance_id": 29,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726012800,
+      "enter_time": 1726029204,
+      "exit_time": 1726054903
+    }
+  ]
+  ```
+
+- **Get Attendance Between Dates**:  
+  `GET /api/v1/attendance/range/:type/:startDate/:endDate`  
+  Retrieves attendance records between two dates. The `type` parameter can be `all`, `teacher`, or `student`.
+
+  - **`type`**:
+    - `all`: Fetches attendance records for all users.
+    - `teacher`: Fetches attendance records for teachers only.
+    - `student`: Fetches attendance records for students only.
+
+  **Example Request**:
+  ```bash
+  GET /api/v1/attendance/range/all/1726012800/1726099200
+  GET /api/v1/attendance/range/teacher/1726012800/1726099200
+  GET /api/v1/attendance/range/student/1726012800/1726099200
+  ```
+
+  **Response Body (JSON)**:
+  ```json
+  [
+    {
+      "attendance_id": 28,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726099200,
+      "enter_time": 1726112748,
+      "exit_time": 1726140590
+    },
+    {
+      "attendance_id": 29,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726012800,
+      "enter_time": 1726029204,
+      "exit_time": 1726054903
+    }
+  ]
+  ```
+
+#### **Admin**
+
+- **Update Admin Password**:  
+  `PUT /api/v1/admin/`  
+  Updates the admin's password by username.
+
+  **Request Body (JSON)**:
+  ```json
+  {
+    "user_name": "admin",
+    "password": "newPassword456"
+  }
+  ```
+
+### **Attendance**
+
+- **Get Attendance by Date**:  
+  `GET /api/v1/attendance/:type/:date`  
+  Retrieves attendance records for a specific date. The `type` parameter can be `all`, `teacher`, or `student`.
+
+  - **`type`**:
+    - `all`: Fetches attendance records for all users.
+    - `teacher`: Fetches attendance records for teachers only.
+    - `student`: Fetches attendance records for students only.
+
+  **Example Request**:
+  ```bash
+  GET /api/v1/attendance/all/1726099200
+  GET /api/v1/attendance/teacher/1726099200
+  GET /api/v1/attendance/student/1726099200
+  ```
+
+  **Response Body (JSON)**:
+  ```json
+  [
+    {
+      "attendance_id": 28,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726099200,
+      "enter_time": 1726112748,
+      "exit_time": 1726140590
+    },
+    {
+      "attendance_id": 29,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726012800,
+      "enter_time": 1726029204,
+      "exit_time": 1726054903
+    }
+  ]
+  ```
+
+- **Get Attendance Between Dates**:  
+  `GET /api/v1/attendance/range/:type/:startDate/:endDate`  
+  Retrieves attendance records between two dates. The `type` parameter can be `all`, `teacher`, or `student`.
+
+  - **`type`**:
+    - `all`: Fetches attendance records for all users.
+    - `teacher`: Fetches attendance records for teachers only.
+    - `student`: Fetches attendance records for students only.
+
+  **Example Request**:
+  ```bash
+  GET /api/v1/attendance/range/all/1726012800/1726099200
+  GET /api/v1/attendance/range/teacher/1726012800/1726099200
+  GET /api/v1/attendance/range/student/1726012800/1726099200
+  ```
+
+  **Response Body (JSON)**:
+  ```json
+  [
+    {
+      "attendance_id": 28,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726099200,
+      "enter_time": 1726112748,
+      "exit_time": 1726140590
+    },
+    {
+      "attendance_id": 29,
+      "user_id": 2,
+      "first_name": "1 Teacher",
+      "last_name": "Lastname 1",
+      "date": 1726012800,
+      "enter_time": 1726029204,
+      "exit_time": 1726054903
+    }
+  ]
+  ```
+
+- **Get Absent Users by Date**:  
+  `GET /api/v1/attendance/absent/:date`  
+  Retrieves users who were absent on a specific date.
+
+- **Get Absent Teachers by Date**:  
+  `GET /api/v1/attendance/absent/teacher/:date`  Here is the updated section for the `README.md` to reflect the new attendance routes and responses:
+
+
+#### **Admin**
+
+- **Update Admin Password**:  
+  `PUT /api/v1/admin/`  
+  Updates the admin's password by username.
+
+  **Request Body (JSON)**:
+  ```json
+  {
+    "user_name": "admin",
+    "password": "newPassword456"
+  }
+  ```
+
+
+
 
 ### Biometric Endpoints (`/biometric`)
 
