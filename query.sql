@@ -139,6 +139,15 @@ JOIN teachers t ON u.user_id = t.user_id
 LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
 WHERE a.user_id IS NULL;
 
+-- name: GetAbsentStudentByDate :many
+SELECT u.user_id, u.first_name, u.last_name, u.phone_number, s.required_entry_time
+FROM users u
+JOIN students s ON u.user_id = s.user_id
+LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
+WHERE a.user_id IS NULL;
+
+
+
 -- name: GetTeacherAttendanceByDate :many
 SELECT 
     a.attendance_id, 

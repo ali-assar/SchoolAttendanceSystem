@@ -23,7 +23,7 @@ package sms
 // 	go func() {
 // 		time.Sleep(durationUntilNextRun)
 // 		runTask(store)
-// 		ticker := time.NewTicker(24 * time.Hour)
+// 		ticker := time.NewTicker(24 * time.Hour)c
 // 		for range ticker.C {
 // 			runTask(store)
 // 		}

@@ -156,6 +156,51 @@ func (q *Queries) DeleteUser(ctx context.Context, userID int64) error {
 	return err
 }
 
+const getAbsentStudentByDate = `-- name: GetAbsentStudentByDate :many
+SELECT u.user_id, u.first_name, u.last_name, u.phone_number, s.required_entry_time
+FROM users u
+JOIN students s ON u.user_id = s.user_id
+LEFT JOIN attendance a ON u.user_id = a.user_id AND a.date = ?
+WHERE a.user_id IS NULL
+`
+
+type GetAbsentStudentByDateRow struct {
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	RequiredEntryTime int64  `json:"required_entry_time"`
+}
+
+func (q *Queries) GetAbsentStudentByDate(ctx context.Context, date int64) ([]GetAbsentStudentByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAbsentStudentByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAbsentStudentByDateRow
+	for rows.Next() {
+		var i GetAbsentStudentByDateRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.PhoneNumber,
+			&i.RequiredEntryTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAbsentTeachersByDate = `-- name: GetAbsentTeachersByDate :many
 SELECT u.user_id, u.first_name, u.last_name, u.phone_number,t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM users u

@@ -67,8 +67,8 @@ func main() {
 	apiv1.Get("attendance/range/:type/:startDate/:endDate", handlers.GetAttendanceByTypeAndDateRange)
 
 	// Absent users and teachers
-	apiv1.Get("attendance/absent/:date", handlers.GetAbsentUsersByDate)
 	apiv1.Get("attendance/absent/teacher/:date", handlers.GetAbsentTeachersByDate)
+	apiv1.Get("attendance/absent/student/:date", handlers.GetAbsentStudentsByDate)
 
 	// Admin routes
 	apiv1.Put("admin/", handlers.HandleUpdateAdmin)
