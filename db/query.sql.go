@@ -475,7 +475,9 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
+
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN students s ON u.user_id = s.user_id
@@ -495,6 +497,7 @@ type GetStudentAttendanceBetweenDatesRow struct {
 	Date         int64  `json:"date"`
 	EnterTime    int64  `json:"enter_time"`
 	ExitTime     int64  `json:"exit_time"`
+	PhoneNumber  string `json:"phone_number"`
 }
 
 func (q *Queries) GetStudentAttendanceBetweenDates(ctx context.Context, arg GetStudentAttendanceBetweenDatesParams) ([]GetStudentAttendanceBetweenDatesRow, error) {
@@ -514,6 +517,7 @@ func (q *Queries) GetStudentAttendanceBetweenDates(ctx context.Context, arg GetS
 			&i.Date,
 			&i.EnterTime,
 			&i.ExitTime,
+			&i.PhoneNumber,
 		); err != nil {
 			return nil, err
 		}
@@ -536,7 +540,9 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
+
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN students s ON u.user_id = s.user_id
@@ -551,6 +557,7 @@ type GetStudentAttendanceByDateRow struct {
 	Date         int64  `json:"date"`
 	EnterTime    int64  `json:"enter_time"`
 	ExitTime     int64  `json:"exit_time"`
+	PhoneNumber  string `json:"phone_number"`
 }
 
 func (q *Queries) GetStudentAttendanceByDate(ctx context.Context, date int64) ([]GetStudentAttendanceByDateRow, error) {
@@ -570,6 +577,7 @@ func (q *Queries) GetStudentAttendanceByDate(ctx context.Context, date int64) ([
 			&i.Date,
 			&i.EnterTime,
 			&i.ExitTime,
+			&i.PhoneNumber,
 		); err != nil {
 			return nil, err
 		}
@@ -618,7 +626,9 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
+
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN teachers t ON u.user_id = t.user_id
@@ -638,6 +648,7 @@ type GetTeacherAttendanceBetweenDatesRow struct {
 	Date         int64  `json:"date"`
 	EnterTime    int64  `json:"enter_time"`
 	ExitTime     int64  `json:"exit_time"`
+	PhoneNumber  string `json:"phone_number"`
 }
 
 func (q *Queries) GetTeacherAttendanceBetweenDates(ctx context.Context, arg GetTeacherAttendanceBetweenDatesParams) ([]GetTeacherAttendanceBetweenDatesRow, error) {
@@ -657,6 +668,7 @@ func (q *Queries) GetTeacherAttendanceBetweenDates(ctx context.Context, arg GetT
 			&i.Date,
 			&i.EnterTime,
 			&i.ExitTime,
+			&i.PhoneNumber,
 		); err != nil {
 			return nil, err
 		}
@@ -679,7 +691,8 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN teachers t ON u.user_id = t.user_id
@@ -694,6 +707,7 @@ type GetTeacherAttendanceByDateRow struct {
 	Date         int64  `json:"date"`
 	EnterTime    int64  `json:"enter_time"`
 	ExitTime     int64  `json:"exit_time"`
+	PhoneNumber  string `json:"phone_number"`
 }
 
 func (q *Queries) GetTeacherAttendanceByDate(ctx context.Context, date int64) ([]GetTeacherAttendanceByDateRow, error) {
@@ -713,6 +727,7 @@ func (q *Queries) GetTeacherAttendanceByDate(ctx context.Context, date int64) ([
 			&i.Date,
 			&i.EnterTime,
 			&i.ExitTime,
+			&i.PhoneNumber,
 		); err != nil {
 			return nil, err
 		}

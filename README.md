@@ -11,7 +11,7 @@ This system manages the attendance of students and teachers, incorporating user 
   **Request Body (JSON)**:
   ```json
   {
-    "username": "admin",
+    "user_name": "admin",
     "password": "admin"
   }
   ```

@@ -267,3 +267,16 @@ func (h *Handlers) HandleDeleteUser(c *fiber.Ctx) error {
 		"id":      id,
 	})
 }
+
+func (h *Handlers) HandleGetUserByJWT(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(db.Admin)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"user_name": user.UserName,
+	})
+}

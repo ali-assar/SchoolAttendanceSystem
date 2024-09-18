@@ -36,19 +36,20 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",                            // Specify allowed origins
-		AllowMethods: "GET,POST,PUT,DELETE",          // Specify allowed methods
-		AllowHeaders: "Origin, Content-Type, Accept", // Specify allowed headers
-	}))
 	app.Use(logger.New())
 
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",                                                        // Specify allowed origins
+		AllowMethods: "GET,POST,PUT,DELETE,OPTION",                               // Specify allowed methods
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, X-API-TOKEN", // Specify allowed headers
+	}))
 	authMiddleware := handler.JWTAuthentication(store)
 
 	app.Post("/login", handlers.HandleAuthenticate)
 
 	// Routes requiring authentication
 	apiv1 := app.Group("/api/v1", authMiddleware)
+	apiv1.Get("info/", handlers.HandleGetUserByJWT)
 
 	// Teacher and Student routes
 	apiv1.Post("teacher/", handlers.HandlePostTeacher)

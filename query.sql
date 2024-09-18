@@ -156,7 +156,8 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN teachers t ON u.user_id = t.user_id
@@ -170,7 +171,9 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
+
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN students s ON u.user_id = s.user_id
@@ -184,7 +187,9 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
+
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN teachers t ON u.user_id = t.user_id
@@ -198,7 +203,9 @@ SELECT
     u.last_name, 
     a.date, 
     a.enter_time, 
-    a.exit_time
+    a.exit_time,
+    u.phone_number
+
 FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN students s ON u.user_id = s.user_id

@@ -13,8 +13,8 @@ import (
 )
 
 type AuthResponse struct {
-	User  db.Admin `json:"user"`
-	Token string   `json:"token"`
+	User  string `json:"user"`
+	Token string `json:"token"`
 }
 
 func (h *Handlers) HandleAuthenticate(c *fiber.Ctx) error {
@@ -35,7 +35,7 @@ func (h *Handlers) HandleAuthenticate(c *fiber.Ctx) error {
 	}
 
 	resp := AuthResponse{
-		User:  admin,
+		User:  admin.UserName,
 		Token: CreateTokenFromUser(admin),
 	}
 	return c.JSON(resp)
