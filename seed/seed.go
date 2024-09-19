@@ -56,8 +56,8 @@ func seedDB(ctx context.Context, store db.Querier) error {
 	for i := 0; i < teacherCount; i++ {
 		// Create teacher user
 		userParams := db.CreateUserParams{
-			FirstName:   fmt.Sprintf("%d معلم ", i),
-			LastName:    fmt.Sprintf("خانوادگی معلم %d", i),
+			FirstName:   fmt.Sprintf("%d teacher ", i),
+			LastName:    fmt.Sprintf("teacher lastname %d", i),
 			PhoneNumber: fmt.Sprintf("09%d", rand.Intn(1000000000)),
 		}
 
@@ -94,8 +94,8 @@ func seedDB(ctx context.Context, store db.Querier) error {
 	for i := 0; i < studentCount; i++ {
 		// Create student user
 		userParams := db.CreateUserParams{
-			FirstName:   fmt.Sprintf("%d دانش آموز", i),
-			LastName:    fmt.Sprintf("خانوادگی دانش آموز %d", i),
+			FirstName:   fmt.Sprintf("%d student ", i),
+			LastName:    fmt.Sprintf("student lastname %d", i),
 			PhoneNumber: fmt.Sprintf("09%d", rand.Intn(1000000000)),
 		}
 
@@ -176,8 +176,8 @@ func randomEntryTime() int64 {
 	}
 
 	// Randomize the hour and minute between 7 AM and 9 AM as an example (or use other ranges)
-	hour := rand.Intn(3) + 7    // 7 AM to 9 AM
-	minute := rand.Intn(60)     // Any minute in the hour
+	hour := rand.Intn(3) + 7 // 7 AM to 9 AM
+	minute := rand.Intn(60)  // Any minute in the hour
 
 	// Convert the hours and minutes to total seconds
 	totalSeconds := int64(hour*3600 + minute*60)

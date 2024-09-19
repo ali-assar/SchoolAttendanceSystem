@@ -467,6 +467,83 @@ func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAtten
 	return i, err
 }
 
+const getFullDetailsTeacherAttendanceByDate = `-- name: GetFullDetailsTeacherAttendanceByDate :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    u.phone_number,
+    t.sunday_entry_time, 
+    t.monday_entry_time, 
+    t.tuesday_entry_time, 
+    t.wednesday_entry_time, 
+    t.thursday_entry_time, 
+    t.friday_entry_time, 
+    t.saturday_entry_time, 
+    a.enter_time,     
+    a.date
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN teachers t ON u.user_id = t.user_id
+WHERE a.date = ?
+`
+
+type GetFullDetailsTeacherAttendanceByDateRow struct {
+	AttendanceID       int64  `json:"attendance_id"`
+	UserID             int64  `json:"user_id"`
+	FirstName          string `json:"first_name"`
+	LastName           string `json:"last_name"`
+	PhoneNumber        string `json:"phone_number"`
+	SundayEntryTime    int64  `json:"sunday_entry_time"`
+	MondayEntryTime    int64  `json:"monday_entry_time"`
+	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64  `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64  `json:"thursday_entry_time"`
+	FridayEntryTime    int64  `json:"friday_entry_time"`
+	SaturdayEntryTime  int64  `json:"saturday_entry_time"`
+	EnterTime          int64  `json:"enter_time"`
+	Date               int64  `json:"date"`
+}
+
+func (q *Queries) GetFullDetailsTeacherAttendanceByDate(ctx context.Context, date int64) ([]GetFullDetailsTeacherAttendanceByDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFullDetailsTeacherAttendanceByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFullDetailsTeacherAttendanceByDateRow
+	for rows.Next() {
+		var i GetFullDetailsTeacherAttendanceByDateRow
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.PhoneNumber,
+			&i.SundayEntryTime,
+			&i.MondayEntryTime,
+			&i.TuesdayEntryTime,
+			&i.WednesdayEntryTime,
+			&i.ThursdayEntryTime,
+			&i.FridayEntryTime,
+			&i.SaturdayEntryTime,
+			&i.EnterTime,
+			&i.Date,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getStudentAttendanceBetweenDates = `-- name: GetStudentAttendanceBetweenDates :many
 SELECT 
     a.attendance_id, 

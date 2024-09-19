@@ -210,3 +210,27 @@ FROM attendance a
 JOIN users u ON a.user_id = u.user_id
 JOIN students s ON u.user_id = s.user_id
 WHERE a.date BETWEEN ? AND ?;
+
+
+-- name: GetFullDetailsTeacherAttendanceByDate :many
+SELECT 
+    a.attendance_id, 
+    a.user_id, 
+    u.first_name, 
+    u.last_name, 
+    u.phone_number,
+    t.sunday_entry_time, 
+    t.monday_entry_time, 
+    t.tuesday_entry_time, 
+    t.wednesday_entry_time, 
+    t.thursday_entry_time, 
+    t.friday_entry_time, 
+    t.saturday_entry_time, 
+    a.enter_time,     
+    a.date
+FROM attendance a
+JOIN users u ON a.user_id = u.user_id
+JOIN teachers t ON u.user_id = t.user_id
+WHERE a.date = ?;
+
+

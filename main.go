@@ -89,6 +89,7 @@ func main() {
 		ip = "127.0.0.1:3000"
 	}
 	go sms.ScheduleDailyAt(store, context.Background(), 11, 44)
+	go sms.ScheduleDelayDailyAt(store, context.Background(), 13, 36)
 
 	log.Fatal(app.Listen(ip))
 }
