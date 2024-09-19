@@ -136,35 +136,6 @@ func (h *Handlers) HandleGetUsersWithTrueBiometric(c *fiber.Ctx) error {
 }
 
 // UPDATE handlers
-
-func (h *Handlers) HandleUpdateUser(c *fiber.Ctx) error {
-	idStr := c.Params("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(err.Error())
-	}
-
-	_, err = h.Store.GetUserByID(c.Context(), id)
-	if err != nil {
-		return c.Status(http.StatusNotFound).JSON("User not found")
-	}
-	var updateParams db.UpdateUserDetailsParams
-	if err := c.BodyParser(&updateParams); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(err.Error())
-	}
-
-	updateParams.UserID = id
-
-	if err := h.Store.UpdateUserDetails(c.Context(), updateParams); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(err.Error())
-	}
-
-	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"message": "user updated",
-		"id":      id,
-	})
-}
-
 func (h *Handlers) HandleUpdateUserBiometric(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
@@ -193,7 +164,12 @@ func (h *Handlers) HandleUpdateUserBiometric(c *fiber.Ctx) error {
 	})
 }
 
-func (h *Handlers) HandleUpdateStudentAllowedTime(c *fiber.Ctx) error {
+type updateStudentParams struct {
+	db.UpdateUserDetailsParams
+	db.UpdateStudentAllowedTimeParams
+}
+
+func (h *Handlers) HandleUpdateStudent(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -202,26 +178,41 @@ func (h *Handlers) HandleUpdateStudentAllowedTime(c *fiber.Ctx) error {
 
 	_, err = h.Store.GetStudentByID(c.Context(), id)
 	if err != nil {
-		return c.Status(http.StatusNotFound).JSON("Student not found")
+		return c.Status(http.StatusNotFound).JSON("Teacher not found")
 	}
 
-	var updateParams db.UpdateStudentAllowedTimeParams
+	_, err = h.Store.GetUserByID(c.Context(), id)
+	if err != nil {
+		return c.Status(http.StatusNotFound).JSON("User not found")
+	}
+
+	var updateParams updateStudentParams
 	if err := c.BodyParser(&updateParams); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err.Error())
 	}
 
-	updateParams.UserID = id
+	updateParams.UpdateUserDetailsParams.UserID = id
+	updateParams.UpdateStudentAllowedTimeParams.UserID = id
 
-	if err := h.Store.UpdateStudentAllowedTime(c.Context(), updateParams); err != nil {
+	if err := h.Store.UpdateUserDetails(c.Context(), updateParams.UpdateUserDetailsParams); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	if err := h.Store.UpdateStudentAllowedTime(c.Context(), updateParams.UpdateStudentAllowedTimeParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"message": "student allowed time updated",
+		"message": "student updated",
 		"id":      id,
 	})
 }
 
-func (h *Handlers) HandleUpdateTeacherAllowedTime(c *fiber.Ctx) error {
+type updateTeacherParams struct {
+	db.UpdateUserDetailsParams
+	db.UpdateTeacherAllowedTimeParams
+}
+
+func (h *Handlers) HandleUpdateTeacher(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -233,18 +224,28 @@ func (h *Handlers) HandleUpdateTeacherAllowedTime(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).JSON("Teacher not found")
 	}
 
-	var updateParams db.UpdateTeacherAllowedTimeParams
+	_, err = h.Store.GetUserByID(c.Context(), id)
+	if err != nil {
+		return c.Status(http.StatusNotFound).JSON("User not found")
+	}
+
+	var updateParams updateTeacherParams
 	if err := c.BodyParser(&updateParams); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err.Error())
 	}
 
-	updateParams.UserID = id
+	updateParams.UpdateUserDetailsParams.UserID = id
+	updateParams.UpdateTeacherAllowedTimeParams.UserID = id
 
-	if err := h.Store.UpdateTeacherAllowedTime(c.Context(), updateParams); err != nil {
+	if err := h.Store.UpdateUserDetails(c.Context(), updateParams.UpdateUserDetailsParams); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	if err := h.Store.UpdateTeacherAllowedTime(c.Context(), updateParams.UpdateTeacherAllowedTimeParams); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"message": "teacher allowed time updated",
+		"message": "teacher updated",
 		"id":      id,
 	})
 }
@@ -280,4 +281,3 @@ func (h *Handlers) HandleGetUserByJWT(c *fiber.Ctx) error {
 		"user_name": user.UserName,
 	})
 }
-

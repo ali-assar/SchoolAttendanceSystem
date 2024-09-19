@@ -60,9 +60,8 @@ func main() {
 	apiv1.Get("teacher/:id", handlers.HandleGetTeacherByID)
 	apiv1.Get("student/:id", handlers.HandleGetStudentByID)
 	apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
-	apiv1.Put("user/:id", handlers.HandleUpdateUser)
-	apiv1.Put("student/:id", handlers.HandleUpdateStudentAllowedTime)
-	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacherAllowedTime)
+	apiv1.Put("student/:id", handlers.HandleUpdateStudent)
+	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacher)
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
 	// Combined Attendance routes (all, teacher, student)
@@ -89,7 +88,7 @@ func main() {
 	if ip == "" {
 		ip = "127.0.0.1:3000"
 	}
-	go sms.ScheduleDailyAt(store, context.Background(),10,58)
+	go sms.ScheduleDailyAt(store, context.Background(), 10, 58)
 
 	log.Fatal(app.Listen(ip))
 }

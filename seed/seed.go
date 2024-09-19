@@ -56,8 +56,8 @@ func seedDB(ctx context.Context, store db.Querier) error {
 	for i := 0; i < teacherCount; i++ {
 		// Create teacher user
 		userParams := db.CreateUserParams{
-			FirstName:   fmt.Sprintf("%d Teacher", i),
-			LastName:    fmt.Sprintf("Lastname %d", i),
+			FirstName:   fmt.Sprintf("%d معلم ", i),
+			LastName:    fmt.Sprintf("خانوادگی معلم %d", i),
 			PhoneNumber: fmt.Sprintf("09%d", rand.Intn(1000000000)),
 		}
 
@@ -94,8 +94,8 @@ func seedDB(ctx context.Context, store db.Querier) error {
 	for i := 0; i < studentCount; i++ {
 		// Create student user
 		userParams := db.CreateUserParams{
-			FirstName:   fmt.Sprintf("%d Student", i),
-			LastName:    fmt.Sprintf("Lastname %d", i),
+			FirstName:   fmt.Sprintf("%d دانش آموز", i),
+			LastName:    fmt.Sprintf("خانوادگی دانش آموز %d", i),
 			PhoneNumber: fmt.Sprintf("09%d", rand.Intn(1000000000)),
 		}
 

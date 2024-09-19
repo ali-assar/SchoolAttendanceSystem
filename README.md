@@ -141,17 +141,47 @@ These routes require a valid JWT token.
   }
   ```
 
-- **Update User**:  
-  `PUT /api/v1/user/:id`  
-  Updates a user’s details by user ID.
+- ## **Update User**:  
+
+**Update Student's**
+- **Endpoint**: `PUT /api/v1/student/:id`
+- **Description**: Updates allowed entry time for a student by student ID, along with other details.
 
   **Request Body (JSON)**:
   ```json
   {
-    "first_name": "UpdatedFirstName",
-    "last_name": "UpdatedLastName",
-    "phone_number": "09123456787",
-    "image_path": "/images/updated.jpg"
+    "first_name": "bazz",
+    "last_name": "bazz",
+    "phone_number": "7894561000023",
+    "required_entry_time": 220
+  }
+  ```
+
+  **Response Body (JSON)**:
+  ```json
+  {
+    "id": 3,
+    "message": "Student updated"
+  }
+  ```
+
+**Update Teacher's**
+- **Endpoint**: `PUT /api/v1/teacher/:id`
+- **Description**: Updates a teacher’s personal details and allowed entry time by teacher ID.
+
+  **Request Body (JSON)**:
+  ```json
+  {
+    "first_name": "james",
+    "last_name": "foo",
+    "phone_number": "09371327163",
+    "sunday_entry_time": 0,
+    "monday_entry_time": 0,
+    "tuesday_entry_time": 0,
+    "wednesday_entry_time": 0,
+    "thursday_entry_time": 0,
+    "friday_entry_time": 0,
+    "saturday_entry_time": 0
   }
   ```
 
@@ -159,54 +189,9 @@ These routes require a valid JWT token.
   ```json
   {
     "id": 1,
-    "message": "User updated"
+    "message": "Teacher updated"
   }
   ```
-
-- **Update Student's Allowed Entry Time**:  
-  `PUT /api/v1/student/:id`  
-  Updates allowed entry time for a student by student ID.
-
-  **Request Body (JSON)**:
-  ```json
-  {
-    "required_entry_time": 900
-  }
-  ```
-
-  **Response Body (JSON)**:
-  ```json
-  {
-    "id": 1,
-    "message": "Student allowed entry time updated"
-  }
-  ```
-
-- **Update Teacher's Allowed Entry Time**:  
-  `PUT /api/v1/teacher/:id`  
-  Updates allowed entry time for a teacher by teacher ID.
-
-  **Request Body (JSON)**:
-  ```json
-  {
-    "sunday_entry_time": 830,
-    "monday_entry_time": 800,
-    "tuesday_entry_time": 800,
-    "wednesday_entry_time": 800,
-    "thursday_entry_time": 800,
-    "friday_entry_time": 800,
-    "saturday_entry_time": 800
-  }
-  ```
-
-  **Response Body (JSON)**:
-  ```json
-  {
-    "id": 1,
-    "message": "Teacher allowed entry time updated"
-  }
-  ```
-
 - **Delete User**:  
   `DELETE /api/v1/user/:id`  
   Deletes a user from the system by user ID.
