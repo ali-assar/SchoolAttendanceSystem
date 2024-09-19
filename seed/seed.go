@@ -106,8 +106,8 @@ func seedDB(ctx context.Context, store db.Querier) error {
 
 		// Insert student-specific data
 		studentParams := db.CreateStudentParams{
-			UserID: userID,
-			// Add other fields as per your schema
+			UserID:            userID,
+			RequiredEntryTime: 28800,
 		}
 
 		_, err = store.CreateStudent(ctx, studentParams)
@@ -170,8 +170,18 @@ func seedAttendance(ctx context.Context, store db.Querier, userID int64) error {
 }
 
 func randomEntryTime() int64 {
-	if rand.Intn(3) == 0 { // 33% chance to return 0
+	// Introduce a chance for the entry time to be 0 (e.g., 30% chance)
+	if rand.Float64() < 0.3 { // 30% chance to return 0
 		return 0
 	}
-	return 800 // 8:00 AM
+
+	// Randomize the hour and minute between 7 AM and 9 AM as an example (or use other ranges)
+	hour := rand.Intn(3) + 7    // 7 AM to 9 AM
+	minute := rand.Intn(60)     // Any minute in the hour
+
+	// Convert the hours and minutes to total seconds
+	totalSeconds := int64(hour*3600 + minute*60)
+
+	// Return the Unix time as the seconds from the start of the day
+	return totalSeconds
 }
