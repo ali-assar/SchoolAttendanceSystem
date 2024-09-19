@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 )
@@ -103,9 +104,26 @@ func GetFormattedAbsentTeachers(store db.Querier, ctx context.Context, date int)
 	return name, phone, nil
 }
 
-// Helper function to extract only hours, minutes, and seconds from a Unix timestamp
 func ExtractUnixTime(timestamp int64) int64 {
 	return timestamp % 86400 // This strips off the date by keeping only seconds of the day
+}
+
+func GetLocalTimeOffset() int64 {
+	nowLocal := time.Now()
+	nowUTC := time.Now().UTC()
+
+	hourOffset := int64(nowLocal.Hour() - nowUTC.Hour())
+	minuteOffset := int64(nowLocal.Minute() - nowUTC.Minute())
+
+	if hourOffset > 12 {
+		hourOffset -= 24
+	} else if hourOffset < -12 {
+		hourOffset += 24
+	}
+
+	offsetInSeconds := hourOffset*3600 + minuteOffset*60
+	fmt.Println(offsetInSeconds)
+	return offsetInSeconds
 }
 
 func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]db.GetFullDetailsTeacherAttendanceByDateRow, error) {
@@ -118,9 +136,10 @@ func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]db.Ge
 	}
 
 	var delayOnDay []db.GetFullDetailsTeacherAttendanceByDateRow
+	localTimeOffset := GetLocalTimeOffset()
 	for _, user := range attendance {
 		// Normalize the EnterTime to keep only hours, minutes, and seconds
-		normalizedEnterTime := ExtractUnixTime(user.EnterTime)
+		normalizedEnterTime := ExtractUnixTime(user.EnterTime) + localTimeOffset
 
 		switch dayOfWeek {
 		case 1:

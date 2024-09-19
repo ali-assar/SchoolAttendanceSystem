@@ -53,7 +53,7 @@ func seedDB(ctx context.Context, store db.Querier) error {
 	rand.Seed(time.Now().UnixNano())
 
 	// Seed teachers
-	for i := 0; i < teacherCount; i++ {
+	for i := 1; i < teacherCount+1; i++ {
 		// Create teacher user
 		userParams := db.CreateUserParams{
 			FirstName:   fmt.Sprintf("%d teacher ", i),
@@ -91,7 +91,7 @@ func seedDB(ctx context.Context, store db.Querier) error {
 	}
 
 	// Seed students
-	for i := 0; i < studentCount; i++ {
+	for i := 1; i < studentCount+1; i++ {
 		// Create student user
 		userParams := db.CreateUserParams{
 			FirstName:   fmt.Sprintf("%d student ", i),
