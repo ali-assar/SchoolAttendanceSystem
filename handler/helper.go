@@ -88,15 +88,16 @@ func GetFormattedAbsentTeachers(store db.Querier, ctx context.Context, date int)
 
 	var names []string
 	for _, teacher := range absentTeachers {
-		firstName := strings.ReplaceAll(teacher.FirstName, " ", "-")
-		lastName := strings.ReplaceAll(teacher.LastName, " ", "-")
-		fullName := fmt.Sprintf("%s-%s", firstName, lastName)
+		// firstName := strings.ReplaceAll(teacher.FirstName, " ", "-")
+		// lastName := strings.ReplaceAll(teacher.LastName, " ", "-")
+		// fullName := fmt.Sprintf("%s-%s", firstName, lastName)
+		fullName := fmt.Sprintf("%s %s", teacher.FirstName, teacher.LastName)
 
 		names = append(names, fullName)
 	}
-	name = strings.Join(names, ",")
-	if len(absentTeachers)>0{
-	phone = absentTeachers[0].PhoneNumber
+	name = strings.Join(names, ", ")
+	if len(absentTeachers) > 0 {
+		phone = absentTeachers[0].PhoneNumber
 	}
 
 	return name, phone, nil
@@ -163,13 +164,13 @@ func GetFormattedTeachersDelay(store db.Querier, ctx context.Context, date int) 
 
 	var names []string
 	for _, teacher := range teachersDelay {
-		firstName := strings.ReplaceAll(teacher.FirstName, " ", "-")
-		lastName := strings.ReplaceAll(teacher.LastName, " ", "-")
-		fullName := fmt.Sprintf("%s-%s", firstName, lastName)
+		// firstName := strings.ReplaceAll(teacher.FirstName, " ", "-")
+		// lastName := strings.ReplaceAll(teacher.LastName, " ", "-")
+		fullName := fmt.Sprintf("%s %s", teacher.FirstName, teacher.LastName)
 
 		names = append(names, fullName)
 	}
-	name = strings.Join(names, ",")
+	name = strings.Join(names, ", ")
 	if len(teachersDelay) > 0 {
 		phone = teachersDelay[0].PhoneNumber
 	}
