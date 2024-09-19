@@ -280,3 +280,4 @@ func (h *Handlers) HandleGetUserByJWT(c *fiber.Ctx) error {
 		"user_name": user.UserName,
 	})
 }
+

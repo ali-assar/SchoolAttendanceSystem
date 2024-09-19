@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 )
@@ -76,4 +78,24 @@ func FindAbsentStudents(store db.Querier, ctx context.Context, date int) ([]db.G
 		return nil, err
 	}
 	return absentStudents, nil
+}
+
+func GetFormattedAbsentTeachers(store db.Querier, ctx context.Context, date int) (name string, phone string, err error) {
+	absentTeachers, err := FindAbsentTeachers(store, ctx, date)
+	if err != nil {
+		return "", "", err
+	}
+
+	var names []string
+	for _, teacher := range absentTeachers {
+		firstName := strings.ReplaceAll(teacher.FirstName, " ", "-")
+		lastName := strings.ReplaceAll(teacher.LastName, " ", "-")
+		fullName := fmt.Sprintf("%s-%s", firstName, lastName)
+
+		names = append(names, fullName)
+	}
+	name = strings.Join(names, ",")
+	phone = absentTeachers[0].PhoneNumber
+
+	return name, phone, nil
 }

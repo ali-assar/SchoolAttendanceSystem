@@ -168,36 +168,3 @@ func (h *Handlers) GetAbsentStudentsByDate(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(absentStudents)
 }
 
-/*
-func (h *Handlers) GetAbsentUsersByDate(c *fiber.Ctx) error {
-	attendanceType := c.Params("type")
-	date, err := c.ParamsInt("date")
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON("Invalid start date format")
-	}
-	var absentRecords interface{}
-
-	switch attendanceType {
-	case "teacher":
-		absentRecords, err := FindAbsentTeachers(h.Store, c.Context(), date)
-		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(err.Error())
-		}
-		if absentRecords == nil {
-			return c.Status(http.StatusOK).JSON(fiber.Map{"message": "no absent teachers for given date"})
-		}
-	case "student":
-		absentRecords, err := FindAbsentStudents(h.Store, c.Context(), date)
-		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(err.Error())
-		}
-		if absentRecords == nil {
-			return c.Status(http.StatusOK).JSON(fiber.Map{"message": "no absent student for given date"})
-		}
-	default:
-		return c.Status(http.StatusBadRequest).JSON("Invalid attendance type. Use 'student', or 'teacher'.")
-	}
-	return c.Status(http.StatusOK).JSON(absentRecords)
-
-}
-*/
