@@ -695,6 +695,47 @@ func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentB
 	return i, err
 }
 
+const getStudents = `-- name: GetStudents :many
+SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
+FROM students s
+JOIN users u ON s.user_id = u.user_id
+`
+
+type GetStudentsRow struct {
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	RequiredEntryTime int64  `json:"required_entry_time"`
+}
+
+func (q *Queries) GetStudents(ctx context.Context) ([]GetStudentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStudents)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetStudentsRow
+	for rows.Next() {
+		var i GetStudentsRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.RequiredEntryTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTeacherAttendanceBetweenDates = `-- name: GetTeacherAttendanceBetweenDates :many
 SELECT 
     a.attendance_id, 
@@ -855,6 +896,59 @@ func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherB
 		&i.SaturdayEntryTime,
 	)
 	return i, err
+}
+
+const getTeachers = `-- name: GetTeachers :many
+SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+FROM teachers t
+JOIN users u ON t.user_id = u.user_id
+`
+
+type GetTeachersRow struct {
+	UserID             int64  `json:"user_id"`
+	FirstName          string `json:"first_name"`
+	LastName           string `json:"last_name"`
+	SundayEntryTime    int64  `json:"sunday_entry_time"`
+	MondayEntryTime    int64  `json:"monday_entry_time"`
+	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
+	WednesdayEntryTime int64  `json:"wednesday_entry_time"`
+	ThursdayEntryTime  int64  `json:"thursday_entry_time"`
+	FridayEntryTime    int64  `json:"friday_entry_time"`
+	SaturdayEntryTime  int64  `json:"saturday_entry_time"`
+}
+
+func (q *Queries) GetTeachers(ctx context.Context) ([]GetTeachersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTeachers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTeachersRow
+	for rows.Next() {
+		var i GetTeachersRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FirstName,
+			&i.LastName,
+			&i.SundayEntryTime,
+			&i.MondayEntryTime,
+			&i.TuesdayEntryTime,
+			&i.WednesdayEntryTime,
+			&i.ThursdayEntryTime,
+			&i.FridayEntryTime,
+			&i.SaturdayEntryTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUserByID = `-- name: GetUserByID :one

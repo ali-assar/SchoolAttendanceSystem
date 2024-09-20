@@ -103,6 +103,15 @@ func (h *Handlers) HandleGetTeacherByID(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(user)
 }
 
+func (h *Handlers) HandleGetTeachers(c *fiber.Ctx) error {
+
+	user, err := h.Store.GetTeachers(c.Context())
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	return c.Status(http.StatusOK).JSON(user)
+}
+
 func (h *Handlers) HandleGetStudentByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
@@ -111,6 +120,15 @@ func (h *Handlers) HandleGetStudentByID(c *fiber.Ctx) error {
 	}
 
 	user, err := h.Store.GetStudentByID(c.Context(), id)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+	return c.Status(http.StatusOK).JSON(user)
+}
+
+func (h *Handlers) HandleGetStudents(c *fiber.Ctx) error {
+
+	user, err := h.Store.GetStudents(c.Context())
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(err.Error())
 	}

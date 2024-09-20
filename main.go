@@ -59,6 +59,8 @@ func main() {
 	apiv1.Get("user/:id", handlers.HandleGetUserByID)
 	apiv1.Get("teacher/:id", handlers.HandleGetTeacherByID)
 	apiv1.Get("student/:id", handlers.HandleGetStudentByID)
+	apiv1.Get("teacher/", handlers.HandleGetTeachers)
+	apiv1.Get("student/", handlers.HandleGetStudents)
 	apiv1.Get("user/name/:first_name/:last_name", handlers.HandleGetUserByName)
 	apiv1.Put("student/:id", handlers.HandleUpdateStudent)
 	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacher)
