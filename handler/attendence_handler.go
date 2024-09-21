@@ -65,7 +65,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 	})
 }
 
-func (h *Handlers) GetAttendanceByTypeAndDate(c *fiber.Ctx) error {
+func (h *Handlers) HandleGetAttendanceByTypeAndDate(c *fiber.Ctx) error {
 	attendanceType := c.Params("type")
 
 	date, err := c.ParamsInt("date")
@@ -95,7 +95,7 @@ func (h *Handlers) GetAttendanceByTypeAndDate(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(attendanceRecords)
 }
 
-func (h *Handlers) GetAttendanceByTypeAndDateRange(c *fiber.Ctx) error {
+func (h *Handlers) HandleGetAttendanceByTypeAndDateRange(c *fiber.Ctx) error {
 	attendanceType := c.Params("type")
 	startDate, err := c.ParamsInt("startDate")
 	if err != nil {
@@ -134,7 +134,7 @@ func (h *Handlers) GetAttendanceByTypeAndDateRange(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(attendanceRecords)
 }
 
-func (h *Handlers) GetAbsentTeachersByDate(c *fiber.Ctx) error {
+func (h *Handlers) HandleGetAbsentTeachersByDate(c *fiber.Ctx) error {
 	date, err := c.ParamsInt("date")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
@@ -152,7 +152,7 @@ func (h *Handlers) GetAbsentTeachersByDate(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(absentTeachers)
 }
 
-func (h *Handlers) GetAbsentStudentsByDate(c *fiber.Ctx) error {
+func (h *Handlers) HandleGetAbsentStudentsByDate(c *fiber.Ctx) error {
 	date, err := c.ParamsInt("date")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
@@ -166,4 +166,52 @@ func (h *Handlers) GetAbsentStudentsByDate(c *fiber.Ctx) error {
 		return c.Status(http.StatusOK).JSON(fiber.Map{"message": "no absent student for given date"})
 	}
 	return c.Status(http.StatusOK).JSON(absentStudents)
+}
+
+func (h *Handlers) HandleUpdateExitByID(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	exit, err := c.ParamsInt("exit_time")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+
+	params := db.UpdateExitParams{
+		ExitTime:     int64(exit),
+		AttendanceID: int64(id),
+	}
+
+	err = h.Store.UpdateExit(c.Context(), params)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "exit time updated",
+		"id":      id,
+	})
+
+}
+
+func (h *Handlers) HandleUpdateEntranceByID(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	exit, err := c.ParamsInt("enter_time")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON("Invalid date format")
+	}
+
+	params := db.UpdateEntaranceByIDParams{
+		EnterTime:    int64(exit),
+		AttendanceID: int64(id),
+	}
+
+	err = h.Store.UpdateEntaranceByID(c.Context(), params)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "enter time updated",
+		"id":      id,
+	})
+
 }

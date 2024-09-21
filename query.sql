@@ -110,6 +110,11 @@ UPDATE attendance
 SET exit_time = ?
 WHERE attendance_id = ?;
 
+-- name: UpdateEntaranceByID :exec
+UPDATE attendance
+SET enter_time = ?
+WHERE attendance_id = ?;
+
 -- name: DeleteAttendance :exec
 DELETE FROM attendance
 WHERE attendance_id = ?;

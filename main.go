@@ -67,12 +67,16 @@ func main() {
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
 	// Combined Attendance routes (all, teacher, student)
-	apiv1.Get("attendance/:type/:date", handlers.GetAttendanceByTypeAndDate)
-	apiv1.Get("attendance/range/:type/:startDate/:endDate", handlers.GetAttendanceByTypeAndDateRange)
+	apiv1.Get("attendance/:type/:date", handlers.HandleGetAttendanceByTypeAndDate)
+	apiv1.Get("attendance/range/:type/:startDate/:endDate", handlers.HandleGetAttendanceByTypeAndDateRange)
+
+	//update Attendance routes
+	apiv1.Put("attendance/enter/:id/:enter_time", handlers.HandleUpdateEntranceByID)
+	apiv1.Put("attendance/exit/:id/:exit_time", handlers.HandleUpdateExitByID)
 
 	// Absent users and teachers
-	apiv1.Get("attendance/absent/teacher/:date", handlers.GetAbsentTeachersByDate)
-	apiv1.Get("attendance/absent/student/:date", handlers.GetAbsentStudentsByDate)
+	apiv1.Get("attendance/absent/teacher/:date", handlers.HandleGetAbsentTeachersByDate)
+	apiv1.Get("attendance/absent/student/:date", handlers.HandleGetAbsentStudentsByDate)
 
 	// Admin routes
 	apiv1.Put("admin/", handlers.HandleUpdateAdmin)

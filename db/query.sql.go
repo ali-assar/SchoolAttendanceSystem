@@ -1120,6 +1120,22 @@ func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error 
 	return err
 }
 
+const updateEntaranceByID = `-- name: UpdateEntaranceByID :exec
+UPDATE attendance
+SET enter_time = ?
+WHERE attendance_id = ?
+`
+
+type UpdateEntaranceByIDParams struct {
+	EnterTime    int64 `json:"enter_time"`
+	AttendanceID int64 `json:"attendance_id"`
+}
+
+func (q *Queries) UpdateEntaranceByID(ctx context.Context, arg UpdateEntaranceByIDParams) error {
+	_, err := q.db.ExecContext(ctx, updateEntaranceByID, arg.EnterTime, arg.AttendanceID)
+	return err
+}
+
 const updateExit = `-- name: UpdateExit :exec
 UPDATE attendance
 SET exit_time = ?

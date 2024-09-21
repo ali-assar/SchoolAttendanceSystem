@@ -39,6 +39,7 @@ type Querier interface {
 	GetUsersWithFalseBiometric(ctx context.Context) ([]GetUsersWithFalseBiometricRow, error)
 	GetUsersWithTrueBiometric(ctx context.Context) ([]GetUsersWithTrueBiometricRow, error)
 	UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error
+	UpdateEntaranceByID(ctx context.Context, arg UpdateEntaranceByIDParams) error
 	UpdateExit(ctx context.Context, arg UpdateExitParams) error
 	UpdateStudentAllowedTime(ctx context.Context, arg UpdateStudentAllowedTimeParams) error
 	UpdateTeacherAllowedTime(ctx context.Context, arg UpdateTeacherAllowedTimeParams) error

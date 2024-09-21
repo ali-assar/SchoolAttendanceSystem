@@ -384,6 +384,14 @@ These routes require a valid JWT token.
   ]
   ```
 
+- **Update entrance time by Attendance ID**:  
+  `PUT /api/v1/attendance/enter/:id/:enter_time`  
+- **Update Exit time by Attendance ID**:  
+  `PUT /api/v1/attendance/exit/:id/:exit_time`  
+
+  
+
+
 #### **Admin**
 
 - **Update Admin Password**:  
