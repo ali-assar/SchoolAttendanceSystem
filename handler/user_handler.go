@@ -194,12 +194,12 @@ func (h *Handlers) HandleUpdateStudent(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err})
 	}
 
-	_, err = h.Store.GetStudentByID(c.Context(), id)
+	fetchedStudent, err := h.Store.GetStudentByID(c.Context(), id)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "Teacher not found"})
 	}
 
-	_, err = h.Store.GetUserByID(c.Context(), id)
+	fetchedUser, err := h.Store.GetUserByID(c.Context(), id)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
 	}
@@ -207,6 +207,25 @@ func (h *Handlers) HandleUpdateStudent(c *fiber.Ctx) error {
 	var updateParams updateStudentParams
 	if err := c.BodyParser(&updateParams); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err})
+	}
+
+	// Fill missing user details with the fetched user data
+	if updateParams.UpdateUserDetailsParams.FirstName == "" {
+		updateParams.UpdateUserDetailsParams.FirstName = fetchedUser.FirstName
+	}
+	if updateParams.UpdateUserDetailsParams.LastName == "" {
+		updateParams.UpdateUserDetailsParams.LastName = fetchedUser.LastName
+	}
+	if updateParams.UpdateUserDetailsParams.PhoneNumber == "" {
+		updateParams.UpdateUserDetailsParams.PhoneNumber = fetchedUser.PhoneNumber
+	}
+	if updateParams.UpdateUserDetailsParams.ImagePath == "" {
+		updateParams.UpdateUserDetailsParams.ImagePath = fetchedUser.ImagePath
+	}
+
+	// Fill missing teacher allowed time params with fetched teacher data
+	if updateParams.UpdateStudentAllowedTimeParams.RequiredEntryTime == 0 {
+		updateParams.UpdateStudentAllowedTimeParams.RequiredEntryTime = fetchedStudent.RequiredEntryTime
 	}
 
 	updateParams.UpdateUserDetailsParams.UserID = id
@@ -237,12 +256,12 @@ func (h *Handlers) HandleUpdateTeacher(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err})
 	}
 
-	_, err = h.Store.GetTeacherByID(c.Context(), id)
+	fetchedTeacher, err := h.Store.GetTeacherByID(c.Context(), id)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "Teacher not found"})
 	}
 
-	_, err = h.Store.GetUserByID(c.Context(), id)
+	fetchedUser, err := h.Store.GetUserByID(c.Context(), id)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
 	}
@@ -250,6 +269,43 @@ func (h *Handlers) HandleUpdateTeacher(c *fiber.Ctx) error {
 	var updateParams updateTeacherParams
 	if err := c.BodyParser(&updateParams); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err})
+	}
+
+	// Fill missing user details with the fetched user data
+	if updateParams.UpdateUserDetailsParams.FirstName == "" {
+		updateParams.UpdateUserDetailsParams.FirstName = fetchedUser.FirstName
+	}
+	if updateParams.UpdateUserDetailsParams.LastName == "" {
+		updateParams.UpdateUserDetailsParams.LastName = fetchedUser.LastName
+	}
+	if updateParams.UpdateUserDetailsParams.PhoneNumber == "" {
+		updateParams.UpdateUserDetailsParams.PhoneNumber = fetchedUser.PhoneNumber
+	}
+	if updateParams.UpdateUserDetailsParams.ImagePath == "" {
+		updateParams.UpdateUserDetailsParams.ImagePath = fetchedUser.ImagePath
+	}
+
+	// Fill missing teacher allowed time params with fetched teacher data
+	if updateParams.UpdateTeacherAllowedTimeParams.SundayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.SundayEntryTime = fetchedTeacher.SundayEntryTime
+	}
+	if updateParams.UpdateTeacherAllowedTimeParams.MondayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.MondayEntryTime = fetchedTeacher.MondayEntryTime
+	}
+	if updateParams.UpdateTeacherAllowedTimeParams.TuesdayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.TuesdayEntryTime = fetchedTeacher.TuesdayEntryTime
+	}
+	if updateParams.UpdateTeacherAllowedTimeParams.WednesdayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.WednesdayEntryTime = fetchedTeacher.WednesdayEntryTime
+	}
+	if updateParams.UpdateTeacherAllowedTimeParams.ThursdayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.ThursdayEntryTime = fetchedTeacher.ThursdayEntryTime
+	}
+	if updateParams.UpdateTeacherAllowedTimeParams.FridayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.FridayEntryTime = fetchedTeacher.FridayEntryTime
+	}
+	if updateParams.UpdateTeacherAllowedTimeParams.SaturdayEntryTime == 0 {
+		updateParams.UpdateTeacherAllowedTimeParams.SaturdayEntryTime = fetchedTeacher.SaturdayEntryTime
 	}
 
 	updateParams.UpdateUserDetailsParams.UserID = id
