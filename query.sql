@@ -110,7 +110,7 @@ UPDATE attendance
 SET exit_time = ?
 WHERE attendance_id = ?;
 
--- name: UpdateEntaranceByID :exec
+-- name: UpdateEntranceByID :exec
 UPDATE attendance
 SET enter_time = ?
 WHERE attendance_id = ?;

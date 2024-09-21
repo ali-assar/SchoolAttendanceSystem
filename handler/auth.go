@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -52,7 +52,7 @@ func CreateTokenFromUser(user db.Admin) string {
 	secret := os.Getenv("JWT_SECRET")
 	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
-		fmt.Println("failed to sign token:", err)
+		log.Println("failed to sign token:", err)
 	}
 	return tokenStr
 }

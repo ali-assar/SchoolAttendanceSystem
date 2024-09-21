@@ -41,10 +41,15 @@ func (h *Handlers) HandleGetAdminByUserName(c *fiber.Ctx) error {
 	userName := c.Params("username")
 	admin, err := h.Store.GetAdminByUserName(c.Context(), userName)
 	if err != nil {
-		return c.Status(http.StatusNotFound).JSON(err.Error())
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{
+			"error": err,
+		})
 	}
 
-	return c.Status(http.StatusOK).JSON(admin)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"user_name": admin.UserName,
+		"password":  admin.Password,
+	})
 }
 
 func (h *Handlers) HandleUpdateAdmin(c *fiber.Ctx) error {

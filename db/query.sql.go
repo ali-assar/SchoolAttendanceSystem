@@ -1120,19 +1120,19 @@ func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error 
 	return err
 }
 
-const updateEntaranceByID = `-- name: UpdateEntaranceByID :exec
+const updateEntranceByID = `-- name: UpdateEntranceByID :exec
 UPDATE attendance
 SET enter_time = ?
 WHERE attendance_id = ?
 `
 
-type UpdateEntaranceByIDParams struct {
+type UpdateEntranceByIDParams struct {
 	EnterTime    int64 `json:"enter_time"`
 	AttendanceID int64 `json:"attendance_id"`
 }
 
-func (q *Queries) UpdateEntaranceByID(ctx context.Context, arg UpdateEntaranceByIDParams) error {
-	_, err := q.db.ExecContext(ctx, updateEntaranceByID, arg.EnterTime, arg.AttendanceID)
+func (q *Queries) UpdateEntranceByID(ctx context.Context, arg UpdateEntranceByIDParams) error {
+	_, err := q.db.ExecContext(ctx, updateEntranceByID, arg.EnterTime, arg.AttendanceID)
 	return err
 }
 
