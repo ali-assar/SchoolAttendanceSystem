@@ -42,7 +42,7 @@ func (h *Handlers) HandleGetAdminByUserName(c *fiber.Ctx) error {
 	admin, err := h.Store.GetAdminByUserName(c.Context(), userName)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 

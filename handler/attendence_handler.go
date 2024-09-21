@@ -33,7 +33,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		})
 
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		return c.Status(http.StatusCreated).JSON(fiber.Map{
@@ -56,7 +56,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
@@ -89,7 +89,7 @@ func (h *Handlers) HandleGetAttendanceByTypeAndDate(c *fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(http.StatusOK).JSON(attendanceRecords)
@@ -128,7 +128,7 @@ func (h *Handlers) HandleGetAttendanceByTypeAndDateRange(c *fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(http.StatusOK).JSON(attendanceRecords)
@@ -142,7 +142,7 @@ func (h *Handlers) HandleGetAbsentTeachersByDate(c *fiber.Ctx) error {
 
 	absentTeachers, err := FindAbsentTeachers(h.Store, c.Context(), date)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	if absentTeachers == nil {
@@ -160,7 +160,7 @@ func (h *Handlers) HandleGetAbsentStudentsByDate(c *fiber.Ctx) error {
 
 	absentStudents, err := FindAbsentStudents(h.Store, c.Context(), date)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	if absentStudents == nil {
 		return c.Status(http.StatusOK).JSON(fiber.Map{"message": "no absent student for given date"})
@@ -182,7 +182,7 @@ func (h *Handlers) HandleUpdateExitByID(c *fiber.Ctx) error {
 
 	err = h.Store.UpdateExit(c.Context(), params)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
@@ -206,7 +206,7 @@ func (h *Handlers) HandleUpdateEntranceByID(c *fiber.Ctx) error {
 
 	err = h.Store.UpdateEntranceByID(c.Context(), params)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err})
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{

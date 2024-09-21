@@ -41,4 +41,5 @@ type User struct {
 	ImagePath         string `json:"image_path"`
 	FingerID          string `json:"finger_id"`
 	IsBiometricActive bool   `json:"is_biometric_active"`
+	CreatedAt         int64  `json:"created_at"`
 }

@@ -59,6 +59,7 @@ func seedDB(ctx context.Context, store db.Querier) error {
 			FirstName:   fmt.Sprintf("%d teacher ", i),
 			LastName:    fmt.Sprintf("teacher lastname %d", i),
 			PhoneNumber: fmt.Sprintf("09%d", rand.Intn(1000000000)),
+			CreatedAt:   handler.ExtractUnixDate(time.Now().Unix()),
 		}
 
 		userID, err := store.CreateUser(ctx, userParams)

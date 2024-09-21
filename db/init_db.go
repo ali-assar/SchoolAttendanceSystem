@@ -96,7 +96,9 @@ func CreateUsersTable(db *sql.DB) error {
 		phone_number VARCHAR(50) NOT NULL,
 		image_path TEXT NOT NULL DEFAULT NULL,
 		finger_id TEXT NOT NULL DEFAULT NULL,
-		is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE
+		is_biometric_active BOOLEAN NOT NULL DEFAULT FALSE,
+		created_at INTEGER NOT NULL
+
 	);
 	`
 	_, err := db.Exec(createUsersTable)

@@ -1,7 +1,7 @@
 
 -- name: CreateUser :one
-INSERT INTO users (first_name, last_name, phone_number, image_path, finger_id, is_biometric_active)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO users (first_name, last_name, phone_number, image_path, finger_id, is_biometric_active, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING user_id;
 
 -- name: GetUserByID :one

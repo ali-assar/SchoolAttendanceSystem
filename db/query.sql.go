@@ -98,8 +98,8 @@ func (q *Queries) CreateTeacher(ctx context.Context, arg CreateTeacherParams) (i
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (first_name, last_name, phone_number, image_path, finger_id, is_biometric_active)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO users (first_name, last_name, phone_number, image_path, finger_id, is_biometric_active, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING user_id
 `
 
@@ -110,6 +110,7 @@ type CreateUserParams struct {
 	ImagePath         string `json:"image_path"`
 	FingerID          string `json:"finger_id"`
 	IsBiometricActive bool   `json:"is_biometric_active"`
+	CreatedAt         int64  `json:"created_at"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
@@ -120,6 +121,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.ImagePath,
 		arg.FingerID,
 		arg.IsBiometricActive,
+		arg.CreatedAt,
 	)
 	var user_id int64
 	err := row.Scan(&user_id)
@@ -957,9 +959,19 @@ FROM users
 WHERE user_id = ?
 `
 
-func (q *Queries) GetUserByID(ctx context.Context, userID int64) (User, error) {
+type GetUserByIDRow struct {
+	UserID            int64  `json:"user_id"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
+	ImagePath         string `json:"image_path"`
+	FingerID          string `json:"finger_id"`
+	IsBiometricActive bool   `json:"is_biometric_active"`
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, userID)
-	var i User
+	var i GetUserByIDRow
 	err := row.Scan(
 		&i.UserID,
 		&i.FirstName,
