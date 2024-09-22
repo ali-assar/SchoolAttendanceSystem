@@ -26,19 +26,19 @@ func (h *Handlers) HandleAuthenticate(c *fiber.Ctx) error {
 
 	admin, err := h.Store.GetAdminByUserName(c.Context(), params.UserName)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid username or password"})
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid username or password", "success": false})
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(params.Password))
 	if err != nil {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid username or password"})
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid username or password", "success": false})
 	}
 
 	resp := AuthResponse{
 		User:  admin.UserName,
 		Token: CreateTokenFromUser(admin),
 	}
-	return c.JSON(resp)
+	return c.JSON(fiber.Map{"message": resp, "success": true})
 }
 
 func CreateTokenFromUser(user db.Admin) string {

@@ -34,7 +34,7 @@ type Querier interface {
 	GetTeacherAttendanceByDate(ctx context.Context, date int64) ([]GetTeacherAttendanceByDateRow, error)
 	GetTeacherByID(ctx context.Context, userID int64) (GetTeacherByIDRow, error)
 	GetTeachers(ctx context.Context) ([]GetTeachersRow, error)
-	GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error)
+	GetUserByID(ctx context.Context, userID int64) (User, error)
 	GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error)
 	GetUsersWithFalseBiometric(ctx context.Context) ([]GetUsersWithFalseBiometricRow, error)
 	GetUsersWithTrueBiometric(ctx context.Context) ([]GetUsersWithTrueBiometricRow, error)

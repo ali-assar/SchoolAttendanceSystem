@@ -5,12 +5,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING user_id;
 
 -- name: GetUserByID :one
-SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active
+SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active, created_at
 FROM users
 WHERE user_id = ?;
 
 -- name: GetUserByName :many
-SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active
+SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active, created_at
 FROM users
 WHERE first_name = ? AND last_name = ?;
 
@@ -44,13 +44,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING user_id;
 
 -- name: GetTeacherByID :one
-SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
 WHERE t.user_id = ?;
 
 -- name: GetTeachers :many
-SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id;
 
@@ -65,13 +65,13 @@ VALUES (?, ?)
 RETURNING user_id;
 
 -- name: GetStudentByID :one
-SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, u.created_at, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
 WHERE s.user_id = ?;
 
 -- name: GetStudents :many
-SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, u.created_at, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id;
 

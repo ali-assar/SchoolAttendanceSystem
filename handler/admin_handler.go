@@ -42,13 +42,15 @@ func (h *Handlers) HandleGetAdminByUserName(c *fiber.Ctx) error {
 	admin, err := h.Store.GetAdminByUserName(c.Context(), userName)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{
-			"error": err.Error(),
+			"message":   err.Error(),
+			"success": false,
 		})
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"user_name": admin.UserName,
 		"password":  admin.Password,
+		"success":   true,
 	})
 }
 
@@ -57,14 +59,16 @@ func (h *Handlers) HandleUpdateAdmin(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&params); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "Failed to parse request body",
+			"message":   "Failed to parse request body",
+			"success": false,
 		})
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to hash password",
+			"message":   "Failed to hash password",
+			"success": false,
 		})
 	}
 
@@ -72,11 +76,12 @@ func (h *Handlers) HandleUpdateAdmin(c *fiber.Ctx) error {
 	err = h.Store.UpdateAdmin(c.Context(), params)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to update admin",
+			"message":   "Failed to update admin",
+			"success": false,
 		})
 	}
-
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "Admin password updated successfully",
+		"success": true,
 	})
 }

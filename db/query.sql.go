@@ -672,7 +672,7 @@ func (q *Queries) GetStudentAttendanceByDate(ctx context.Context, date int64) ([
 }
 
 const getStudentByID = `-- name: GetStudentByID :one
-SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, u.created_at, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
 WHERE s.user_id = ?
@@ -682,6 +682,7 @@ type GetStudentByIDRow struct {
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
+	CreatedAt         int64  `json:"created_at"`
 	RequiredEntryTime int64  `json:"required_entry_time"`
 }
 
@@ -692,13 +693,14 @@ func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentB
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
+		&i.CreatedAt,
 		&i.RequiredEntryTime,
 	)
 	return i, err
 }
 
 const getStudents = `-- name: GetStudents :many
-SELECT s.user_id, u.first_name, u.last_name, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, u.created_at, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
 `
@@ -707,6 +709,7 @@ type GetStudentsRow struct {
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
+	CreatedAt         int64  `json:"created_at"`
 	RequiredEntryTime int64  `json:"required_entry_time"`
 }
 
@@ -723,6 +726,7 @@ func (q *Queries) GetStudents(ctx context.Context) ([]GetStudentsRow, error) {
 			&i.UserID,
 			&i.FirstName,
 			&i.LastName,
+			&i.CreatedAt,
 			&i.RequiredEntryTime,
 		); err != nil {
 			return nil, err
@@ -863,7 +867,7 @@ func (q *Queries) GetTeacherAttendanceByDate(ctx context.Context, date int64) ([
 }
 
 const getTeacherByID = `-- name: GetTeacherByID :one
-SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
 WHERE t.user_id = ?
@@ -873,6 +877,7 @@ type GetTeacherByIDRow struct {
 	UserID             int64  `json:"user_id"`
 	FirstName          string `json:"first_name"`
 	LastName           string `json:"last_name"`
+	CreatedAt          int64  `json:"created_at"`
 	SundayEntryTime    int64  `json:"sunday_entry_time"`
 	MondayEntryTime    int64  `json:"monday_entry_time"`
 	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
@@ -889,6 +894,7 @@ func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherB
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
+		&i.CreatedAt,
 		&i.SundayEntryTime,
 		&i.MondayEntryTime,
 		&i.TuesdayEntryTime,
@@ -901,7 +907,7 @@ func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherB
 }
 
 const getTeachers = `-- name: GetTeachers :many
-SELECT t.user_id, u.first_name, u.last_name, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
 `
@@ -910,6 +916,7 @@ type GetTeachersRow struct {
 	UserID             int64  `json:"user_id"`
 	FirstName          string `json:"first_name"`
 	LastName           string `json:"last_name"`
+	CreatedAt          int64  `json:"created_at"`
 	SundayEntryTime    int64  `json:"sunday_entry_time"`
 	MondayEntryTime    int64  `json:"monday_entry_time"`
 	TuesdayEntryTime   int64  `json:"tuesday_entry_time"`
@@ -932,6 +939,7 @@ func (q *Queries) GetTeachers(ctx context.Context) ([]GetTeachersRow, error) {
 			&i.UserID,
 			&i.FirstName,
 			&i.LastName,
+			&i.CreatedAt,
 			&i.SundayEntryTime,
 			&i.MondayEntryTime,
 			&i.TuesdayEntryTime,
@@ -954,24 +962,14 @@ func (q *Queries) GetTeachers(ctx context.Context) ([]GetTeachersRow, error) {
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active
+SELECT user_id, first_name, last_name, phone_number, image_path, finger_id, is_biometric_active, created_at
 FROM users
 WHERE user_id = ?
 `
 
-type GetUserByIDRow struct {
-	UserID            int64  `json:"user_id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
-	PhoneNumber       string `json:"phone_number"`
-	ImagePath         string `json:"image_path"`
-	FingerID          string `json:"finger_id"`
-	IsBiometricActive bool   `json:"is_biometric_active"`
-}
-
-func (q *Queries) GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow, error) {
+func (q *Queries) GetUserByID(ctx context.Context, userID int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, userID)
-	var i GetUserByIDRow
+	var i User
 	err := row.Scan(
 		&i.UserID,
 		&i.FirstName,
@@ -980,12 +978,13 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int64) (GetUserByIDRow
 		&i.ImagePath,
 		&i.FingerID,
 		&i.IsBiometricActive,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getUserByName = `-- name: GetUserByName :many
-SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active
+SELECT user_id, first_name, last_name, phone_number, image_path, is_biometric_active, created_at
 FROM users
 WHERE first_name = ? AND last_name = ?
 `
@@ -1002,6 +1001,7 @@ type GetUserByNameRow struct {
 	PhoneNumber       string `json:"phone_number"`
 	ImagePath         string `json:"image_path"`
 	IsBiometricActive bool   `json:"is_biometric_active"`
+	CreatedAt         int64  `json:"created_at"`
 }
 
 func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) ([]GetUserByNameRow, error) {
@@ -1020,6 +1020,7 @@ func (q *Queries) GetUserByName(ctx context.Context, arg GetUserByNameParams) ([
 			&i.PhoneNumber,
 			&i.ImagePath,
 			&i.IsBiometricActive,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
