@@ -20,6 +20,11 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 	}
 	date := ExtractUnixDate(params.Time)
 
+	fetchedUser, err := h.Store.GetUserByID(c.Context(), params.UserID)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
+	}
+
 	attendance, err := h.Store.GetAttendanceByUserIDAndDate(c.Context(), db.GetAttendanceByUserIDAndDateParams{
 		UserID: params.UserID,
 		Date:   date,
@@ -37,14 +42,21 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		}
 
 		return c.Status(http.StatusCreated).JSON(fiber.Map{
-			"message": "Entrance created",
-			"id":      attendanceID,
-			"success": true,
+			"message":    "Entrance created",
+			"first_name": fetchedUser.FirstName,
+			"last_name":  fetchedUser.LastName,
+			"id":         attendanceID,
+			"success":    true,
 		})
 	}
 
 	if UnixToMinute(params.Time)-UnixToMinute(attendance.EnterTime) < 1 {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "repetitive record", "success": false})
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message":    "repetitive record",
+			"first_name": fetchedUser.FirstName,
+			"last_name":  fetchedUser.LastName,
+			"success":    false,
+		})
 	}
 
 	// If the record exists but exit_time is already set, return a conflict
@@ -61,9 +73,11 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "Exit created",
-		"id":      attendance.AttendanceID,
-		"success": true,
+		"message":    "Exit created",
+		"first_name": fetchedUser.FirstName,
+		"last_name":  fetchedUser.LastName,
+		"id":         attendance.AttendanceID,
+		"success":    true,
 	})
 }
 
