@@ -165,7 +165,7 @@ func (h *Handlers) HandleGetAbsentTeachersByDate(c *fiber.Ctx) error {
 		return c.Status(http.StatusOK).JSON(fiber.Map{"message": "no absent teacher for given date", "success": true})
 	}
 
-	return c.Status(http.StatusOK).JSON(absentTeachers)
+	return c.Status(http.StatusOK).JSON(fiber.Map{"message": absentTeachers, "success": true})
 }
 
 func (h *Handlers) HandleGetAbsentStudentsByDate(c *fiber.Ctx) error {
@@ -181,7 +181,8 @@ func (h *Handlers) HandleGetAbsentStudentsByDate(c *fiber.Ctx) error {
 	if absentStudents == nil {
 		return c.Status(http.StatusOK).JSON(fiber.Map{"message": "no absent student for given date", "success": false})
 	}
-	return c.Status(http.StatusOK).JSON(absentStudents)
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{"message": absentStudents, "success": true})
 }
 
 func (h *Handlers) HandleUpdateExitByID(c *fiber.Ctx) error {

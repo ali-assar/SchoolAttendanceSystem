@@ -389,7 +389,13 @@ These routes require a valid JWT token.
 - **Update Exit time by Attendance ID**:  
   `PUT /api/v1/attendance/exit/:id/:exit_time`  
 
-  
+*** absent teachers ***
+  you can fetch absent teachers be below route:
+    `get /api/v1/attendance/absent/teacher/:date`  
+
+*** absent teachers ***
+  you can fetch absent students be below route:
+    `get /api/v1/attendance/absent/student/:date`  
 
 
 #### **Admin**
