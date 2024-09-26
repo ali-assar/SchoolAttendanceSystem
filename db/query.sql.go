@@ -672,7 +672,7 @@ func (q *Queries) GetStudentAttendanceByDate(ctx context.Context, date int64) ([
 }
 
 const getStudentByID = `-- name: GetStudentByID :one
-SELECT s.user_id, u.first_name, u.last_name, u.created_at, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, u.phone_number,u.created_at, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
 WHERE s.user_id = ?
@@ -682,6 +682,7 @@ type GetStudentByIDRow struct {
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
 	CreatedAt         int64  `json:"created_at"`
 	RequiredEntryTime int64  `json:"required_entry_time"`
 }
@@ -693,6 +694,7 @@ func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentB
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
+		&i.PhoneNumber,
 		&i.CreatedAt,
 		&i.RequiredEntryTime,
 	)
@@ -700,7 +702,7 @@ func (q *Queries) GetStudentByID(ctx context.Context, userID int64) (GetStudentB
 }
 
 const getStudents = `-- name: GetStudents :many
-SELECT s.user_id, u.first_name, u.last_name, u.created_at, s.required_entry_time
+SELECT s.user_id, u.first_name, u.last_name, u.phone_number,u.created_at, s.required_entry_time
 FROM students s
 JOIN users u ON s.user_id = u.user_id
 `
@@ -709,6 +711,7 @@ type GetStudentsRow struct {
 	UserID            int64  `json:"user_id"`
 	FirstName         string `json:"first_name"`
 	LastName          string `json:"last_name"`
+	PhoneNumber       string `json:"phone_number"`
 	CreatedAt         int64  `json:"created_at"`
 	RequiredEntryTime int64  `json:"required_entry_time"`
 }
@@ -726,6 +729,7 @@ func (q *Queries) GetStudents(ctx context.Context) ([]GetStudentsRow, error) {
 			&i.UserID,
 			&i.FirstName,
 			&i.LastName,
+			&i.PhoneNumber,
 			&i.CreatedAt,
 			&i.RequiredEntryTime,
 		); err != nil {
@@ -867,7 +871,7 @@ func (q *Queries) GetTeacherAttendanceByDate(ctx context.Context, date int64) ([
 }
 
 const getTeacherByID = `-- name: GetTeacherByID :one
-SELECT t.user_id, u.first_name, u.last_name, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, u.phone_number ,u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
 WHERE t.user_id = ?
@@ -877,6 +881,7 @@ type GetTeacherByIDRow struct {
 	UserID             int64  `json:"user_id"`
 	FirstName          string `json:"first_name"`
 	LastName           string `json:"last_name"`
+	PhoneNumber        string `json:"phone_number"`
 	CreatedAt          int64  `json:"created_at"`
 	SundayEntryTime    int64  `json:"sunday_entry_time"`
 	MondayEntryTime    int64  `json:"monday_entry_time"`
@@ -894,6 +899,7 @@ func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherB
 		&i.UserID,
 		&i.FirstName,
 		&i.LastName,
+		&i.PhoneNumber,
 		&i.CreatedAt,
 		&i.SundayEntryTime,
 		&i.MondayEntryTime,
@@ -907,7 +913,7 @@ func (q *Queries) GetTeacherByID(ctx context.Context, userID int64) (GetTeacherB
 }
 
 const getTeachers = `-- name: GetTeachers :many
-SELECT t.user_id, u.first_name, u.last_name, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
+SELECT t.user_id, u.first_name, u.last_name, u.phone_number, u.created_at, t.sunday_entry_time, t.monday_entry_time, t.tuesday_entry_time, t.wednesday_entry_time, t.thursday_entry_time, t.friday_entry_time, t.saturday_entry_time
 FROM teachers t
 JOIN users u ON t.user_id = u.user_id
 `
@@ -916,6 +922,7 @@ type GetTeachersRow struct {
 	UserID             int64  `json:"user_id"`
 	FirstName          string `json:"first_name"`
 	LastName           string `json:"last_name"`
+	PhoneNumber        string `json:"phone_number"`
 	CreatedAt          int64  `json:"created_at"`
 	SundayEntryTime    int64  `json:"sunday_entry_time"`
 	MondayEntryTime    int64  `json:"monday_entry_time"`
@@ -939,6 +946,7 @@ func (q *Queries) GetTeachers(ctx context.Context) ([]GetTeachersRow, error) {
 			&i.UserID,
 			&i.FirstName,
 			&i.LastName,
+			&i.PhoneNumber,
 			&i.CreatedAt,
 			&i.SundayEntryTime,
 			&i.MondayEntryTime,
