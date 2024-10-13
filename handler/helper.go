@@ -143,31 +143,31 @@ func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]db.Ge
 
 		switch dayOfWeek {
 		case 1:
-			if normalizedEnterTime > user.MondayEntryTime && user.MondayEntryTime != 0 {
+			if normalizedEnterTime > user.MondayEntryTime+localTimeOffset && user.MondayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		case 2:
-			if normalizedEnterTime > user.TuesdayEntryTime && user.TuesdayEntryTime != 0 {
+			if normalizedEnterTime > user.TuesdayEntryTime+localTimeOffset && user.TuesdayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		case 3:
-			if normalizedEnterTime > user.WednesdayEntryTime && user.WednesdayEntryTime != 0 {
+			if normalizedEnterTime > user.WednesdayEntryTime+localTimeOffset && user.WednesdayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		case 4:
-			if normalizedEnterTime > user.ThursdayEntryTime && user.ThursdayEntryTime != 0 {
+			if normalizedEnterTime > user.ThursdayEntryTime+localTimeOffset && user.ThursdayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		case 5:
-			if normalizedEnterTime > user.FridayEntryTime && user.FridayEntryTime != 0 {
+			if normalizedEnterTime > user.FridayEntryTime+localTimeOffset && user.FridayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		case 6:
-			if normalizedEnterTime > user.SaturdayEntryTime && user.SaturdayEntryTime != 0 {
+			if normalizedEnterTime > user.SaturdayEntryTime+localTimeOffset && user.SaturdayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		case 0:
-			if normalizedEnterTime > user.SundayEntryTime && user.SundayEntryTime != 0 {
+			if normalizedEnterTime > user.SundayEntryTime+localTimeOffset && user.SundayEntryTime != 0 {
 				delayOnDay = append(delayOnDay, user)
 			}
 		}

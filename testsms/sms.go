@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
@@ -34,12 +35,12 @@ func ScheduleDailyAt(store db.Querier, ctx context.Context, hour, minute int) {
 			log.Println("Absent teachers for the day:", names)
 			log.Println("Absent teachers phone:", phone)
 			if names != "" {
-				message := fmt.Sprintf("مدیر گرامی، همکاران %s امروز غیبت داشته‌اند", names)
+				message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز غیبت داشته‌اند", names)
 				fmt.Println(message)
-				// err := sendSMS(phone, message)
-				// if err != nil {
-				// 	log.Println(err)
-				// }
+				err := sendSMS(phone, message)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 
 		}
@@ -71,12 +72,12 @@ func ScheduleDelayDailyAt(store db.Querier, ctx context.Context, hour, minute in
 			log.Println("teachers delay for the day:", names)
 			log.Println("teachers delay phone:", phone)
 			if names != "" {
-				message := fmt.Sprintf("مدیر گرامی، همکاران %s امروز تاخییر داشته‌اند", names)
+				message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز تاخییر داشته‌اند", names)
 				fmt.Println(message)
-				// err := sendSMS(phone, message)
-				// if err != nil {
-				// 	log.Println(err)
-				// }
+				err := sendSMS(phone, message)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 
 		}
@@ -90,12 +91,15 @@ func sendSMS(phone string, message string) error {
 	// Replace with your username, password, and sender number
 	username := "mt.09351851182"
 	password := "Eram@12321"
-	from := "5000454601610"
+	from := "10009611"
+
+	encodedMessage := url.QueryEscape(message)
 
 	// Build the URL for the SMS request
 	url := fmt.Sprintf("https://media.sms24.ir/SMSInOutBox/SendSms?username=%s&password=%s&from=%s&to=%s&text=%s",
-		username, password, from, phone, message)
+		username, password, from, phone, encodedMessage)
 
+	fmt.Println(url)
 	// Make the HTTP request
 	resp, err := http.Get(url)
 	if err != nil {

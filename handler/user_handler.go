@@ -27,6 +27,13 @@ func (h *Handlers) HandlePostTeacher(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 	}
 	postParams.CreateTeacherParams.UserID = id
+	postParams.CreateTeacherParams.MondayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.MondayEntryTime)
+	postParams.CreateTeacherParams.TuesdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.TuesdayEntryTime)
+	postParams.CreateTeacherParams.WednesdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.WednesdayEntryTime)
+	postParams.CreateTeacherParams.ThursdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.ThursdayEntryTime)
+	postParams.CreateTeacherParams.SaturdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.SaturdayEntryTime)
+	postParams.CreateTeacherParams.SundayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.SundayEntryTime)
+
 	_, err = h.Store.CreateTeacher(c.Context(), postParams.CreateTeacherParams)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
@@ -363,6 +370,6 @@ func (h *Handlers) HandleGetUserByJWT(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"user_name": user.UserName,
-		"success": true,
+		"success":   true,
 	})
 }
