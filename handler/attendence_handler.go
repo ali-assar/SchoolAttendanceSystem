@@ -61,7 +61,12 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 
 	// If the record exists but exit_time is already set, return a conflict
 	if attendance.ExitTime != 0 {
-		return c.Status(http.StatusConflict).JSON(fiber.Map{"message": fmt.Sprintf("Exit time for user %d on date %d already exists", params.UserID, date), "success": false})
+		return c.Status(http.StatusConflict).JSON(fiber.Map{
+			"message": fmt.Sprintf("Exit time for user %d on date %d already exists", params.UserID, date), 
+			"first_name": fetchedUser.FirstName,
+			"last_name":  fetchedUser.LastName,
+
+			"success": false})
 	}
 	err = h.Store.UpdateExit(c.Context(), db.UpdateExitParams{
 		AttendanceID: attendance.AttendanceID,
