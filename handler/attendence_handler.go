@@ -25,12 +25,23 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 	}
 
-	attendance, err := h.Store.GetAttendanceByUserIDAndDate(c.Context(), db.GetAttendanceByUserIDAndDateParams{
+	attendance, _ := h.Store.GetAttendanceByUserIDAndDate(c.Context(), db.GetAttendanceByUserIDAndDateParams{
 		UserID: params.UserID,
 		Date:   date,
 	})
 
-	if err != nil {
+	if attendance != nil {
+		if UnixToMinute(params.Time)-UnixToMinute(attendance[len(attendance)-1].ExitTime) < 1 {
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+				"message":    "repetitive record",
+				"first_name": fetchedUser.FirstName,
+				"last_name":  fetchedUser.LastName,
+				"success":    false,
+			})
+		}
+	}
+
+	if attendance == nil || (attendance[len(attendance)-1].ExitTime > 0) {
 		attendanceID, err := h.Store.CreateEntrance(c.Context(), db.CreateEntranceParams{
 			UserID:    params.UserID,
 			EnterTime: params.Time,
@@ -50,7 +61,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	if UnixToMinute(params.Time)-UnixToMinute(attendance.EnterTime) < 1 {
+	if UnixToMinute(params.Time)-UnixToMinute(attendance[len(attendance)-1].EnterTime) < 1 {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"message":    "repetitive record",
 			"first_name": fetchedUser.FirstName,
@@ -59,31 +70,27 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	// If the record exists but exit_time is already set, return a conflict
-	if attendance.ExitTime != 0 {
-		return c.Status(http.StatusConflict).JSON(fiber.Map{
-			"message": fmt.Sprintf("Exit time for user %d on date %d already exists", params.UserID, date), 
+	if attendance[len(attendance)-1].ExitTime == 0 {
+		fmt.Println("here2")
+		err = h.Store.UpdateExit(c.Context(), db.UpdateExitParams{
+			AttendanceID: attendance[len(attendance)-1].AttendanceID,
+			ExitTime:     params.Time,
+		})
+
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"message":    "Exit created",
 			"first_name": fetchedUser.FirstName,
 			"last_name":  fetchedUser.LastName,
-
-			"success": false})
-	}
-	err = h.Store.UpdateExit(c.Context(), db.UpdateExitParams{
-		AttendanceID: attendance.AttendanceID,
-		ExitTime:     params.Time,
-	})
-
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
+			"id":         attendance[len(attendance)-1].AttendanceID,
+			"success":    true,
+		})
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message":    "Exit created",
-		"first_name": fetchedUser.FirstName,
-		"last_name":  fetchedUser.LastName,
-		"id":         attendance.AttendanceID,
-		"success":    true,
-	})
+	return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 }
 
 func (h *Handlers) HandleGetAttendanceByTypeAndDate(c *fiber.Ctx) error {

@@ -445,7 +445,7 @@ func (q *Queries) GetAttendanceByUserID(ctx context.Context, userID int64) ([]At
 	return items, nil
 }
 
-const getAttendanceByUserIDAndDate = `-- name: GetAttendanceByUserIDAndDate :one
+const getAttendanceByUserIDAndDate = `-- name: GetAttendanceByUserIDAndDate :many
 SELECT attendance_id, user_id, date, enter_time, exit_time
 FROM attendance
 WHERE user_id = ? AND date = ?
@@ -456,17 +456,33 @@ type GetAttendanceByUserIDAndDateParams struct {
 	Date   int64 `json:"date"`
 }
 
-func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error) {
-	row := q.db.QueryRowContext(ctx, getAttendanceByUserIDAndDate, arg.UserID, arg.Date)
-	var i Attendance
-	err := row.Scan(
-		&i.AttendanceID,
-		&i.UserID,
-		&i.Date,
-		&i.EnterTime,
-		&i.ExitTime,
-	)
-	return i, err
+func (q *Queries) GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) ([]Attendance, error) {
+	rows, err := q.db.QueryContext(ctx, getAttendanceByUserIDAndDate, arg.UserID, arg.Date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Attendance
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.AttendanceID,
+			&i.UserID,
+			&i.Date,
+			&i.EnterTime,
+			&i.ExitTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getFullDetailsTeacherAttendanceByDate = `-- name: GetFullDetailsTeacherAttendanceByDate :many

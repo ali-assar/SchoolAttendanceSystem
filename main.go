@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/handler"
-	sms "github.com/Ali-Assar/SchoolAttendanceSystem/issues/testsms"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -94,8 +92,8 @@ func main() {
 	if ip == "" {
 		ip = "127.0.0.1:3000"
 	}
-	go sms.ScheduleDailyAt(store, context.Background(), 11, 20)
-	go sms.ScheduleDelayDailyAt(store, context.Background(), 11, 20)
+	//go sms.ScheduleDailyAt(store, context.Background(), 11, 20)
+	//go sms.ScheduleDelayDailyAt(store, context.Background(), 11, 20)
 
 	log.Fatal(app.Listen(ip))
 }

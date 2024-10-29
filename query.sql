@@ -119,7 +119,7 @@ WHERE attendance_id = ?;
 DELETE FROM attendance
 WHERE attendance_id = ?;
 
--- name: GetAttendanceByUserIDAndDate :one
+-- name: GetAttendanceByUserIDAndDate :many
 SELECT attendance_id, user_id, date, enter_time, exit_time
 FROM attendance
 WHERE user_id = ? AND date = ?;

@@ -24,7 +24,7 @@ type Querier interface {
 	GetAttendanceBetweenDates(ctx context.Context, arg GetAttendanceBetweenDatesParams) ([]GetAttendanceBetweenDatesRow, error)
 	GetAttendanceByDate(ctx context.Context, date int64) ([]GetAttendanceByDateRow, error)
 	GetAttendanceByUserID(ctx context.Context, userID int64) ([]Attendance, error)
-	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) (Attendance, error)
+	GetAttendanceByUserIDAndDate(ctx context.Context, arg GetAttendanceByUserIDAndDateParams) ([]Attendance, error)
 	GetFullDetailsTeacherAttendanceByDate(ctx context.Context, date int64) ([]GetFullDetailsTeacherAttendanceByDateRow, error)
 	GetStudentAttendanceBetweenDates(ctx context.Context, arg GetStudentAttendanceBetweenDatesParams) ([]GetStudentAttendanceBetweenDatesRow, error)
 	GetStudentAttendanceByDate(ctx context.Context, date int64) ([]GetStudentAttendanceByDateRow, error)
