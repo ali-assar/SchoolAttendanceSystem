@@ -19,6 +19,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error(), "success": false})
 	}
 	date := ExtractUnixDate(params.Time)
+	print(params.UserID)
 
 	fetchedUser, err := h.Store.GetUserByID(c.Context(), params.UserID)
 	if err != nil {
@@ -30,18 +31,17 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		Date:   date,
 	})
 
-	if attendance != nil {
-		if UnixToMinute(params.Time)-UnixToMinute(attendance[len(attendance)-1].ExitTime) < 1 {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-				"message":    "repetitive record",
-				"first_name": fetchedUser.FirstName,
-				"last_name":  fetchedUser.LastName,
-				"success":    false,
-			})
-		}
-	}
-
 	if attendance == nil || (attendance[len(attendance)-1].ExitTime > 0) {
+		if len(attendance) != 0 {
+			if UnixToMinute(params.Time)-UnixToMinute(attendance[len(attendance)-1].ExitTime) < 1 {
+				return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+					"message":    "repetitive record",
+					"first_name": fetchedUser.FirstName,
+					"last_name":  fetchedUser.LastName,
+					"success":    false,
+				})
+			}
+		}
 		attendanceID, err := h.Store.CreateEntrance(c.Context(), db.CreateEntranceParams{
 			UserID:    params.UserID,
 			EnterTime: params.Time,
@@ -71,7 +71,6 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 	}
 
 	if attendance[len(attendance)-1].ExitTime == 0 {
-		fmt.Println("here2")
 		err = h.Store.UpdateExit(c.Context(), db.UpdateExitParams{
 			AttendanceID: attendance[len(attendance)-1].AttendanceID,
 			ExitTime:     params.Time,
@@ -89,6 +88,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 			"success":    true,
 		})
 	}
+	fmt.Println("here")
 
 	return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 }
