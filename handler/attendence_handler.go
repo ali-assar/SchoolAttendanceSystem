@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
@@ -33,7 +32,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 
 	if attendance == nil || (attendance[len(attendance)-1].ExitTime > 0) {
 		if len(attendance) != 0 {
-			if UnixToMinute(params.Time)-UnixToMinute(attendance[len(attendance)-1].ExitTime) < 1 {
+			if params.Time-attendance[len(attendance)-1].ExitTime < 60 {
 				return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 					"message":    "repetitive record",
 					"first_name": fetchedUser.FirstName,
@@ -61,7 +60,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		})
 	}
 
-	if UnixToMinute(params.Time)-UnixToMinute(attendance[len(attendance)-1].EnterTime) < 1 {
+	if params.Time-attendance[len(attendance)-1].EnterTime < 60 {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"message":    "repetitive record",
 			"first_name": fetchedUser.FirstName,
@@ -88,7 +87,6 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 			"success":    true,
 		})
 	}
-	fmt.Println("here")
 
 	return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 }
