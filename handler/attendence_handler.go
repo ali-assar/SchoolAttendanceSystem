@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
@@ -18,7 +19,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error(), "success": false})
 	}
 	date := ExtractUnixDate(params.Time)
-	print(params.UserID)
+	log.Printf("time = %d", params.Time)
 
 	fetchedUser, err := h.Store.GetUserByID(c.Context(), params.UserID)
 	if err != nil {
@@ -51,7 +52,7 @@ func (h *Handlers) HandleAttendance(c *fiber.Ctx) error {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 		}
 
-		return c.Status(http.StatusCreated).JSON(fiber.Map{
+		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"message":    "Entrance created",
 			"first_name": fetchedUser.FirstName,
 			"last_name":  fetchedUser.LastName,

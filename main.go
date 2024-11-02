@@ -4,10 +4,11 @@ import (
 	"context"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/handler"
-	sms "github.com/Ali-Assar/SchoolAttendanceSystem/issues/testsms"
+	sms "github.com/Ali-Assar/SchoolAttendanceSystem/issues/sms"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -96,8 +97,20 @@ func main() {
 		ip = "127.0.0.1:3000"
 	}
 
-	go sms.ScheduleDailyAt(store, context.Background(), 10, 0)
-	go sms.ScheduleDelayDailyAt(store, context.Background(), 10, 0)
+	sendHour := os.Getenv("SEND_HOUR")
+	if sendHour == "" {
+		sendHour = "10"
+	}
+	intSendHour, _ := strconv.ParseInt(sendHour, 10, 64)
+
+	sendMin := os.Getenv("SEND_MINUTE")
+	if sendMin == "" {
+		sendMin = "0"
+	}
+	intSendMin, _ := strconv.ParseInt(sendMin, 10, 64)
+
+	go sms.ScheduleDailyAt(store, context.Background(), int(intSendHour), int(intSendMin))
+	go sms.ScheduleDelayDailyAt(store, context.Background(), int(intSendHour), int(intSendMin))
 
 	log.Fatal(app.Listen(ip))
 }
