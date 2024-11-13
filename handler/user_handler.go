@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,19 +22,33 @@ func (h *Handlers) HandlePostTeacher(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error(), "success": false})
 	}
 
+	// Apply date stripping to CreatedAt if needed
 	postParams.CreateUserParams.CreatedAt = ExtractUnixDate(time.Now().Unix())
+
+	// Store user and retrieve ID
 	id, err := h.Store.CreateUser(c.Context(), postParams.CreateUserParams)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})
 	}
 	postParams.CreateTeacherParams.UserID = id
-	postParams.CreateTeacherParams.MondayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.MondayEntryTime)
-	postParams.CreateTeacherParams.TuesdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.TuesdayEntryTime)
-	postParams.CreateTeacherParams.WednesdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.WednesdayEntryTime)
-	postParams.CreateTeacherParams.ThursdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.ThursdayEntryTime)
-	postParams.CreateTeacherParams.SaturdayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.SaturdayEntryTime)
-	postParams.CreateTeacherParams.SundayEntryTime = ExtractUnixTime(postParams.CreateTeacherParams.SundayEntryTime)
 
+	// Extract Unix time consistently for each weekday entry time
+	dayEntryTimes := []*int64{
+		&postParams.CreateTeacherParams.MondayEntryTime,
+		&postParams.CreateTeacherParams.TuesdayEntryTime,
+		&postParams.CreateTeacherParams.WednesdayEntryTime,
+		&postParams.CreateTeacherParams.ThursdayEntryTime,
+		&postParams.CreateTeacherParams.SaturdayEntryTime,
+		&postParams.CreateTeacherParams.SundayEntryTime,
+	}
+	for _, entryTime := range dayEntryTimes {
+		if entryTime != nil {
+			*entryTime = ExtractUnixTime(*entryTime)
+			fmt.Printf("Extracted time for entry: %d\n", *entryTime) // Logging for debugging
+		}
+	}
+
+	// Store teacher
 	_, err = h.Store.CreateTeacher(c.Context(), postParams.CreateTeacherParams)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": err.Error(), "success": false})

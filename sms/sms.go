@@ -17,36 +17,36 @@ func ScheduleDailyAt(store db.Querier, ctx context.Context, hour, minute int) {
 	for {
 		now := time.Now()
 
-		// Calculate next 10 AM (or next day's 10 AM if it's past 10 AM today)
+		// Set next execution time based on current OS time
 		next := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
 		if now.After(next) {
-			next = next.Add(24 * time.Hour)
+			next = next.Add(24* time.Hour)
 		}
 
+		// Check and log current system time each day
+		log.Printf("Current system time: %v", time.Now())
+		log.Printf("Scheduled time for next SMS: %v", next)
+
 		sleepDuration := next.Sub(now)
-		log.Printf("Waiting for %v until next %d:%d AM...\n", sleepDuration, hour, minute)
+		log.Printf("Sleeping for %v until next scheduled time...\n", sleepDuration)
 		time.Sleep(sleepDuration)
 
+		// Perform the scheduled task
 		date := int(time.Now().Unix())
 		names, phone, err := handler.GetFormattedAbsentTeachers(store, ctx, date)
 		if err != nil {
 			log.Println("Error fetching absent teachers:", err)
-		} else {
-			log.Println("Absent teachers for the day:", names)
-			log.Println("Absent teachers phone:", phone)
-			if names != "" {
-				message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز غیبت داشته‌اند", names)
-				fmt.Println(message)
-				err := sendSMS(phone, message)
-				if err != nil {
-					log.Println(err)
-				}
+		} else if names != "" {
+			message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز غیبت داشته‌اند", names)
+			fmt.Println(message)
+			err := sendSMS(phone, message)
+			if err != nil {
+				log.Println("SMS send error:", err)
 			}
-
 		}
 
-		// After calling, sleep for 24 hours to run again the next day at 10 AM
-		time.Sleep(24 * time.Hour)
+		// Ensure it runs again in the next 24 hours regardless of time sync issues
+		time.Sleep(2 * time.Minute)
 	}
 }
 
@@ -54,32 +54,32 @@ func ScheduleDelayDailyAt(store db.Querier, ctx context.Context, hour, minute in
 	for {
 		now := time.Now()
 
-		// Calculate next 10 AM (or next day's 10 AM if it's past 10 AM today)
+		// Set next execution time based on current OS time
 		next := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
 		if now.After(next) {
 			next = next.Add(24 * time.Hour)
 		}
 
+		// Check and log current system time each day
+		log.Printf("Current system time: %v", time.Now())
+		log.Printf("Scheduled time for next SMS: %v", next)
+
 		sleepDuration := next.Sub(now)
-		log.Printf("Waiting for %v until next %d:%d AM...\n", sleepDuration, hour, minute)
+		log.Printf("Sleeping for %v until next scheduled time...\n", sleepDuration)
 		time.Sleep(sleepDuration)
 
+		// Perform the scheduled task
 		date := int(time.Now().Unix())
 		names, phone, err := handler.GetFormattedTeachersDelay(store, ctx, date)
 		if err != nil {
 			log.Println("Error fetching absent teachers:", err)
-		} else {
-			log.Println("teachers delay for the day:", names)
-			log.Println("teachers delay phone:", phone)
-			if names != "" {
-				message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز تاخییر داشته‌اند", names)
-				fmt.Println(message)
-				err := sendSMS(phone, message)
-				if err != nil {
-					log.Println(err)
-				}
+		} else if names != "" {
+			message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز تاخیی داشته‌اند", names)
+			fmt.Println(message)
+			err := sendSMS(phone, message)
+			if err != nil {
+				log.Println("SMS send error:", err)
 			}
-
 		}
 
 		// After calling, sleep for 24 hours to run again the next day at 10 AM
