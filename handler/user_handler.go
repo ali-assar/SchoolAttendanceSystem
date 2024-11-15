@@ -315,28 +315,21 @@ func (h *Handlers) HandleUpdateTeacher(c *fiber.Ctx) error {
 		updateParams.UpdateUserDetailsParams.ImagePath = fetchedUser.ImagePath
 	}
 
-	// Fill missing teacher allowed time params with fetched teacher data
-	if updateParams.UpdateTeacherAllowedTimeParams.SundayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.SundayEntryTime = fetchedTeacher.SundayEntryTime
-	}
-	if updateParams.UpdateTeacherAllowedTimeParams.MondayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.MondayEntryTime = fetchedTeacher.MondayEntryTime
-	}
-	if updateParams.UpdateTeacherAllowedTimeParams.TuesdayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.TuesdayEntryTime = fetchedTeacher.TuesdayEntryTime
-	}
-	if updateParams.UpdateTeacherAllowedTimeParams.WednesdayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.WednesdayEntryTime = fetchedTeacher.WednesdayEntryTime
-	}
-	if updateParams.UpdateTeacherAllowedTimeParams.ThursdayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.ThursdayEntryTime = fetchedTeacher.ThursdayEntryTime
-	}
-	if updateParams.UpdateTeacherAllowedTimeParams.FridayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.FridayEntryTime = fetchedTeacher.FridayEntryTime
-	}
-	if updateParams.UpdateTeacherAllowedTimeParams.SaturdayEntryTime == 0 {
-		updateParams.UpdateTeacherAllowedTimeParams.SaturdayEntryTime = fetchedTeacher.SaturdayEntryTime
-	}
+	// Apply ExtractUnixTime to all entry times to ensure consistency
+	updateParams.UpdateTeacherAllowedTimeParams.SundayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.SundayEntryTime, fetchedTeacher.SundayEntryTime)
+	updateParams.UpdateTeacherAllowedTimeParams.MondayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.MondayEntryTime, fetchedTeacher.MondayEntryTime)
+	updateParams.UpdateTeacherAllowedTimeParams.TuesdayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.TuesdayEntryTime, fetchedTeacher.TuesdayEntryTime)
+	updateParams.UpdateTeacherAllowedTimeParams.WednesdayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.WednesdayEntryTime, fetchedTeacher.WednesdayEntryTime)
+	updateParams.UpdateTeacherAllowedTimeParams.ThursdayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.ThursdayEntryTime, fetchedTeacher.ThursdayEntryTime)
+	updateParams.UpdateTeacherAllowedTimeParams.FridayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.FridayEntryTime, fetchedTeacher.FridayEntryTime)
+	updateParams.UpdateTeacherAllowedTimeParams.SaturdayEntryTime = ExtractUnixTimeOrFetched(
+		updateParams.UpdateTeacherAllowedTimeParams.SaturdayEntryTime, fetchedTeacher.SaturdayEntryTime)
 
 	updateParams.UpdateUserDetailsParams.UserID = id
 	updateParams.UpdateTeacherAllowedTimeParams.UserID = id

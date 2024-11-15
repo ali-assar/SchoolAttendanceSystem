@@ -9,6 +9,14 @@ import (
 	"github.com/Ali-Assar/SchoolAttendanceSystem/issues/db"
 )
 
+// Helper function to apply ExtractUnixTime or return fetched value if zero
+func ExtractUnixTimeOrFetched(newTime, fetchedTime int64) int64 {
+	// if newTime == 0 {
+	// 	return ExtractUnixTime(fetchedTime)
+	// }
+	return ExtractUnixTime(newTime)
+}
+
 func UnixToMinute(timestamp int64) int64 {
 	return (timestamp % 3600) / 60
 }
