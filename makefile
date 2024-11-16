@@ -13,11 +13,11 @@ sqlc:
 
 build-reduce: $(BIN_DIR)
 	@echo "Building the main application..."
-	@go build -ldflags="-s -w" -o $(BIN_DIR)/$(EXECUTABLE_reduce) 
+	@/usr/local/go/bin/go build -ldflags="-s -w" -o $(BIN_DIR)/$(EXECUTABLE_reduce) 
 
 build: $(BIN_DIR)
 	@echo "Building the main application..."
-	@go build -o $(BIN_DIR)/$(EXECUTABLE) 
+	@/usr/local/go/bin/go build -o $(BIN_DIR)/$(EXECUTABLE) 
 
 run: build
 	@echo "Running the main application..."
