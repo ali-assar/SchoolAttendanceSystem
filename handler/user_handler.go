@@ -211,6 +211,33 @@ func (h *Handlers) HandleUpdateUserBiometric(c *fiber.Ctx) error {
 	})
 }
 
+// UPDATE handlers
+func (h *Handlers) HandleUpdateUserBiometricToFalse(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error(), "success": false})
+	}
+
+	_, err = h.Store.GetUserByID(c.Context(), id)
+	if err != nil {
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "User not found", "success": false})
+	}
+	var updateParams db.UpdateUserBiometricParams
+
+	updateParams.UserID = id
+	updateParams.IsBiometricActive = false
+
+	if err := h.Store.UpdateUserBiometric(c.Context(), updateParams); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error(), "success": false})
+	}
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"message": "user biometric updated",
+		"id":      id,
+		"success": true,
+	})
+}
+
 type updateStudentParams struct {
 	db.UpdateUserDetailsParams
 	db.UpdateStudentAllowedTimeParams

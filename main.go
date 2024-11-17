@@ -68,6 +68,10 @@ func main() {
 	apiv1.Put("teacher/:id", handlers.HandleUpdateTeacher)
 	apiv1.Delete("user/:id", handlers.HandleDeleteUser)
 
+	// make user biometric false
+	apiv1.Put("user/biometric/:id", handlers.HandleUpdateUserBiometricToFalse)
+
+
 	// Combined Attendance routes (all, teacher, student)
 	apiv1.Get("attendance/:type/:date", handlers.HandleGetAttendanceByTypeAndDate)
 	apiv1.Get("attendance/range/:type/:startDate/:endDate", handlers.HandleGetAttendanceByTypeAndDateRange)
