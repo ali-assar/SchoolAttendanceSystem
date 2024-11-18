@@ -529,7 +529,8 @@ These routes do not require authentication and handle biometric-based attendance
 
 - **Get Users with Active Biometric Data**:  
   `GET /biometric/user`  
-  Retrieves users whose biometric authentication is active.
+  Retrieves users whose biometric authenticatio	nowLocalUnix := nowLocal.Unix() + int64(offset)
+	nowUTCUnix := nowUTC.Unix()n is active.
 
 - **Update User Biometric Data**:  
   `PUT /biometric/:id`  
@@ -554,6 +555,21 @@ These routes do not require authentication and handle biometric-based attendance
     "time": 1726336438
   }
 
+### time Endpoints (`/api/v1/time`)
+
+- **Get time **:  
+  `get api/v1/time/`  
+  Handles time fetch.
+
+  **response Body (JSON)**:
+  ```json
+  {
+  "local_time": "2024-11-18T11:54:14.693098237+03:30",
+  "local_time_unix": 1731930854,
+  "success": true,
+  "utc_time": "2024-11-18T08:24:14.693098177Z",
+  "utc_time_unix": 1731918254
+  }
 
   ```
 
