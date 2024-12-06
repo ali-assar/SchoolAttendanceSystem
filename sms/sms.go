@@ -20,7 +20,7 @@ func ScheduleDailyAt(store db.Querier, ctx context.Context, hour, minute int) {
 		// Set next execution time based on current OS time
 		next := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())
 		if now.After(next) {
-			next = next.Add(24* time.Hour)
+			next = next.Add(24 * time.Hour)
 		}
 
 		// Check and log current system time each day
@@ -60,7 +60,6 @@ func ScheduleDelayDailyAt(store db.Querier, ctx context.Context, hour, minute in
 			next = next.Add(24 * time.Hour)
 		}
 
-		// Check and log current system time each day
 		log.Printf("Current system time: %v", time.Now())
 		log.Printf("Scheduled time for next SMS: %v", next)
 
@@ -72,9 +71,9 @@ func ScheduleDelayDailyAt(store db.Querier, ctx context.Context, hour, minute in
 		date := int(time.Now().Unix())
 		names, phone, err := handler.GetFormattedTeachersDelay(store, ctx, date)
 		if err != nil {
-			log.Println("Error fetching absent teachers:", err)
+			log.Println("Error fetching delayed teachers:", err)
 		} else if names != "" {
-			message := fmt.Sprintf("مدیر گرامی، همکاران %s .امروز تاخیی داشته‌اند", names)
+			message := fmt.Sprintf("مدیر گرامی، همکاران %s امروز تاخییر داشته‌اند.", names)
 			fmt.Println(message)
 			err := sendSMS(phone, message)
 			if err != nil {
@@ -82,7 +81,7 @@ func ScheduleDelayDailyAt(store db.Querier, ctx context.Context, hour, minute in
 			}
 		}
 
-		// After calling, sleep for 24 hours to run again the next day at 10 AM
+		// Sleep for 24 hours before the next scheduled time
 		time.Sleep(24 * time.Hour)
 	}
 }

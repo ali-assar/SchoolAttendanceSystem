@@ -134,7 +134,14 @@ func GetLocalTimeOffset() int64 {
 	return offsetInSeconds
 }
 
-func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]db.GetFullDetailsTeacherAttendanceByDateRow, error) {
+
+type TeacherDelayDetails struct {
+	db.GetFullDetailsTeacherAttendanceByDateRow
+	DelayTime int64 `json:"delay_time"` // Added field for delay time
+}
+
+
+func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]TeacherDelayDetails, error) {
 	date = int(ExtractUnixDate(int64(date)))
 	dayOfWeek := ((date / 86400) + 4) % 7
 
@@ -143,41 +150,35 @@ func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]db.Ge
 		return nil, err
 	}
 
-	var delayOnDay []db.GetFullDetailsTeacherAttendanceByDateRow
+	var delayOnDay []TeacherDelayDetails
 	localTimeOffset := GetLocalTimeOffset()
 	for _, user := range attendance {
-		// Normalize the EnterTime to keep only hours, minutes, and seconds
 		normalizedEnterTime := ExtractUnixTime(user.EnterTime) + localTimeOffset
 
+		var allowedEntryTime int64
 		switch dayOfWeek {
 		case 1:
-			if normalizedEnterTime > user.MondayEntryTime+localTimeOffset && user.MondayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.MondayEntryTime
 		case 2:
-			if normalizedEnterTime > user.TuesdayEntryTime+localTimeOffset && user.TuesdayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.TuesdayEntryTime
 		case 3:
-			if normalizedEnterTime > user.WednesdayEntryTime+localTimeOffset && user.WednesdayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.WednesdayEntryTime
 		case 4:
-			if normalizedEnterTime > user.ThursdayEntryTime+localTimeOffset && user.ThursdayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.ThursdayEntryTime
 		case 5:
-			if normalizedEnterTime > user.FridayEntryTime+localTimeOffset && user.FridayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.FridayEntryTime
 		case 6:
-			if normalizedEnterTime > user.SaturdayEntryTime+localTimeOffset && user.SaturdayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.SaturdayEntryTime
 		case 0:
-			if normalizedEnterTime > user.SundayEntryTime+localTimeOffset && user.SundayEntryTime != 0 {
-				delayOnDay = append(delayOnDay, user)
-			}
+			allowedEntryTime = user.SundayEntryTime
+		}
+
+		if allowedEntryTime != 0 && normalizedEnterTime > allowedEntryTime+localTimeOffset {
+			delay := normalizedEnterTime - (allowedEntryTime + localTimeOffset)
+			delayOnDay = append(delayOnDay, TeacherDelayDetails{
+				GetFullDetailsTeacherAttendanceByDateRow: user,
+				DelayTime:                                delay,
+			})
 		}
 	}
 	return delayOnDay, nil
@@ -191,10 +192,8 @@ func GetFormattedTeachersDelay(store db.Querier, ctx context.Context, date int) 
 
 	var names []string
 	for _, teacher := range teachersDelay {
-		// firstName := strings.ReplaceAll(teacher.FirstName, " ", "-")
-		// lastName := strings.ReplaceAll(teacher.LastName, " ", "-")
-		fullName := fmt.Sprintf("%s %s", teacher.FirstName, teacher.LastName)
-
+		delayMinutes := teacher.DelayTime / 60 // Convert delay time to minutes
+		fullName := fmt.Sprintf("%s %s (%d دقیقه تاخیر)", teacher.FirstName, teacher.LastName, delayMinutes)
 		names = append(names, fullName)
 	}
 	name = strings.Join(names, ", ")
