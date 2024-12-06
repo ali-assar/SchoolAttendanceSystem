@@ -113,8 +113,6 @@ func main() {
 	}
 	intSendMin, _ := strconv.ParseInt(sendMin, 10, 64)
 
-	go sms.ScheduleDailyAt(store, context.Background(), int(intSendHour), int(intSendMin))
-	go sms.ScheduleDelayDailyAt(store, context.Background(), int(intSendHour), int(intSendMin))
-
+	go sms.ScheduleDailyNotifications(store, context.Background(), int(intSendHour), int(intSendMin))
 	log.Fatal(app.Listen(ip))
 }

@@ -130,16 +130,13 @@ func GetLocalTimeOffset() int64 {
 	}
 
 	offsetInSeconds := hourOffset*3600 + minuteOffset*60
-	fmt.Println(offsetInSeconds)
 	return offsetInSeconds
 }
-
 
 type TeacherDelayDetails struct {
 	db.GetFullDetailsTeacherAttendanceByDateRow
 	DelayTime int64 `json:"delay_time"` // Added field for delay time
 }
-
 
 func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]TeacherDelayDetails, error) {
 	date = int(ExtractUnixDate(int64(date)))
@@ -180,6 +177,10 @@ func FindTeachersDelay(store db.Querier, ctx context.Context, date int) ([]Teach
 				DelayTime:                                delay,
 			})
 		}
+	}
+
+	if delayOnDay == nil {
+		fmt.Println("no teacher delayed")
 	}
 	return delayOnDay, nil
 }
